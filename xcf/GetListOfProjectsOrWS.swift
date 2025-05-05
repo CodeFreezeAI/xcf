@@ -57,6 +57,28 @@ func listProjectsOrWorkspacesIn(_ directive: String, _ parentFolderPath: String,
     return result
 }
 
+func selectProjOrWS(withDirective directive: String, selectProject: String) -> String {
+    let startIndex = directive.index(directive.startIndex, offsetBy: selectProject.count)
+    let index = String(directive[startIndex...]).trimmingCharacters(in: .whitespaces)
+    
+    let projects = getListOfProjectsOrWorkspacesRecursively(inFolderPath: defaultFolderPath, proj: true)
+    
+    guard !projects.isEmpty else { return "No projects found" }
+    
+    var num = Int(index) ?? 0
+    if num < 1 {
+        num = 1
+    }
+    
+    if num > projects.count {
+        return "Error: Project number \(num) is out of range. Only \(projects.count) projects available."
+    }
+    
+    currentProject = projects[num - 1]
+    return currentProject ?? ""
+}
+
+// Not really used right now, dead code
 func getListOfProjects(inFolderPath folderPath: String) -> [String] {
     let fileManager = FileManager.default
     var projects: [String] = []

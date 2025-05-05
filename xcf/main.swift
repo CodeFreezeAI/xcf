@@ -106,7 +106,7 @@ func handleXcfDirective(directive: String) -> String {
     switch lowercasedDirective {
     case "xcf":
         return "All systems operational."
-    case "help", "xcf help", "list tools":
+    case "help", "xcf help":
         return """
         xcf directives:
         - xcf: Activate XCF mode
@@ -118,44 +118,23 @@ func handleXcfDirective(directive: String) -> String {
         - help: Show this help information
         """
     case "grant permission":
+        // May not be needed anymore... leave for now.
         let script = OsaScriptBuildFirstOpenXCodeDocument()
         return executeWithOsascript(script: script)
     case "run":
         guard let currentProject else { return "Error: No project selected"}
-        print("Running current project \(currentProject)...")
         return XcodeBuildScript().buildCurrentWorkspace(projectPath: currentProject, run: true)
-        
     case "build":
         guard let currentProject else { return "Error: No project selected"}
-        print("Building current project \(currentProject)...")
         return XcodeBuildScript().buildCurrentWorkspace(projectPath: currentProject, run: false)
-        
     case let cmd where cmd.starts(with: selectProject):
-        let startIndex = directive.index(directive.startIndex, offsetBy: selectProject.count)
-        let index = String(directive[startIndex...]).trimmingCharacters(in: .whitespaces)
-        
-        let projects = getListOfProjectsOrWorkspacesRecursively(inFolderPath: defaultFolderPath, proj: true)
-        
-        guard !projects.isEmpty else { return "No projects found" }
-        
-        var num = Int(index) ?? 0
-        if num < 1 {
-            num = 1
-        }
-        
-        if num > projects.count {
-            return "Error: Project number \(num) is out of range. Only \(projects.count) projects available."
-        }
-        
-        currentProject = projects[num - 1]
-        return currentProject ?? ""
-        
+        return selectProjOrWS(withDirective: directive, selectProject: selectProject)
     case let cmd where cmd.starts(with: listProjectsIn):
         return listProjectsOrWorkspacesIn(directive, listProjectsIn, proj: true)
-        
     default:
         // No recognized directive
-        print("Unrecognized XCF directive: \(directive)\nUse 'help' to see available commands.")
         return "Unrecognized XCF directive: \(directive)\nUse 'help' to see available commands."
     }
 }
+
+
