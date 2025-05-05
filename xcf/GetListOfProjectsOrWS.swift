@@ -44,10 +44,10 @@ func listProjectsOrWorkspacesIn(_ directive: String, _ parentFolderPath: String,
     }
     
     let projects = getListOfProjectsOrWorkspacesRecursively(inFolderPath: defaultFolderPath, proj: proj)
-    var result = "List of Projects in \(folderPath)!!"
+    var result = "List of Projects in \(folderPath)"
     
     if projects.isEmpty {
-        result += "\nNo projects found in \(folderPath)."
+        result += "\nNo projects found in \(folderPath)"
     } else {
         for (index, project) in projects.enumerated() {
             result += "\n\(index + 1). \(project)"
@@ -57,11 +57,11 @@ func listProjectsOrWorkspacesIn(_ directive: String, _ parentFolderPath: String,
     return result
 }
 
-func selectProjOrWS(withDirective directive: String, selectProject: String) -> String {
-    let startIndex = directive.index(directive.startIndex, offsetBy: selectProject.count)
+func selectProjectOrWorkspace(withDirective directive: String, projectOrWorkspace: String, proj: Bool) -> String {
+    let startIndex = directive.index(directive.startIndex, offsetBy: projectOrWorkspace.count)
     let index = String(directive[startIndex...]).trimmingCharacters(in: .whitespaces)
     
-    let projects = getListOfProjectsOrWorkspacesRecursively(inFolderPath: defaultFolderPath, proj: true)
+    let projects = getListOfProjectsOrWorkspacesRecursively(inFolderPath: defaultFolderPath, proj: proj)
     
     guard !projects.isEmpty else { return "No projects found" }
     

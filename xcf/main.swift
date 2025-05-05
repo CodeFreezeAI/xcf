@@ -69,11 +69,11 @@ await server.withMethodHandler(CallTool.self) { params in
         if let arguments = params.arguments,
            let directive = arguments["directive"]?.stringValue {
             print("Directive found: \(directive)")
-            return CallTool.Result(content: [.text(await handleXcfDirective(directive: directive))])
+            return CallTool.Result(content: [.text(handleXcfDirective(directive: directive))])
         } else {
             print("No directive found, using help")
             // If no directive specified, return the help information
-            return CallTool.Result(content: [.text(await handleXcfDirective(directive: "help"))])
+            return CallTool.Result(content: [.text(handleXcfDirective(directive: "help"))])
         }
     default:
         throw MCPError.invalidParams("Unknown tool: \(params.name)")
@@ -92,27 +92,25 @@ func getToolsList(tools: [Tool]) -> String {
     return result
 }
 
-var defaultFolderPath = "Monkies"
-var currentProject: String?
 
 
-@MainActor
 func handleXcfDirective(directive: String) -> String {
     
     // Convert directive to lowercase for case-insensitive matching
     let lowercasedDirective = directive.lowercased()
-    let selectProject = "select project "
-    let listProjectsIn = "list projects in "
+   
     switch lowercasedDirective {
-    case "xcf":
-        return "All systems operational."
-    case "help", "xcf help":
+    case "use xcf", "xcf":
+        return "All xcf systems go!"
+    case "help", "list", "xcf help":
         return """
         xcf directives:
         - xcf: Activate XCF mode
         - grant permission: to use xcode automation
-        - list projects in [folder]: list projects in folder
+        - list projects in [folder] like ~/Documents
         - select project [#]
+        - list workspaces in [folder] like ~/Documents
+        - select workspace [#]
         - run: Execute the current XCF project
         - build: Build the current XCF project
         - help: Show this help information
@@ -127,13 +125,22 @@ func handleXcfDirective(directive: String) -> String {
     case "build":
         guard let currentProject else { return "Error: No project selected"}
         return XcodeBuildScript().buildCurrentWorkspace(projectPath: currentProject, run: false)
-    case let cmd where cmd.starts(with: selectProject):
-        return selectProjOrWS(withDirective: directive, selectProject: selectProject)
-    case let cmd where cmd.starts(with: listProjectsIn):
-        return listProjectsOrWorkspacesIn(directive, listProjectsIn, proj: true)
+        
+    // Projects
+    case let cmd where cmd.starts(with: Directives.listProjectsIn):
+        return listProjectsOrWorkspacesIn(directive, Directives.listProjectsIn, proj: true)
+    case let cmd where cmd.starts(with: Directives.selectProject):
+        return selectProjectOrWorkspace(withDirective: directive, projectOrWorkspace: Directives.selectProject, proj: true)
+        
+    // Workspaces
+    case let cmd where cmd.starts(with: Directives.listWorkspacesIn):
+        return listProjectsOrWorkspacesIn(directive, Directives.listWorkspacesIn, proj: false)
+    case let cmd where cmd.starts(with: Directives.selectWorkspace):
+        return selectProjectOrWorkspace(withDirective: directive, projectOrWorkspace: Directives.selectWorkspace, proj: false)
+        
     default:
         // No recognized directive
-        return "Unrecognized XCF directive: \(directive)\nUse 'help' to see available commands."
+        return "Houston we have a problem: \(directive) is not recognized."
     }
 }
 
