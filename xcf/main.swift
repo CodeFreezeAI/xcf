@@ -12,22 +12,6 @@ import MCP
 print("welcome to xcf in pure swift\nxcodefreeze mcp local server\ncopyright 2025 codefreeze.ai\n")
 
 // Define our tools
-let swiftVersionTool = Tool(
-    name: "swift_version",
-    description: "Returns the current Swift version",
-    inputSchema: .object([
-        "type": .string("object")
-    ])
-)
-
-let systemInfoTool = Tool(
-    name: "system_info",
-    description: "Returns information about the system",
-    inputSchema: .object([
-        "type": .string("object")
-    ])
-)
-
 let listToolsTool = Tool(
     name: "list_tools",
     description: "Lists all available tools on this server",
@@ -63,7 +47,7 @@ let transport = StdioTransport()
 try await server.start(transport: transport)
 
 // Get all available tools
-let allTools = [swiftVersionTool, systemInfoTool, listToolsTool, xcfTool]
+let allTools = [xcfTool, listToolsTool]
 
 // Handle tool listing
 await server.withMethodHandler(ListTools.self) { params in
@@ -74,10 +58,6 @@ await server.withMethodHandler(ListTools.self) { params in
 await server.withMethodHandler(CallTool.self) { params in
   
     switch params.name {
-    case "swift_version":
-        return CallTool.Result(content: [.text(getSwiftVersion())])
-    case "system_info":
-        return CallTool.Result(content: [.text(getSystemInfo())])
     case "list_tools":
         return CallTool.Result(content: [.text(getToolsList(tools: allTools))])
     case "xcf":
@@ -102,50 +82,6 @@ await server.withMethodHandler(CallTool.self) { params in
 
 await server.waitUntilCompleted()
 
-// Tool implementations
-func getSwiftVersion() -> String {
-    let process = Process()
-    process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-    process.arguments = ["swift", "--version"]
-    
-    let outputPipe = Pipe()
-    process.standardOutput = outputPipe
-    
-    do {
-        try process.run()
-        process.waitUntilExit()
-        
-        let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
-        return String(data: data, encoding: .utf8) ?? "No version"
-    } catch {
-        return "Error running swift-version: \(error)"
-    }
-}
-
-func getSystemInfo() -> String {
-    var info = [String]()
-    
-    // Get OS version
-    let osVersion = ProcessInfo.processInfo.operatingSystemVersionString
-    info.append("OS Version: \(osVersion)")
-    
-    // Get hostname
-    if let hostname = Host.current().localizedName {
-        info.append("Hostname: \(hostname)")
-    }
-    
-    // Get architecture
-    #if arch(x86_64)
-    info.append("Architecture: x86_64")
-    #elseif arch(arm64)
-    info.append("Architecture: arm64")
-    #else
-    info.append("Architecture: unknown")
-    #endif
-    
-    return info.joined(separator: "\n")
-}
-
 func getToolsList(tools: [Tool]) -> String {
     var result = "Available tools:\n"
     
@@ -167,13 +103,13 @@ func handleXcfDirective(directive: String) -> String {
     let selectProject = "select project "
     let listProjectsIn = "list projects in "
     switch lowercasedDirective {
-    case "use xcf":
-        return("welcome to xcf in pure swift\nxcodefreeze mcp local server\ncopyright 2025 codefreeze.ai\n")
+    case "xcf":
+        return("All systems operational.")
     case "help", "xcf help":
         return """
         
         XCF Directives Help:
-        - use xcf: Activate XCF mode
+        - xcf: Activate XCF mode
         - grant permission: to use xcode automation
         - list projects in [folder]: list projects in folder
         - select project [#]
