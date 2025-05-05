@@ -19,7 +19,10 @@ class XcodeBuildScript {
         
         var buildResult: XcodeSchemeActionResult?
         
+        currentWorkspace.stop?()
+        
         if run {
+           
             buildResult = currentWorkspace.runWithCommandLineArguments?(nil, withEnvironmentVariables: nil)
             if buildResult == nil {
                 return "Failed to start build"
