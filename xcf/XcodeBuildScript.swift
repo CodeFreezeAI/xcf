@@ -11,22 +11,26 @@ class XcodeBuildScript {
         // Open the project
         let xcDoc = xcode.open?(projectPath as Any)
         
+        
         // Run the document
         guard
-            let currentWorkspace = xcDoc as? XcodeWorkspaceDocument else {
+            let currentWorkspace = xcDoc as? XcodeWorkspaceDocument
+        else {
             return "No workspace document found"
         }
         
-        var buildResult: XcodeSchemeActionResult?
-        
         currentWorkspace.stop?()
         
+        var buildResult: XcodeSchemeActionResult?
+        
         if run {
-           
-            buildResult = currentWorkspace.runWithCommandLineArguments?(nil, withEnvironmentVariables: nil)
-            if buildResult == nil {
-                return "Failed to start build"
+            sleep(1) // time for last one to get killed
+            
+            Task {
+                currentWorkspace.runWithCommandLineArguments?(nil, withEnvironmentVariables: nil)
             }
+            
+            return "🐦📜 Ran successfully"
         } else {
             buildResult = currentWorkspace.build?()
             if buildResult == nil {
@@ -60,6 +64,6 @@ class XcodeBuildScript {
             }
         }
         
-        return buildResults.isEmpty ? "🐦📜 Ran successfully" : buildResults
+        return buildResults.isEmpty ? "🐦📜 Built successfully" : buildResults
     }
 }

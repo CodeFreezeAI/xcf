@@ -86,3 +86,13 @@ func OsaScriptBuildFirstOpenXCodeDocument() -> String {
     end tell
     """
 }
+
+func AppleScriptStop() -> String {
+    """
+    tell application "Xcode"        
+        tell first document
+            stop
+        end tell
+    end tell
+    """
+}

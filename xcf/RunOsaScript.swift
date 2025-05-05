@@ -7,6 +7,7 @@
 
 import Foundation
 
+@discardableResult
 func executeAppleScript(script: String) -> String {
     if let appleScript = NSAppleScript(source: script) {
         var errorDict: NSDictionary? = nil

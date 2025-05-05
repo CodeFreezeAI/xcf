@@ -69,11 +69,11 @@ await server.withMethodHandler(CallTool.self) { params in
         if let arguments = params.arguments,
            let directive = arguments["directive"]?.stringValue {
             print("Directive found: \(directive)")
-            return CallTool.Result(content: [.text(handleXcfDirective(directive: directive))])
+            return CallTool.Result(content: [.text(await handleXcfDirective(directive: directive))])
         } else {
             print("No directive found, using help")
             // If no directive specified, return the help information
-            return CallTool.Result(content: [.text(handleXcfDirective(directive: "help"))])
+            return CallTool.Result(content: [.text(await handleXcfDirective(directive: "help"))])
         }
     default:
         throw MCPError.invalidParams("Unknown tool: \(params.name)")
@@ -92,6 +92,7 @@ func getToolsList(tools: [Tool]) -> String {
     return result
 }
 
+@MainActor
 func handleXcfDirective(directive: String) -> String {
     
     // Convert directive to lowercase for case-insensitive matching
@@ -119,7 +120,14 @@ func handleXcfDirective(directive: String) -> String {
         return executeWithOsascript(script: script)
     case "run":
         guard let currentProject else { return "Error: No project selected"}
-        return XcodeBuildScript().buildCurrentWorkspace(projectPath: currentProject, run: true)
+        let XcodeBuildScript = XcodeBuildScript()
+        let buildCheckForErrors = XcodeBuildScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
+        
+        if buildCheckForErrors.contains("success") {
+            return XcodeBuildScript.buildCurrentWorkspace(projectPath: currentProject, run: true)
+        } else {
+            return buildCheckForErrors
+        }
     case "build":
         guard let currentProject else { return "Error: No project selected"}
         return XcodeBuildScript().buildCurrentWorkspace(projectPath: currentProject, run: false)
