@@ -92,8 +92,6 @@ func getToolsList(tools: [Tool]) -> String {
     return result
 }
 
-
-
 func handleXcfDirective(directive: String) -> String {
     
     // Convert directive to lowercase for case-insensitive matching
