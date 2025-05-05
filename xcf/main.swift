@@ -95,6 +95,7 @@ func getToolsList(tools: [Tool]) -> String {
 var defaultFolderPath = "Monkies"
 var currentProject: String?
 
+
 @MainActor
 func handleXcfDirective(directive: String) -> String {
     
@@ -104,11 +105,10 @@ func handleXcfDirective(directive: String) -> String {
     let listProjectsIn = "list projects in "
     switch lowercasedDirective {
     case "xcf":
-        return("All systems operational.")
-    case "help", "xcf help":
+        return "All systems operational."
+    case "help", "xcf help", "list tools":
         return """
-        
-        XCF Directives Help:
+        xcf directives:
         - xcf: Activate XCF mode
         - grant permission: to use xcode automation
         - list projects in [folder]: list projects in folder
@@ -134,7 +134,7 @@ func handleXcfDirective(directive: String) -> String {
         let startIndex = directive.index(directive.startIndex, offsetBy: selectProject.count)
         let index = String(directive[startIndex...]).trimmingCharacters(in: .whitespaces)
         
-        let projects = getListOfProjectsRecursively(inFolderPath: defaultFolderPath)
+        let projects = getListOfProjectsOrWorkspacesRecursively(inFolderPath: defaultFolderPath, proj: true)
         
         guard !projects.isEmpty else { return "No projects found" }
         
@@ -151,29 +151,7 @@ func handleXcfDirective(directive: String) -> String {
         return currentProject ?? ""
         
     case let cmd where cmd.starts(with: listProjectsIn):
-        let startIndex = directive.index(directive.startIndex, offsetBy: listProjectsIn.count)
-        let folderPath = String(directive[startIndex...]).trimmingCharacters(in: .whitespaces)
-        
-        // Handle tilde expansion for home directory
-        defaultFolderPath = folderPath
-        if folderPath.starts(with: "~") {
-            if let homeDir = ProcessInfo.processInfo.environment["HOME"] {
-                defaultFolderPath = folderPath.replacingOccurrences(of: "~", with: homeDir)
-            }
-        }
-        
-        let projects = getListOfProjectsRecursively(inFolderPath: defaultFolderPath)
-        var result = "List of Projects in \(folderPath)!!"
-        
-        if projects.isEmpty {
-            result += "\nNo projects found."
-        } else {
-            for (index, project) in projects.enumerated() {
-                result += "\n\(index + 1). \(project)"
-            }
-        }
-        
-        return result
+        return listProjectsOrWorkspacesIn(directive, listProjectsIn, proj: true)
         
     default:
         // No recognized directive
