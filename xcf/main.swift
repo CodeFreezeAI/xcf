@@ -122,9 +122,9 @@ func handleXcfDirective(directive: String) -> String {
         return """
         xcf directives:
         - xcf: Activate XCF mode
-        - grant permission: to use xcode automation
-        - list [open xc projects and workspaces]
-        - select [open xc project or workspace]
+        - grant: permission to use xcode automation
+        - list: [open xc projects and workspaces]
+        - select #: [open xc project or workspace]
         - run: Execute the current XCF project
         - build: Build the current XCF project
         - help: Show this help information
