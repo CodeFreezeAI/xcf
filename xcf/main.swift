@@ -105,7 +105,7 @@ func getOpenProjectsList(projs: [String]) -> String {
 
 // Get sorted list of Xcode projects
 func getSortedXcodeProjects(ext: String = ".xc") -> [String] {
-    let xc = executeAppleScript(script: getXcodeDocumentPaths(ext: ext))
+    let xc = AppleScriptDescriptorToSet(script: getXcodeDocumentPaths(ext: ext))
     return Array(xc).sorted() // Convert Set to Array and sort alphabetically
 }
 

@@ -262,7 +262,7 @@ extension SBObject: XcodeResolvedBuildSetting {}
 extension SBObject: XcodeTarget {}
 
 func extractStringSet(from descriptor: NSAppleEventDescriptor) -> Set<String> {
-    var result: Set<String> = []
+    var result: Set<String> = [] //Ensure no duplicate items
     
     // Check if it's a list descriptor
     if descriptor.descriptorType == typeAEList {
@@ -280,7 +280,7 @@ func extractStringSet(from descriptor: NSAppleEventDescriptor) -> Set<String> {
 }
 
 @discardableResult
-func executeAppleScript(script: String) -> Set<String> {
+func AppleScriptDescriptorToSet(script: String) -> Set<String> {
     if let appleScript = NSAppleScript(source: script) {
         var errorDict: NSDictionary? = nil
         let output = appleScript.executeAndReturnError(&errorDict)
