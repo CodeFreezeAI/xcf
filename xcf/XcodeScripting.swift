@@ -1,3 +1,10 @@
+//
+//  XcodeScripting.swift
+//  xcf
+//
+//  Created by Todd Bruss on 5/7/25.
+//
+
 public enum XcodeScripting: String {
     case analyzerissue = "analyzer issue"
     case application = "application"

@@ -1,6 +1,6 @@
 //
 //  AppleScripts.swift
-//  ScriptAutomationTest
+//  xcf
 //
 //  Created by Todd Bruss on 5/4/25.
 //
@@ -26,7 +26,7 @@ func grantAutomation() -> String {
     """
 }
 
-func getXcodeDocumentPaths(ext: String = ".xc") -> String {
+func getXcodeDocumentPaths(ext: String) -> String {
     """
     tell application "Xcode"
         set p to get path of every document whose name contains "\(ext)"

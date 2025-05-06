@@ -1,5 +1,5 @@
 //
-//  Global.swift
+//  Variables.swift
 //  xcf
 //
 //  Created by Todd Bruss on 5/4/25.

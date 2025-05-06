@@ -1,3 +1,11 @@
+//
+//  XcodeBuildScript.swift
+//  xcf
+//
+//  Created by Todd Bruss on 5/7/25.
+//
+
+
 import Foundation
 import ScriptingBridge
 
@@ -60,7 +68,7 @@ class XcodeBuildScript {
                        let startLine = error.startingLineNumber,
                        let endLine = error.endingLineNumber {
                         files.insert(filePath)
-                        buildResults += "\(filePath):\(endLine):\(startingColNum) \(errorMessage)\(Format.newLine)"
+                        buildResults += "\(filePath):\(startLine):\(startingColNum) \(errorMessage)\(Format.newLine)"
                         buildResults += "```swift\(Format.newLine)"
                         buildResults += captureSnippet(from: filePath, startLine: startLine, endLine: endLine, entireFile: false)
                         buildResults += "```\(Format.newLine)"
