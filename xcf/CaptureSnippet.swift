@@ -7,11 +7,15 @@
 
 import Foundation
 
-func captureSnippet(from filePath: String, startLine: Int, endLine: Int) -> String {
+func captureSnippet(from filePath: String, startLine: Int, endLine: Int, entireFile: Bool) -> String {
     do {
         // Read the content of the file into a single string
         let fileContent = try String(contentsOfFile: filePath, encoding: .utf8)
 
+        if entireFile {
+            return fileContent
+        }
+        
         // Split the content into lines
         let lines = fileContent.components(separatedBy: .newlines)
 

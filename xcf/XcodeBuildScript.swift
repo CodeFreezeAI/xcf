@@ -50,6 +50,8 @@ class XcodeBuildScript {
         var buildResults = ""
         
         // Check build errors
+        var files: Set<String> = []
+        
         if let buildErrors = result.buildErrors?() {
             for case let error as XcodeBuildError in buildErrors {
                 if let errorMessage = error.message {
@@ -57,16 +59,21 @@ class XcodeBuildScript {
                        let startingColNum = error.startingColumnNumber,
                        let startLine = error.startingLineNumber,
                        let endLine = error.endingLineNumber {
-                        
+                        files.insert(filePath)
                         buildResults += "\(filePath):\(endLine):\(startingColNum) \(errorMessage)\n"
-                        buildResults += captureSnippet(from: filePath, startLine: startLine, endLine: endLine)
+                        buildResults += captureSnippet(from: filePath, startLine: startLine, endLine: endLine, entireFile: false)
                         buildResults += "\n"
                     } else {
                         buildResults += "\(errorMessage)\n"
                     }
                 }
-                
-                
+            }
+            
+            for file in files {
+                buildResults += "Enter file `\(file)`:\n"
+                buildResults += "```swift\n"
+                buildResults += captureSnippet(from: file, startLine: 0, endLine: 0, entireFile: true)
+                buildResults += "```\n"
             }
         }
         
