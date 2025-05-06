@@ -129,7 +129,7 @@ func handleXcfDirective(directive: String) -> String {
         - build: Build the current XCF project
         - help: Show this help information
         """
-    case "grant permission":
+    case "grant":
         // May not be needed anymore... leave for now.
         let script = OsaScriptBuildFirstOpenXCodeDocument()
         return executeWithOsascript(script: script)
