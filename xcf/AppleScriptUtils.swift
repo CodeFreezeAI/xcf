@@ -47,15 +47,14 @@ func AppleScriptDescriptorToSet(script: String) -> Set<String> {
     
     // Fallback to the regex approach
     let result = executeWithOsascript(script: script)
-    let descriptorStrings = result.split(separator: ",")
+    let descriptorStrings = result.split(separator: Format.commaSeparator.first!)
     
     // Parse the result into a set
     var xcSet: Set<String> = []
     
     for ds in descriptorStrings {
         // Extract strings between quotes
-        let regex = /\"([^\"]+)\"/
-        if let match = try? regex.wholeMatch(in: String(ds)) {
+        if let match = try? Format.quoteExtractPattern.wholeMatch(in: String(ds)) {
             xcSet.insert(String(match.1))
         }
     }

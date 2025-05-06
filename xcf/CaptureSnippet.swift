@@ -17,7 +17,7 @@ func captureSnippet(from filePath: String, startLine: Int, endLine: Int, entireF
         }
         
         // Split the content into lines
-        let lines = fileContent.components(separatedBy: .newlines)
+        let lines = fileContent.components(separatedBy: Format.newlinesCharSet())
 
         // Validate line numbers
         guard startLine > 0, endLine >= startLine, endLine <= lines.count else {
@@ -28,7 +28,7 @@ func captureSnippet(from filePath: String, startLine: Int, endLine: Int, entireF
         let snippetLines = lines[(startLine - 1)...(endLine - 1)]
 
         // Join the lines back into a single string
-        return snippetLines.joined(separator: "\n")
+        return snippetLines.joined(separator: Format.newLine)
 
     } catch {
         return String(format: ErrorMessages.errorReadingFile, error.localizedDescription)

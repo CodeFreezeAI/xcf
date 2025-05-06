@@ -60,20 +60,21 @@ class XcodeBuildScript {
                        let startLine = error.startingLineNumber,
                        let endLine = error.endingLineNumber {
                         files.insert(filePath)
-                        buildResults += "\(filePath):\(endLine):\(startingColNum) \(errorMessage)\n"
+                        buildResults += "\(filePath):\(endLine):\(startingColNum) \(errorMessage)\(Format.newLine)"
+                        buildResults += "```swift\(Format.newLine)"
                         buildResults += captureSnippet(from: filePath, startLine: startLine, endLine: endLine, entireFile: false)
-                        buildResults += "\n"
+                        buildResults += "```\(Format.newLine)"
                     } else {
-                        buildResults += "\(errorMessage)\n"
+                        buildResults += "\(errorMessage)\(Format.newLine)"
                     }
                 }
             }
             
             for file in files {
-                buildResults += "Enter file `\(file)`:\n"
-                buildResults += "```swift\n"
+                buildResults += "Enter file `\(file)`:\(Format.newLine)"
+                buildResults += "```swift\(Format.newLine)"
                 buildResults += captureSnippet(from: file, startLine: 0, endLine: 0, entireFile: true)
-                buildResults += "```\n"
+                buildResults += "```\(Format.newLine)"
             }
         }
         

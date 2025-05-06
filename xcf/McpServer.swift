@@ -15,7 +15,7 @@ struct McpServer {
         name: McpConfig.listToolsName,
         description: McpConfig.listToolsDesc,
         inputSchema: .object([
-            "type": .string(McpConfig.objectType)
+            McpConfig.typeKey: .string(McpConfig.objectType)
         ])
     )
 
@@ -23,14 +23,14 @@ struct McpServer {
         name: McpConfig.xcfToolName,
         description: McpConfig.xcfToolDesc,
         inputSchema: .object([
-            "type": .string(McpConfig.objectType),
-            "properties": .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
                 McpConfig.directiveParamName: .object([
-                    "type": .string(McpConfig.stringType),
-                    "description": .string(McpConfig.directiveParamDesc)
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.directiveParamDesc)
                 ])
             ]),
-            "required": .array([.string(McpConfig.directiveParamName)])
+            McpConfig.requiredKey: .array([.string(McpConfig.directiveParamName)])
         ])
     )
     

@@ -17,7 +17,7 @@ struct XcfDirectiveHandler {
         switch lowercasedDirective {
         case Directives.xcf, Directives.useXcf:
             return SuccessMessages.xcfActive
-        case Directives.help, Directives.xcf + " " + Directives.help:
+        case Directives.help, Directives.xcf + Format.spaceSeparator + Directives.help:
             return getHelpText()
         case Directives.grant:
             return grantPermission()
@@ -58,7 +58,7 @@ struct XcfDirectiveHandler {
         let XcodeBuildScript = XcodeBuildScript()
         let buildCheckForErrors = XcodeBuildScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
         
-        if buildCheckForErrors.contains(StatusKeywords.success) {
+        if buildCheckForErrors.contains(SuccessMessages.success) {
             return XcodeBuildScript.buildCurrentWorkspace(projectPath: currentProject, run: true)
         } else {
             return buildCheckForErrors
@@ -112,13 +112,13 @@ struct XcfDirectiveHandler {
     
     // Parse the project number from a directive
     private static func parseProjectNumber(from directive: String) -> Int? {
-        let parts = directive.split(separator: " ")
+        let parts = directive.split(separator: Format.spaceSeparator.first!)
         guard parts.count >= 2, let n = Int(parts[1]) else { return nil }
         return n
     }
     
     // Get a sorted list of open Xcode projects
-    private static func getSortedXcodeProjects(ext: String = FileFormats.xcodeFileExtension) -> [String] {
+    private static func getSortedXcodeProjects(ext: String = Format.xcodeFileExtension) -> [String] {
         let xc = AppleScriptDescriptorToSet(script: getXcodeDocumentPaths(ext: ext))
         return Array(xc).sorted() // Convert Set to Array and sort alphabetically
     }
@@ -128,7 +128,7 @@ struct XcfDirectiveHandler {
         var result = ""
         
         for (index, proj) in projs.enumerated() {
-            result += String(format: FileFormats.projectListFormat, index + 1, proj)
+            result += String(format: Format.projectListFormat, index + 1, proj)
         }
         
         return result

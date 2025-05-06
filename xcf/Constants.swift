@@ -5,6 +5,8 @@
 //  Created by Todd Bruss on 5/4/25.
 //
 
+import Foundation
+
 // Define string constants for commands
 struct Directives {
     static let xcf = "xcf"
@@ -52,6 +54,7 @@ struct SuccessMessages {
     static let runSuccess = "🐦📜 Ran successfully"
     static let permissionGranted = "Permission Granted"
     static let projectSelected = "Selected project %d: %@"
+    static let success = "success"
 }
 
 // Define path constants
@@ -79,6 +82,12 @@ struct McpConfig {
     static let objectType = "object"
     static let stringType = "string"
     
+    // Schema keys
+    static let typeKey = "type"
+    static let propertiesKey = "properties"
+    static let descriptionKey = "description"
+    static let requiredKey = "required"
+    
     // Console messages
     static let availableTools = "Available tools:\n"
     static let toolListFormat = "- %@: %@\n"
@@ -103,13 +112,18 @@ struct McpConfig {
 }
 
 // Define file extensions and formats
-struct FileFormats {
+struct Format {
     static let xcodeFileExtension = ".xc"
     static let projectListFormat = "%d. %@\n"
     static let newLine = "\n"
-}
-
-// Define status keywords
-struct StatusKeywords {
-    static let success = "success"
+    static let spaceSeparator = " "
+    static let commaSeparator = ","
+    
+    // Regex patterns
+    static let quoteExtractPattern = /\"([^\"]+)\"/
+    
+    // Character sets
+    static func newlinesCharSet() -> CharacterSet {
+        return .newlines
+    }
 }
