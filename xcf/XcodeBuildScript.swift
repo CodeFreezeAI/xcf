@@ -11,7 +11,6 @@ class XcodeBuildScript {
         // Open the project
         let xcDoc = xcode.open?(projectPath as Any)
         
-        
         // Run the document
         guard
             let currentWorkspace = xcDoc as? XcodeWorkspaceDocument
@@ -56,9 +55,9 @@ class XcodeBuildScript {
                 if let errorMessage = error.message {
                     if let filePath = error.filePath {
                         let lineNum = error.startingLineNumber ?? 0
-                        buildResults += "Error: \(errorMessage) in \(filePath) (line \(lineNum))\n"
+                        buildResults += "Compilation Error: \(errorMessage) in \(filePath) (line \(lineNum))\n^ Fix this please."
                     } else {
-                        buildResults += "Error: \(errorMessage)\n"
+                        buildResults += "Error: \(errorMessage)\n^Fix this issue."
                     }
                 }
             }
