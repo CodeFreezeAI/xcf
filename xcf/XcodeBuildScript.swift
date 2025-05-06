@@ -5,7 +5,7 @@ class XcodeBuildScript {
     func buildCurrentWorkspace(projectPath: String, run: Bool = false) -> String {
         // Get Xcode application instance
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: "com.apple.dt.Xcode") else {
-            return "Failed to connect to Xcode"
+            return ErrorMessages.failedToConnectXcode
         }
         
         // Open the project
@@ -15,7 +15,7 @@ class XcodeBuildScript {
         guard
             let currentWorkspace = xcDoc as? XcodeWorkspaceDocument
         else {
-            return "No workspace document found"
+            return ErrorMessages.noWorkspaceFound
         }
         
         currentWorkspace.stop?()
@@ -29,17 +29,17 @@ class XcodeBuildScript {
                 currentWorkspace.runWithCommandLineArguments?(nil, withEnvironmentVariables: nil)
             }
             
-            return "🐦📜 Ran successfully"
+            return SuccessMessages.runSuccess
         } else {
             buildResult = currentWorkspace.build?()
             if buildResult == nil {
-                return "Failed to start build"
+                return ErrorMessages.failedToStartBuild
             }
         }
         
         // Now we can safely use buildResult outside the if/else blocks
         guard let result = buildResult else {
-            return "Failed to get build result"
+            return ErrorMessages.failedToGetBuildResult
         }
             
         // Wait for build to complete
@@ -77,7 +77,7 @@ class XcodeBuildScript {
             }
         }
         
-        return buildResults.isEmpty ? "🐦📜 Built successfully" : buildResults
+        return buildResults.isEmpty ? SuccessMessages.buildSuccess : buildResults
     }
    
 }

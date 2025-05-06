@@ -21,7 +21,7 @@ func captureSnippet(from filePath: String, startLine: Int, endLine: Int, entireF
 
         // Validate line numbers
         guard startLine > 0, endLine >= startLine, endLine <= lines.count else {
-            return("Code Snippet Error: Invalid line numbers.")
+            return ErrorMessages.invalidLineNumbers
         }
 
         // Extract the lines within the specified range
@@ -31,6 +31,6 @@ func captureSnippet(from filePath: String, startLine: Int, endLine: Int, entireF
         return snippetLines.joined(separator: "\n")
 
     } catch {
-        return("Code Snippet want to Error reading file: \(error.localizedDescription)")
+        return String(format: ErrorMessages.errorReadingFile, error.localizedDescription)
     }
 }

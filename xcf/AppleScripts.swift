@@ -5,7 +5,7 @@
 //  Created by Todd Bruss on 5/4/25.
 //
 
-func OsaScriptBuildFirstOpenXCodeDocument() -> String {
+func grantAutomation() -> String {
     """
     tell application "Xcode"
         set xcDoc to first document
@@ -20,7 +20,7 @@ func OsaScriptBuildFirstOpenXCodeDocument() -> String {
                 delay 0.5
             end repeat
             
-            return "Permission Granted"
+            return "Xcode Automation permission has been granted"
         end tell
     end tell
     """

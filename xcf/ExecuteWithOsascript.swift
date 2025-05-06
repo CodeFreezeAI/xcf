@@ -9,7 +9,7 @@ import Foundation
 
 func executeWithOsascript(script: String) -> String {
     let process = Process()
-    process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+    process.executableURL = URL(fileURLWithPath: Paths.osascriptPath)
     
     // Create a pipe to capture the output
     let outputPipe = Pipe()
@@ -27,15 +27,11 @@ func executeWithOsascript(script: String) -> String {
         
         // Convert the data to a string
         if let result = String(data: data, encoding: .utf8) {
-            print(result)
-            print("AppleScript executed via osascript.")
             return result.trimmingCharacters(in: .whitespacesAndNewlines)
         } else {
-            print("Failed to convert output data to string.")
-            return ""
+            return ErrorMessages.failedToConvertOutput
         }
     } catch {
-        print("Failed to execute osascript: \(error)")
-        return ""
+        return String(format: ErrorMessages.failedToExecuteOsascript, "\(error)")
     }
 }
