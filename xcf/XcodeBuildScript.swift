@@ -58,9 +58,10 @@ class XcodeBuildScript {
         var buildResults = ""
         
         // Check build errors
-        var files: Set<String> = []
         
         if let buildErrors = result.buildErrors?() {
+            var files: Set<String> = []
+
             for case let error as XcodeBuildError in buildErrors {
                 if let errorMessage = error.message {
                     if let filePath = error.filePath,
