@@ -54,10 +54,10 @@ class XcodeBuildScript {
             for case let error as XcodeBuildError in buildErrors {
                 if let errorMessage = error.message {
                     if let filePath = error.filePath {
+                        let startingColNum = error.startingColumnNumber ?? 0
                         let lineNum = error.startingLineNumber ?? 0
-                        buildResults += "Compilation Error: \(errorMessage) in \(filePath) (line \(lineNum))\n^ Fix this please."
-                    } else {
-                        buildResults += "Error: \(errorMessage)\n^Fix this issue."
+                        buildResults += "\(filePath):\(lineNum):\(startingColNum) \(errorMessage)\n"} else {
+                        buildResults += "\(errorMessage)\n"
                     }
                 }
             }
