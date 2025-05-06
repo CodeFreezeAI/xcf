@@ -58,7 +58,6 @@ class XcodeBuildScript {
         var buildResults = ""
         
         // Check build errors
-        
         if let buildErrors = result.buildErrors?() {
             var files: Set<String> = []
 
@@ -79,8 +78,9 @@ class XcodeBuildScript {
                 }
             }
             
+            //Send entire file at the end6
             for file in files {
-                buildResults += "Enter file `\(file)`:\(Format.newLine)"
+                buildResults += "File:`\(file)`:\(Format.newLine)"
                 buildResults += "```swift\(Format.newLine)"
                 buildResults += captureSnippet(from: file, startLine: 0, endLine: 0, entireFile: true)
                 buildResults += "```\(Format.newLine)"
