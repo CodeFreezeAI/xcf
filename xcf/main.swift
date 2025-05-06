@@ -10,7 +10,7 @@ import MCP
 
 //Header
 print("welcome to xcf in pure swift\nxcodefreeze mcp local server\ncopyright 2025 codefreeze.ai\n")
-
+                           
 // Define our tools
 let listToolsTool = Tool(
     name: "list_tools",
@@ -21,6 +21,7 @@ let listToolsTool = Tool(
 )
 
 let xcfTool = Tool(
+    
     name: "xcf",
     description: "Execute an XCF directive or command",
     inputSchema: .object([
@@ -92,6 +93,22 @@ func getToolsList(tools: [Tool]) -> String {
     return result
 }
 
+func getOpenProjectsList(projs: [String]) -> String {
+    var result = ""
+    
+    for (index, proj) in projs.enumerated() {
+        result += "\(index + 1). \(proj)\n"
+    }
+    
+    return result
+}
+
+// Get sorted list of Xcode projects
+func getSortedXcodeProjects(ext: String = ".xc") -> [String] {
+    let xc = executeAppleScript(script: getXcodeDocumentPaths(ext: ext))
+    return Array(xc).sorted() // Convert Set to Array and sort alphabetically
+}
+
 @MainActor
 func handleXcfDirective(directive: String) -> String {
     
@@ -101,15 +118,13 @@ func handleXcfDirective(directive: String) -> String {
     switch lowercasedDirective {
     case "use xcf", "xcf":
         return "All xcf systems go!"
-    case "help", "list", "xcf help":
+    case "help", "xcf help":
         return """
         xcf directives:
         - xcf: Activate XCF mode
         - grant permission: to use xcode automation
-        - list projects in [folder] like ~/Documents
-        - select project [#]
-        - list workspaces in [folder] like ~/Documents
-        - select workspace [#]
+        - list [open xc projects and workspaces]
+        - select [open xc project or workspace]
         - run: Execute the current XCF project
         - build: Build the current XCF project
         - help: Show this help information
@@ -133,17 +148,41 @@ func handleXcfDirective(directive: String) -> String {
         return XcodeBuildScript().buildCurrentWorkspace(projectPath: currentProject, run: false)
         
     // Projects
-    case let cmd where cmd.starts(with: Directives.listProjectsIn):
-        return listProjectsOrWorkspacesIn(directive, Directives.listProjectsIn, proj: true)
-    case let cmd where cmd.starts(with: Directives.selectProject):
-        return selectProjectOrWorkspace(withDirective: directive, projectOrWorkspace: Directives.selectProject, proj: true)
+    case let cmd where cmd.starts(with: Directives.list):
+        let xcArray = getSortedXcodeProjects()
+
+        if xcArray.isEmpty {
+            return "Error: No open projects."
+        }
         
-    // Workspaces
-    case let cmd where cmd.starts(with: Directives.listWorkspacesIn):
-        return listProjectsOrWorkspacesIn(directive, Directives.listWorkspacesIn, proj: false)
-    case let cmd where cmd.starts(with: Directives.selectWorkspace):
-        return selectProjectOrWorkspace(withDirective: directive, projectOrWorkspace: Directives.selectWorkspace, proj: false)
+        return getOpenProjectsList(projs: xcArray)
+    case let cmd where cmd.starts(with: Directives.select):
+        // Extract the project number from the directive
+        // The format should be "select N" where N is the project number
+        let components = directive.components(separatedBy: " ")
         
+        // Make sure we have at least two components (select + number)
+        guard components.count >= 2,
+              let projectNumber = Int(components[1]) else {
+            return "Error: Invalid project selection format. Use 'select N' where N is the project number."
+        }
+        
+        // Get the list of open Xcode projects
+        let xcArray = getSortedXcodeProjects()
+        
+        if xcArray.isEmpty {
+            return "Error: No open projects."
+        }
+        
+        // Check if the selected number is within range
+        if projectNumber < 1 || projectNumber > xcArray.count {
+            return "Error: Project number \(projectNumber) is out of range. Available projects: 1-\(xcArray.count)"
+        }
+        
+        // Select the project (with 1-based indexing)
+        currentProject = xcArray[projectNumber - 1]
+        
+        return "Selected project \(projectNumber): \(currentProject ?? "")"
     default:
         // No recognized directive
         return "Houston we have a problem: \(directive) is not recognized."

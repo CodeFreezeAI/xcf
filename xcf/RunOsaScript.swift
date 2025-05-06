@@ -7,21 +7,6 @@
 
 import Foundation
 
-@discardableResult
-func executeAppleScript(script: String) -> String {
-    if let appleScript = NSAppleScript(source: script) {
-        var errorDict: NSDictionary? = nil
-        let output = appleScript.executeAndReturnError(&errorDict)
-        
-        if let error = errorDict {
-            return "Error: \(error)"
-        }
-        return output.stringValue ?? "AppleScript executed successfully."
-    } else {
-        return "Failed to create AppleScript."
-    }
-}
-
 func executeWithOsascript(script: String) -> String {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
@@ -54,9 +39,3 @@ func executeWithOsascript(script: String) -> String {
         return ""
     }
 }
-
-//private func validatePath() {
-//    let fileManager = FileManager.default
-//    isValidPath = fileManager.fileExists(atPath: projectPath) &&
-//                 (projectPath.hasSuffix(".xcodeproj") || projectPath.hasSuffix(".xcworkspace"))
-//}

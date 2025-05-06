@@ -66,4 +66,5 @@ class XcodeBuildScript {
         
         return buildResults.isEmpty ? "🐦📜 Built successfully" : buildResults
     }
+   
 }

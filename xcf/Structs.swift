@@ -7,8 +7,6 @@
 
 // Define string constants for commands
 struct Directives {
-    static let selectProject = "select project "
-    static let selectWorkspace = "select workspace "
-    static let listProjectsIn = "list projects in "
-    static let listWorkspacesIn = "list workspaces in "
+    static let list = "list"
+    static let select = "select"
 }

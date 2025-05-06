@@ -1,5 +1,6 @@
 import AppKit
 import ScriptingBridge
+import Foundation
 
 @objc public protocol SBObjectProtocol: NSObjectProtocol {
     func get() -> Any!
@@ -259,3 +260,36 @@ extension SBObject: XcodeResolvedBuildSetting {}
     @objc optional func setName(_ name: String!) // The name of this target.
 }
 extension SBObject: XcodeTarget {}
+
+func extractStringSet(from descriptor: NSAppleEventDescriptor) -> Set<String> {
+    var result: Set<String> = []
+    
+    // Check if it's a list descriptor
+    if descriptor.descriptorType == typeAEList {
+        // Iterate through each item with `atIndex(_:)` (note: AppleScript indexing is 1-based, not 0-based)
+        for index in 1...descriptor.numberOfItems {
+            if let item = descriptor.atIndex(index) {
+                if let string = item.stringValue {
+                    result.insert(string)
+                }
+            }
+        }
+    }
+    
+    return result
+}
+
+@discardableResult
+func executeAppleScript(script: String) -> Set<String> {
+    if let appleScript = NSAppleScript(source: script) {
+        var errorDict: NSDictionary? = nil
+        let output = appleScript.executeAndReturnError(&errorDict)
+        
+        if let error = errorDict {
+            return ["Error: \(error)"]
+        }
+        return extractStringSet(from: output)
+    } else {
+        return ["Failed to create AppleScript."]
+    }
+}
