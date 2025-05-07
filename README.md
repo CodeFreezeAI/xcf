@@ -10,7 +10,7 @@ Like this:
   "mcpServers": {
     "xcf": {
       "type": "stdio",
-      "command": "/Users/toddbruss/Library/Developer/Xcode/DerivedData/xcf-gjkedfdeozfrmpdqvxazxerdeght/Build/Products/Release/xcf"
+      "command": "/Users/username/pathto/xcf"
     }
   }
 }
