@@ -65,24 +65,67 @@ struct Paths {
 // Define MCP server configurations
 struct McpConfig {
     // Tool names
-    static let listToolsName = "list_tools"
+    static let listToolsName = "tools"
     static let xcfToolName = "xcf"
-    static let snippetToolName = "code_snippet"
+    static let snippetToolName = "snippet"
+    static let helpToolName = "help"
     
     // Tool descriptions
     static let listToolsDesc = "Lists all available tools on this server"
     static let xcfToolDesc = "Execute an XCF directive or command"
     static let snippetToolDesc = "Extract code snippets from files in the current project (use entireFile=true to get full file content)"
+    static let helpToolDesc = "Displays help information about xcf directives and usage"
     
     // Server config
     static let serverName = "xcf"
     static let serverVersion = "1.0.0"
+    
+    // Resource URIs
+    static let xcodeProjResourceURI = "xcf://resources/xcodeProjects"
+    static let fileContentsResourceURI = "xcf://resources/fileContents"
+    static let buildResultsResourceURI = "xcf://resources/buildResults"
+    
+    // Resource names and descriptions
+    static let xcodeProjResourceName = "xcodeProjects"
+    static let xcodeProjResourceDesc = "Currently open Xcode projects and workspaces"
+    static let fileContentsResourceName = "fileContents"
+    static let fileContentsResourceDesc = "Provides file contents from the workspace"
+    static let buildResultsResourceName = "buildResults"
+    static let buildResultsResourceDesc = "Latest Xcode build results including errors and warnings"
+    
+    // Prompt names and descriptions
+    static let buildPromptName = "buildProject"
+    static let buildPromptDesc = "Prompt for building a project"
+    static let runPromptName = "runProject"
+    static let runPromptDesc = "Prompt for running a project"
+    static let analyzeCodePromptName = "analyzeCode"
+    static let analyzeCodePromptDesc = "Analyze code for potential issues or improvements"
+    
+    // Prompt argument names and descriptions
+    static let projectPathArgName = "projectPath"
+    static let projectPathArgDesc = "Path to the Xcode project"
+    static let filePathArgName = "filePath"
+    static let filePathArgDesc = "Path to the file to analyze"
+    static let includeSnippetArgName = "includeSnippet"
+    static let includeSnippetArgDesc = "Include code snippet in results"
     
     // Schema parameters
     static let directiveParamName = "directive"
     static let directiveParamDesc = "The XCF directive to execute"
     static let objectType = "object"
     static let stringType = "string"
+    static let integerType = "integer"
+    static let booleanType = "boolean"
+    
+    // Snippet tool parameters
+    static let filePathParamName = "filePath"
+    static let filePathParamDesc = "Path to the file to extract snippet from"
+    static let startLineParamName = "startLine"
+    static let startLineParamDesc = "Starting line number (1-indexed)"
+    static let endLineParamName = "endLine"
+    static let endLineParamDesc = "Ending line number (1-indexed)"
+    static let entireFileParamName = "entireFile"
+    static let entireFileParamDesc = "Set to true to get the entire file content"
     
     // Schema keys
     static let typeKey = "type"
@@ -93,8 +136,36 @@ struct McpConfig {
     // Console messages
     static let availableTools = "Available tools:\n"
     static let toolListFormat = "- %@: %@\n"
+    static let availableResources = "Available resources:\n"
+    static let resourceListFormat = "- %@ (%@): %@\n"
+    static let availablePrompts = "Available prompts:\n"
+    static let promptListFormat = "- %@: %@\n"
     static let directiveFound = "Directive found: %@"
     static let noDirectiveFound = "No directive found, using help"
+    
+    // Code snippet error messages
+    static let missingLineParamsError = "Missing required line parameters when entireFile is false"
+    static let missingFilePathError = "Missing required filePath parameter for code snippet"
+    
+    // Resource error messages
+    static let missingFilePathParamError = "Missing filePath parameter"
+    static let unknownResourceUriError = "Unknown resource URI: %@"
+    static let unknownPromptNameError = "Unknown prompt name: %@"
+    
+    // Prompt templates
+    static let buildProjectTemplate = "Please build the project at path: %@"
+    static let runProjectTemplate = "Please run the project at path: %@"
+    static let analyzeCodeTemplate = "Please analyze the code at path: %@"
+    static let analyzeCodeWithSnippetTemplate = "\n\n```%@\n%@\n```"
+    
+    // Prompt descriptions
+    static let buildProjectResultDesc = "Builds the specified Xcode project"
+    static let runProjectResultDesc = "Runs the specified Xcode project"
+    static let analyzeCodeResultDesc = "Analyzes code for potential issues"
+    
+    // Parameter placeholders
+    static let projectPathPlaceholder = "{{projectPath}}"
+    static let filePathPlaceholder = "{{filePath}}"
     
     // Main app messages
     static let welcomeMessage = "welcome to xcf in pure swift\nxcodefreeze mcp local server\ncopyright 2025 codefreeze.ai\n"
@@ -103,19 +174,24 @@ struct McpConfig {
     // Help text
     static let helpText = """
     xcf directives:
-    - xcf: Activate XCF mode
+    - use xcf: Activate XCF mode
     - grant: permission to use xcode automation
     - list: [open xc projects and workspaces]
     - select #: [open xc project or workspace]
     - run: Execute the current XCF project
     - build: Build the current XCF project
     - help: Show this help information
-    
-    MCP features:
-    - Resources: Access project information and code snippets
-    - Prompts: Use pre-defined templates for common tasks
-    - Tools: Execute commands, extract snippets, and more
     """
+    
+    // MIME types
+    static let plainTextMimeType = "text/plain"
+    
+    // Formatting
+    static let newLineSeparator = "\n"
+    static let codeBlockFormat = "```%@\n%@\n```"
+    
+    // Query parameters
+    static let filePathQueryParam = "filePath"
 }
 
 // Define file extensions and formats

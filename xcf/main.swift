@@ -18,7 +18,7 @@ Task {
         let server = try await McpServer.configureMcpServer()
         
         // Wait until the server completes
-        await server.waitUntilCompleted()
+await server.waitUntilCompleted()
     } catch {
         print(String(format: McpConfig.errorStartingServer, "\(error)"))
     }

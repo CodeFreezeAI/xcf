@@ -15,9 +15,9 @@ struct XcfDirectiveHandler {
         let lowercasedDirective = directive.lowercased()
        
         switch lowercasedDirective {
-        case Directives.xcf, Directives.useXcf:
+        case Directives.useXcf:
             return SuccessMessages.xcfActive
-        case Directives.help, Directives.xcf + Format.spaceSeparator + Directives.help:
+        case Directives.help, Directives.xcf, Directives.xcf + Format.spaceSeparator + Directives.help:
             return getHelpText()
         case Directives.grant:
             return grantPermission()
