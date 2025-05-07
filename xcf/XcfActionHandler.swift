@@ -112,7 +112,6 @@ struct XcfActionHandler {
         
         // Select the project
         currentProject = xcArray[projectNumber - 1]
-        persistSelectedProject(currentProject ?? "")
         return String(format: SuccessMessages.projectSelected, projectNumber, currentProject ?? "")
     }
     
@@ -138,58 +137,5 @@ struct XcfActionHandler {
         }
         
         return result
-    }
-
-    // Add state management for project selection
-    static func persistSelectedProject(_ projectPath: String) {
-        let filePath = Paths.stateFilePath(for: projectPath)
-        print("DEBUG: Saving state to \(filePath)")
-        try? projectPath.write(toFile: filePath, atomically: true, encoding: .utf8)
-        print("DEBUG: State file exists: \(FileManager.default.fileExists(atPath: filePath))")
-    }
-
-    static func getPersistedSelectedProject(for projectPath: String) -> String? {
-        let filePath = Paths.stateFilePath(for: projectPath)
-        print("DEBUG: Looking for state at \(filePath)")
-        print("DEBUG: State file exists: \(FileManager.default.fileExists(atPath: filePath))")
-        return try? String(contentsOfFile: filePath, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    // Call this on xcf startup or when switching projects
-    static func loadState(for projectPath: String) -> String? {
-        let result = getPersistedSelectedProject(for: projectPath)
-        print("DEBUG: Loaded state for \(projectPath): \(result ?? "nil")")
-        return result
-    }
-    
-    // Automatically load state based on current working directory
-    @MainActor
-    static func autoLoadStateForCurrentDirectory() -> String? {
-        let cwd = FileManager.default.currentDirectoryPath
-        print("DEBUG: Current working directory: \(cwd)")
-        let openProjects = getSortedXcodeProjects()
-        print("DEBUG: Open projects: \(openProjects)")
-        
-        // Prefer a project that matches the CWD
-        if let match = openProjects.first(where: { $0.hasPrefix(cwd) }) {
-            print("DEBUG: Found matching project for CWD: \(match)")
-            if let persisted = loadState(for: match), !persisted.isEmpty {
-                currentProject = persisted
-                print("DEBUG: Set current project to: \(persisted)")
-                return persisted
-            }
-        }
-        
-        // Fallback: any open project with a state file
-        for project in openProjects {
-            if let persisted = loadState(for: project), !persisted.isEmpty {
-                currentProject = persisted
-                print("DEBUG: Set current project from fallback to: \(persisted)")
-                return persisted
-            }
-        }
-        
-        print("DEBUG: No state found for any open project")
-        return nil
     }
 } 

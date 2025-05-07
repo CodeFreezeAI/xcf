@@ -8,14 +8,6 @@
 import Foundation
 import MCP
 
-/// Define a unified structure for xcf actions
-struct XcfAction {
-    let name: String
-    let tool: Tool
-    let resource: Resource?
-    let prompt: Prompt?
-}
-
 /// McpServer handles all MCP protocol interactions for the xcf tool.
 /// It defines tools, resources, and prompts, and configures the MCP server with appropriate handlers.
 struct McpServer {
@@ -160,30 +152,30 @@ struct McpServer {
         return result
     }
     
-    /// Returns a formatted string listing all available resources (now only those mapped to xcf actions)
+    /// Returns a formatted string listing all available resources
     static func getResourcesList() -> String {
         var result = McpConfig.availableResources
-        // Only include resources from xcfActions
-        let uniqueResources = Set(xcfActions.values.compactMap { $0.resource })
-        for resource in uniqueResources {
+        
+        for resource in allResources {
             result += String(format: McpConfig.resourceListFormat, 
                              resource.name, 
                              resource.uri, 
                              resource.description ?? "")
         }
+        
         return result
     }
     
-    /// Returns a formatted string listing all available prompts (now only those mapped to xcf actions)
+    /// Returns a formatted string listing all available prompts
     static func getPromptsList() -> String {
         var result = McpConfig.availablePrompts
-        // Only include prompts from xcfActions
-        let uniquePrompts = Set(xcfActions.values.compactMap { $0.prompt })
-        for prompt in uniquePrompts {
+        
+        for prompt in allPrompts {
             result += String(format: McpConfig.promptListFormat, 
                              prompt.name, 
                              prompt.description ?? "")
         }
+        
         return result
     }
     
@@ -283,22 +275,16 @@ struct McpServer {
         switch params.name {
         case McpConfig.listToolsName:
             return CallTool.Result(content: [.text(getToolsList())])
+            
         case McpConfig.xcfToolName:
-            // Look up the action in xcfActions if possible
-            if let arguments = params.arguments,
-               let actionName = arguments[McpConfig.actionParamName]?.stringValue,
-               let xcfAction = xcfActions[actionName] {
-                // Use the prompt/resource/tool as needed (for now, just call the handler as before)
-                print("XCF Action found in mapping: \(actionName)")
-                return CallTool.Result(content: [.text(await XcfActionHandler.handleAction(action: actionName))])
-            } else {
-                // Fallback to default xcf handler
-                return try await handleXcfToolCall(params)
-            }
+            return try await handleXcfToolCall(params)
+            
         case McpConfig.snippetToolName:
             return try handleSnippetToolCall(params)
+            
         case McpConfig.helpToolName:
             return handleHelpToolCall(params)
+            
         default:
             throw MCPError.invalidParams(String(format: ErrorMessages.unknownTool, params.name))
         }
@@ -312,24 +298,6 @@ struct McpServer {
         if let arguments = params.arguments,
            let action = arguments[McpConfig.actionParamName]?.stringValue {
             print(String(format: McpConfig.actionFound, action))
-            
-            // Check if we need to load state (for actions that require a project)
-            let actionsRequiringProject = [Actions.build, Actions.run]
-            if actionsRequiringProject.contains(action) {
-                // If no project is selected, try to auto-load state
-                let currentProject = await XcfActionHandler.getCurrentProject()
-                if currentProject == nil || currentProject!.isEmpty {
-                    // Attempt to load state (this is async since it's MainActor)
-                    let _ = await XcfActionHandler.autoLoadStateForCurrentDirectory()
-                    
-                    // Check again after loading state
-                    let updatedProject = await XcfActionHandler.getCurrentProject()
-                    if updatedProject == nil || updatedProject!.isEmpty {
-                        return CallTool.Result(content: [.text("Error: No project selected. Please select a project first using the 'select' command.")])
-                    }
-                }
-            }
-            
             return CallTool.Result(content: [.text(await XcfActionHandler.handleAction(action: action))])
         } else {
             print(McpConfig.noActionFound)
@@ -604,22 +572,4 @@ struct McpServer {
         
         return CallTool.Result(content: [.text(String(format: McpConfig.codeBlockFormat, language, snippet))])
     }
-    
-    // MARK: - XCF Actions Mapping
-    /// Dictionary mapping xcf action names to their corresponding tool, resource, and prompt
-    static let xcfActions: [String: XcfAction] = [
-        "build": XcfAction(
-            name: "build",
-            tool: xcfTool,
-            resource: buildResultsResource,
-            prompt: buildPrompt
-        ),
-        "run": XcfAction(
-            name: "run",
-            tool: xcfTool,
-            resource: nil,
-            prompt: runPrompt
-        ),
-        // Add more actions as needed
-    ]
 } 
