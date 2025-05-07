@@ -31,19 +31,19 @@ struct McpServer {
         ])
     )
 
-    /// Tool for executing xcf directives
+    /// Tool for executing xcf actions
     static let xcfTool = Tool(
         name: McpConfig.xcfToolName,
         description: McpConfig.xcfToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType),
             McpConfig.propertiesKey: .object([
-                McpConfig.directiveParamName: .object([
+                McpConfig.actionParamName: .object([
                     McpConfig.typeKey: .string(McpConfig.stringType),
-                    McpConfig.descriptionKey: .string(McpConfig.directiveParamDesc)
+                    McpConfig.descriptionKey: .string(McpConfig.actionParamDesc)
                 ])
             ]),
-            McpConfig.requiredKey: .array([.string(McpConfig.directiveParamName)])
+            McpConfig.requiredKey: .array([.string(McpConfig.actionParamName)])
         ])
     )
     
@@ -293,16 +293,16 @@ struct McpServer {
     /// Handles a call to the xcf tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the xcf tool call
-    /// - Throws: Error if directive is missing
+    /// - Throws: Error if action is missing
     private static func handleXcfToolCall(_ params: CallTool.Parameters) async throws -> CallTool.Result {
         if let arguments = params.arguments,
-           let directive = arguments[McpConfig.directiveParamName]?.stringValue {
-            print(String(format: McpConfig.directiveFound, directive))
-            return CallTool.Result(content: [.text(await XcfDirectiveHandler.handleDirective(directive: directive))])
+           let action = arguments[McpConfig.actionParamName]?.stringValue {
+            print(String(format: McpConfig.actionFound, action))
+            return CallTool.Result(content: [.text(await XcfActionHandler.handleAction(action: action))])
         } else {
-            print(McpConfig.noDirectiveFound)
-            // If no directive specified, return the help information
-            return CallTool.Result(content: [.text(await XcfDirectiveHandler.handleDirective(directive: Directives.help))])
+            print(McpConfig.noActionFound)
+            // If no action specified, return the help information
+            return CallTool.Result(content: [.text(await XcfActionHandler.handleAction(action: Actions.help))])
         }
     }
     
@@ -361,7 +361,7 @@ struct McpServer {
     /// Handles a request for the Xcode projects resource
     /// - Returns: The Xcode projects resource content
     private static func handleXcodeProjectsResource() async throws -> ReadResource.Result {
-        let projects = await XcfDirectiveHandler.getSortedXcodeProjects()
+        let projects = await XcfActionHandler.getSortedXcodeProjects()
         let content = Resource.Content.text(
             projects.joined(separator: McpConfig.newLineSeparator),
             uri: McpConfig.xcodeProjResourceURI
@@ -373,7 +373,7 @@ struct McpServer {
     /// - Returns: The build results resource content
     /// - Throws: Error if no project is selected
     private static func handleBuildResultsResource() async throws -> ReadResource.Result {
-        guard let currentProject = await XcfDirectiveHandler.getCurrentProject() else {
+        guard let currentProject = await XcfActionHandler.getCurrentProject() else {
             throw MCPError.invalidParams(ErrorMessages.noProjectSelected)
         }
         

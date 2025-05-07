@@ -7,16 +7,21 @@
 
 import Foundation
 
+// Core app constants
+struct AppConstants {
+    static let appName = "xcf"
+}
+
 // Define string constants for commands
-struct Directives {
-    static let xcf = "xcf"
+struct Actions {
+    static let xcf = AppConstants.appName
     static let help = "help"
     static let list = "list"
     static let select = "select"
     static let run = "run"
     static let build = "build"
     static let grant = "grant"
-    static let useXcf = "use xcf"
+    static let useXcf = "use \(AppConstants.appName)"
 }
 
 // Define error messages
@@ -25,7 +30,7 @@ struct ErrorMessages {
     static let noOpenProjects = "Error: No open projects."
     static let invalidProjectSelection = "Error: Invalid project selection format. Use 'select N' where N is the project number."
     static let projectOutOfRange = "Error: Project number %@ is out of range. Available projects: 1-%@"
-    static let unrecognizedDirective = "Houston we have a problem: %@ is not recognized."
+    static let unrecognizedAction = "Houston we have a problem: %@ is not recognized."
     
     // Xcode build errors
     static let failedToConnectXcode = "Failed to connect to Xcode"
@@ -49,7 +54,7 @@ struct ErrorMessages {
 
 // Define success messages
 struct SuccessMessages {
-    static let xcfActive = "All xcf systems go!"
+    static let xcfActive = "All \(AppConstants.appName) systems go!"
     static let buildSuccess = "🐦📜 Built successfully"
     static let runSuccess = "🐦📜 Ran successfully"
     static let permissionGranted = "Permission Granted"
@@ -66,24 +71,24 @@ struct Paths {
 struct McpConfig {
     // Tool names
     static let listToolsName = "tools"
-    static let xcfToolName = "xcf"
+    static let xcfToolName = AppConstants.appName
     static let snippetToolName = "snippet"
     static let helpToolName = "help"
     
     // Tool descriptions
     static let listToolsDesc = "Lists all available tools on this server"
-    static let xcfToolDesc = "Execute an XCF directive or command"
+    static let xcfToolDesc = "Execute an \(AppConstants.appName) action or command"
     static let snippetToolDesc = "Extract code snippets from files in the current project (use entireFile=true to get full file content)"
-    static let helpToolDesc = "Displays help information about xcf directives and usage"
+    static let helpToolDesc = "Displays help information about \(AppConstants.appName) actions and usage"
     
     // Server config
-    static let serverName = "xcf"
+    static let serverName = AppConstants.appName
     static let serverVersion = "1.0.0"
     
     // Resource URIs
-    static let xcodeProjResourceURI = "xcf://resources/xcodeProjects"
-    static let fileContentsResourceURI = "xcf://resources/fileContents"
-    static let buildResultsResourceURI = "xcf://resources/buildResults"
+    static let xcodeProjResourceURI = "\(AppConstants.appName)://resources/xcodeProjects"
+    static let fileContentsResourceURI = "\(AppConstants.appName)://resources/fileContents"
+    static let buildResultsResourceURI = "\(AppConstants.appName)://resources/buildResults"
     
     // Resource names and descriptions
     static let xcodeProjResourceName = "xcodeProjects"
@@ -110,8 +115,8 @@ struct McpConfig {
     static let includeSnippetArgDesc = "Include code snippet in results"
     
     // Schema parameters
-    static let directiveParamName = "directive"
-    static let directiveParamDesc = "The XCF directive to execute"
+    static let actionParamName = "action"
+    static let actionParamDesc = "The xcf action to execute"
     static let objectType = "object"
     static let stringType = "string"
     static let integerType = "integer"
@@ -140,8 +145,8 @@ struct McpConfig {
     static let resourceListFormat = "- %@ (%@): %@\n"
     static let availablePrompts = "Available prompts:\n"
     static let promptListFormat = "- %@: %@\n"
-    static let directiveFound = "Directive found: %@"
-    static let noDirectiveFound = "No directive found, using help"
+    static let actionFound = "Action found: %@"
+    static let noActionFound = "No action found, using help"
     
     // Code snippet error messages
     static let missingLineParamsError = "Missing required line parameters when entireFile is false"
@@ -168,18 +173,18 @@ struct McpConfig {
     static let filePathPlaceholder = "{{filePath}}"
     
     // Main app messages
-    static let welcomeMessage = "welcome to xcf in pure swift\nxcodefreeze mcp local server\ncopyright 2025 codefreeze.ai\n"
+    static let welcomeMessage = "welcome to \(AppConstants.appName) in pure swift\nxcodefreeze mcp local server\ncopyright 2025 codefreeze.ai\n"
     static let errorStartingServer = "Error starting MCP server: %@"
     
     // Help text
     static let helpText = """
-    xcf directives:
-    - use xcf: Activate XCF mode
+    \(AppConstants.appName) actions:
+    - use \(AppConstants.appName): Activate \(AppConstants.appName) mode
     - grant: permission to use xcode automation
     - list: [open xc projects and workspaces]
     - select #: [open xc project or workspace]
-    - run: Execute the current XCF project
-    - build: Build the current XCF project
+    - run: Execute the current \(AppConstants.appName) project
+    - build: Build the current \(AppConstants.appName) project
     - help: Show this help information
     """
     

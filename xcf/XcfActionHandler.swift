@@ -1,5 +1,5 @@
 //
-//  XcfDirectiveHandler.swift
+//  XcfActionHandler.swift
 //  xcf
 //
 //  Created by Todd Bruss on 5/7/25.
@@ -8,35 +8,35 @@
 import Foundation
 
 @MainActor
-struct XcfDirectiveHandler {
-    // Main entry point for handling directives
-    static func handleDirective(directive: String) async -> String {
-        // Convert directive to lowercase for case-insensitive matching
-        let lowercasedDirective = directive.lowercased()
+struct XcfActionHandler {
+    // Main entry point for handling actions
+    static func handleAction(action: String) async -> String {
+        // Convert action to lowercase for case-insensitive matching
+        let lowercasedAction = action.lowercased()
        
-        switch lowercasedDirective {
-        case Directives.useXcf:
+        switch lowercasedAction {
+        case Actions.useXcf:
             return SuccessMessages.xcfActive
-        case Directives.help, Directives.xcf, Directives.xcf + Format.spaceSeparator + Directives.help:
+        case Actions.help, Actions.xcf, Actions.xcf + Format.spaceSeparator + Actions.help:
             return getHelpText()
-        case Directives.grant:
+        case Actions.grant:
             return grantPermission()
-        case Directives.run:
+        case Actions.run:
             return await runProject()
-        case Directives.build:
+        case Actions.build:
             return await buildProject()
             
         // List projects
-        case let cmd where cmd.starts(with: Directives.list):
+        case let cmd where cmd.starts(with: Actions.list):
             return listProjects()
             
         // Select project
-        case let cmd where cmd.starts(with: Directives.select):
-            return selectProject(directive: directive)
+        case let cmd where cmd.starts(with: Actions.select):
+            return selectProject(action: action)
             
         default:
-            // No recognized directive
-            return String(format: ErrorMessages.unrecognizedDirective, directive)
+            // No recognized action
+            return String(format: ErrorMessages.unrecognizedAction, action)
         }
     }
     
@@ -88,9 +88,9 @@ struct XcfDirectiveHandler {
     }
     
     // Select a project by number
-    private static func selectProject(directive: String) -> String {
+    private static func selectProject(action: String) -> String {
         // Parse the project number
-        let projectNumber = parseProjectNumber(from: directive)
+        let projectNumber = parseProjectNumber(from: action)
         
         // Check if the project number is valid
         guard let projectNumber = projectNumber else {
@@ -115,9 +115,9 @@ struct XcfDirectiveHandler {
         return String(format: SuccessMessages.projectSelected, projectNumber, currentProject ?? "")
     }
     
-    // Parse the project number from a directive
-    private static func parseProjectNumber(from directive: String) -> Int? {
-        let parts = directive.split(separator: Format.spaceSeparator)
+    // Parse the project number from an action
+    private static func parseProjectNumber(from action: String) -> Int? {
+        let parts = action.split(separator: Format.spaceSeparator)
         guard parts.count >= 2, let n = Int(parts[1]) else { return nil }
         return n
     }
