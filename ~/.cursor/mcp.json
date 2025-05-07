@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "xcf • XCodeFreeze • Automation by CodeFreeze.ai": {
+      "type": "stdio",
+      "command": "/Users/toddbruss/Library/Developer/Xcode/DerivedData/xcf-gjkedfdeozfrmpdqvxazxerdeght/Build/Products/Release/xcf"
+    }
+  }
+} 
