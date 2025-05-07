@@ -70,7 +70,8 @@ class XcodeBuildScript {
                         files.insert(filePath)
                         buildResults += "\(filePath):\(startLine):\(startingColNum) \(errorMessage)\(Format.newLine)"
                         buildResults += "```swift\(Format.newLine)"
-                        buildResults += captureSnippet(from: filePath, startLine: startLine, endLine: endLine, entireFile: false)
+                        let (snippet, _) = CaptureSnippet.getCodeSnippet(filePath: filePath, startLine: startLine, endLine: endLine)
+                        buildResults += snippet
                         buildResults += "```\(Format.newLine)"
                     } else {
                         buildResults += "\(errorMessage)\(Format.newLine)"
@@ -82,7 +83,8 @@ class XcodeBuildScript {
             for file in files {
                 buildResults += "File:`\(file)`:\(Format.newLine)"
                 buildResults += "```swift\(Format.newLine)"
-                buildResults += captureSnippet(from: file, startLine: 0, endLine: 0, entireFile: true)
+                let (fileContent, _) = CaptureSnippet.getCodeSnippet(filePath: file, startLine: 1, endLine: Int.max, entireFile: true)
+                buildResults += fileContent
                 buildResults += "```\(Format.newLine)"
             }
         }

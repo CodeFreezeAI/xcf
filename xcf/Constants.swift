@@ -67,10 +67,12 @@ struct McpConfig {
     // Tool names
     static let listToolsName = "list_tools"
     static let xcfToolName = "xcf"
+    static let snippetToolName = "code_snippet"
     
     // Tool descriptions
     static let listToolsDesc = "Lists all available tools on this server"
     static let xcfToolDesc = "Execute an XCF directive or command"
+    static let snippetToolDesc = "Extract code snippets from files in the current project (use entireFile=true to get full file content)"
     
     // Server config
     static let serverName = "xcf"
@@ -108,6 +110,11 @@ struct McpConfig {
     - run: Execute the current XCF project
     - build: Build the current XCF project
     - help: Show this help information
+    
+    MCP features:
+    - Resources: Access project information and code snippets
+    - Prompts: Use pre-defined templates for common tasks
+    - Tools: Execute commands, extract snippets, and more
     """
 }
 

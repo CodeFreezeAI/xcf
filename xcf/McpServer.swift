@@ -34,8 +34,36 @@ struct McpServer {
         ])
     )
     
+    // NEW: Add code snippet tool
+    static let snippetTool = Tool(
+        name: McpConfig.snippetToolName,
+        description: McpConfig.snippetToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                "filePath": .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Path to the file to extract snippet from")
+                ]),
+                "startLine": .object([
+                    McpConfig.typeKey: .string("integer"),
+                    McpConfig.descriptionKey: .string("Starting line number (1-indexed)")
+                ]),
+                "endLine": .object([
+                    McpConfig.typeKey: .string("integer"),
+                    McpConfig.descriptionKey: .string("Ending line number (1-indexed)")
+                ]),
+                "entireFile": .object([
+                    McpConfig.typeKey: .string("boolean"),
+                    McpConfig.descriptionKey: .string("Set to true to get the entire file content")
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string("filePath")])
+        ])
+    )
+    
     // Get all available tools
-    static let allTools = [xcfTool, listToolsTool]
+    static let allTools = [xcfTool, listToolsTool, snippetTool]
     
     // Get tools list as a formatted string
     static func getToolsList() -> String {
@@ -54,7 +82,7 @@ struct McpServer {
         let server = Server(
             name: McpConfig.serverName,
             version: McpConfig.serverVersion,
-            capabilities: .init(tools: .init(listChanged: false))
+            capabilities: .init(tools: .init(listChanged: true))
         )
 
         // Configure the transport
@@ -89,6 +117,37 @@ struct McpServer {
                     print(McpConfig.noDirectiveFound)
                     // If no directive specified, return the help information
                     return CallTool.Result(content: [.text(await XcfDirectiveHandler.handleDirective(directive: Directives.help))])
+                }
+            case McpConfig.snippetToolName:
+                if let arguments = params.arguments,
+                   let filePath = arguments["filePath"]?.stringValue {
+                    
+                    let entireFile = arguments["entireFile"]?.boolValue ?? false
+                    
+                    if entireFile {
+                        // If entireFile is true, get the entire file content regardless of other parameters
+                        do {
+                            let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
+                            let language = CaptureSnippet.determineLanguage(from: filePath)
+                            return CallTool.Result(content: [.text("```\(language)\n\(fileContents)\n```")])
+                        } catch {
+                            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, error.localizedDescription))])
+                        }
+                    } else if let startLine = arguments["startLine"]?.intValue,
+                              let endLine = arguments["endLine"]?.intValue {
+                        // Otherwise use the specified line range
+                        let (snippet, language) = CaptureSnippet.getCodeSnippet(
+                            filePath: filePath,
+                            startLine: startLine,
+                            endLine: endLine
+                        )
+                        
+                        return CallTool.Result(content: [.text("```\(language)\n\(snippet)\n```")])
+                    } else {
+                        return CallTool.Result(content: [.text("Missing required line parameters when entireFile is false")])
+                    }
+                } else {
+                    return CallTool.Result(content: [.text("Missing required filePath parameter for code snippet")])
                 }
             default:
                 throw MCPError.invalidParams(String(format: ErrorMessages.unknownTool, params.name))

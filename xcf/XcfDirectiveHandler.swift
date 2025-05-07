@@ -40,6 +40,11 @@ struct XcfDirectiveHandler {
         }
     }
     
+    // NEW: Expose current project for status notifications
+    public static func getCurrentProject() -> String? {
+        return currentProject
+    }
+    
     // Get help information
     private static func getHelpText() -> String {
         return McpConfig.helpText
@@ -118,7 +123,7 @@ struct XcfDirectiveHandler {
     }
     
     // Get a sorted list of open Xcode projects
-    private static func getSortedXcodeProjects(ext: String = Format.xcodeFileExtension) -> [String] {
+    public static func getSortedXcodeProjects(ext: String = Format.xcodeFileExtension) -> [String] {
         let xc = AppleScriptDescriptorToSet(script: getXcodeDocumentPaths(ext: ext))
         return Array(xc).sorted() // Convert Set to Array and sort alphabetically
     }
