@@ -25,6 +25,8 @@ struct XcfActionHandler {
             return await runProject()
         case Actions.build:
             return await buildProject()
+        case Actions.pwd:
+            return runPwd()
             
         // List projects
         case let cmd where cmd.starts(with: Actions.list):
@@ -137,5 +139,28 @@ struct XcfActionHandler {
         }
         
         return result
+    }
+    
+    // Get the current working directory using /bin/pwd
+    private static func runPwd() -> String {
+        let process = Process()
+        let pipe = Pipe()
+        
+        process.executableURL = URL(fileURLWithPath: "/bin/pwd")
+        process.standardOutput = pipe
+        
+        do {
+            try process.run()
+            process.waitUntilExit()
+            
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) {
+                return String(format: SuccessMessages.pwdSuccess, output)
+            } else {
+                return ErrorMessages.failedToConvertOutput
+            }
+        } catch {
+            return String(format: ErrorMessages.failedToExecuteOsascript, error.localizedDescription)
+        }
     }
 } 

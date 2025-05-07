@@ -10,6 +10,8 @@ import Foundation
 import ScriptingBridge
 
 class XcodeBuildScript {
+    private var files: Set<String> = []
+    
     func buildCurrentWorkspace(projectPath: String, run: Bool = false) -> String {
         // Get Xcode application instance
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: "com.apple.dt.Xcode") else {
@@ -57,7 +59,7 @@ class XcodeBuildScript {
         
         var buildResults = ""
         
-        var files: Set<String> = []
+        files = [] // Reset files collection before processing
 
         // Handle build errors with the original approach
         if let buildErrors = result.buildErrors?() {
