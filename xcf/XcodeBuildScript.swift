@@ -57,6 +57,8 @@ class XcodeBuildScript {
         
         var buildResults = ""
         
+        var files: Set<String> = []
+
         // Handle build errors with the original approach
         if let buildErrors = result.buildErrors?() {
             processIssues(issues: buildErrors, issueType: "Error", buildResults: &buildResults)
@@ -75,13 +77,21 @@ class XcodeBuildScript {
             processIssues(issues: testFailures, issueType: "Test Failure", buildResults: &buildResults)
         }
         
+         // Send entire file(s) at the end, uses a set to avoid duplicates
+        for file in files {
+            buildResults += "File:`\(file)`:\(Format.newLine)"
+            let (fileContent, language) = CaptureSnippet.getCodeSnippet(filePath: file, startLine: 1, endLine: Int.max, entireFile: true)
+            buildResults += "```\(language)\(Format.newLine)"
+            buildResults += fileContent
+            buildResults += "```\(Format.newLine)"
+        }
+
         // Return build results
         return buildResults.isEmpty ? SuccessMessages.buildSuccess : buildResults
     }
     
     // Helper function to process different types of build issues
     private func processIssues(issues: SBElementArray, issueType: String, buildResults: inout String) {
-        var files: Set<String> = []
         
         for case let issue as XcodeBuildError in issues {
             if let issueMessage = issue.message {
@@ -91,23 +101,14 @@ class XcodeBuildScript {
                    let endLine = issue.endingLineNumber {
                     files.insert(filePath)
                     buildResults += "\(filePath):\(startLine):\(startingColNum) [\(issueType)] \(issueMessage)\(Format.newLine)"
-                    buildResults += "```swift\(Format.newLine)"
-                    let (snippet, _) = CaptureSnippet.getCodeSnippet(filePath: filePath, startLine: startLine, endLine: endLine)
+                    let (snippet, language) = CaptureSnippet.getCodeSnippet(filePath: filePath, startLine: startLine, endLine: endLine)
+                    buildResults += "```\(language)\(Format.newLine)"
                     buildResults += snippet
                     buildResults += "```\(Format.newLine)"
                 } else {
                     buildResults += "[\(issueType)] \(issueMessage)\(Format.newLine)"
                 }
             }
-        }
-        
-        // Send entire file at the end
-        for file in files {
-            buildResults += "File:`\(file)`:\(Format.newLine)"
-            buildResults += "```swift\(Format.newLine)"
-            let (fileContent, _) = CaptureSnippet.getCodeSnippet(filePath: file, startLine: 1, endLine: Int.max, entireFile: true)
-            buildResults += fileContent
-            buildResults += "```\(Format.newLine)"
         }
     }
    
