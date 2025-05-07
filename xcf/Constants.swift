@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CryptoKit // For hashing project paths
 
 // Core app constants
 struct AppConstants {
@@ -65,6 +66,13 @@ struct SuccessMessages {
 // Define path constants
 struct Paths {
     static let osascriptPath = "/usr/bin/osascript"
+    static let stateDir = ".xcf_state"
+    static func stateFilePath(for projectPath: String) -> String {
+        let hash = SHA256.hash(data: Data(projectPath.utf8)).compactMap { String(format: "%02x", $0) }.joined()
+        let dir = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(stateDir)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir.appendingPathComponent(hash).path
+    }
 }
 
 // Define MCP server configurations
