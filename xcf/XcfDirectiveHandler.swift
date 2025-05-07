@@ -117,7 +117,7 @@ struct XcfDirectiveHandler {
     
     // Parse the project number from a directive
     private static func parseProjectNumber(from directive: String) -> Int? {
-        let parts = directive.split(separator: Format.spaceSeparator.first!)
+        let parts = directive.split(separator: Format.spaceSeparator)
         guard parts.count >= 2, let n = Int(parts[1]) else { return nil }
         return n
     }

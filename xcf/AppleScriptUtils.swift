@@ -47,7 +47,7 @@ func AppleScriptDescriptorToSet(script: String) -> Set<String> {
     
     // Fallback to the regex approach
     let result = executeWithOsascript(script: script)
-    let descriptorStrings = result.split(separator: Format.commaSeparator.first!)
+    let descriptorStrings = result.split(separator: Format.commaSeparator)
     
     // Parse the result into a set
     var xcSet: Set<String> = []
