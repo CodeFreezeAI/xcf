@@ -101,7 +101,7 @@ struct XcfActionHandler {
             let possiblePath = folderURL.appendingPathComponent("\(folderName)\(ext)").path
             if FileManager.default.fileExists(atPath: possiblePath) {
                 currentProject = possiblePath
-                return String(format: SuccessMessages.projectSelected, 0, possiblePath)
+                return String(format: SuccessMessages.currentProject, possiblePath)
             }
         }
         
@@ -152,7 +152,7 @@ struct XcfActionHandler {
         
         // Select the project
         currentProject = xcArray[projectNumber - 1]
-        return String(format: SuccessMessages.projectSelected, projectNumber, currentProject ?? "")
+        return String(format: SuccessMessages.currentProject, currentProject ?? "")
     }
     
     // Parse the project number from an action

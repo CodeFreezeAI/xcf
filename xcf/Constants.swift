@@ -60,7 +60,6 @@ struct SuccessMessages {
     static let buildSuccess = "🐦📜 Built successfully"
     static let runSuccess = "🐦📜 Ran successfully"
     static let permissionGranted = "Permission Granted"
-    static let projectSelected = "Selected project %d: %@"
     static let success = "success"
     static let pwdSuccess = "Current directory: %@"
     static let currentProject = "Current project: %@"
