@@ -33,8 +33,8 @@ This activates the xcf mode, which allows you to work with Xcode projects direct
 After activating xcf with the `use xcf` command, you can use the following commands:
 
 - `grant` - Grant permission to use Xcode automation
-- `show` - Show open Xcode projects and workspaces
-- `open #` - Open an Xcode project or workspace by number
+- `list` - Show open Xcode projects and workspaces
+- `select #` - Open an Xcode project or workspace by number
 - `run` - Execute the currently selected Xcode project
 - `build` - Build the currently selected Xcode project
 - `current` - Display the currently selected project
@@ -78,8 +78,8 @@ This enables the AI to analyze specific parts of your codebase without needing t
 ### Example Workflow
 
 1. Start by activating xcf: `use xcf`
-2. Show open Xcode projects: `show`
-3. Select a project: `open 1`
+2. Show open Xcode projects: `list`
+3. Select a project: `select 1`
 4. Build the selected project: `build`
 5. Run the selected project: `run`
 

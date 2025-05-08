@@ -38,10 +38,10 @@ struct XcfActionHandler {
             return showEnvironmentVariables()
             
         // Show projects (formerly list)
-        case let cmd where cmd.starts(with: Actions.list):
+        case let cmd where cmd.starts(with: Actions.show):
             return listProjects()
         // Open project (formerly select)
-        case let cmd where cmd.starts(with: Actions.select):
+        case let cmd where cmd.starts(with: Actions.open):
             if let currentFolder {
                 return String(format: SuccessMessages.securityPreventManualSelection, currentFolder, selectProject(action: action))
             } else {
