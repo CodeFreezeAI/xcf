@@ -222,3 +222,28 @@ struct Format {
         return .newlines
     }
 }
+
+// Define Xcode-related constants
+struct XcodeConstants {
+    // Bundle IDs
+    static let xcodeBundleIdentifier = "com.apple.dt.Xcode"
+    
+    // Issue types
+    static let errorIssueType = "Error"
+    static let warningIssueType = "Warning"
+    static let analyzerIssueType = "Analyzer Issue"
+    static let testFailureIssueType = "Test Failure"
+    
+    // Time intervals
+    static let buildPollInterval = 0.5 // seconds
+    static let runDelayInterval: UInt32 = 1 // seconds
+    
+    // File prefix and format
+    static let filePrefix = "File:`"
+    static let fileSuffix = "`:"
+    
+    // Code formatting
+    static let codeBlockStart = "```"
+    static let codeBlockEnd = "```"
+    static let issueFormat = "%@:%d:%d [%@] %@"
+}

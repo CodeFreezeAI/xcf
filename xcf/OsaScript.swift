@@ -7,6 +7,29 @@
 
 import Foundation
 
+//MARK: Some Systems only approve over OSAScript - this is a workaround
+//TODO: Monitor and see if we can switch the approval to ScriptingBridge
+func grantAutomation() -> String {
+    """
+    tell application "Xcode"
+        set xcDoc to first document
+        
+        tell xcDoc
+            set buildResult to build
+            
+            repeat
+                if completed of buildResult is true then
+                    exit repeat
+                end if
+                delay 0.5
+            end repeat
+            x
+            return "Xcode Automation permission has been granted"
+        end tell
+    end tell
+    """
+}
+
 func executeWithOsascript(script: String, timeout: TimeInterval = 30.0) -> String {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: Paths.osascriptPath)

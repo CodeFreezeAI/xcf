@@ -5,7 +5,6 @@
 //  Created by Todd Bruss on 5/7/25.
 //
 
-
 import Foundation
 import ScriptingBridge
 
@@ -14,7 +13,7 @@ class XcfScripting {
     
     func buildCurrentWorkspace(projectPath: String, run: Bool = false) -> String {
         // Get Xcode application instance
-        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: "com.apple.dt.Xcode") else {
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
             return ErrorMessages.failedToConnectXcode
         }
         
@@ -33,7 +32,7 @@ class XcfScripting {
         var buildResult: XcodeSchemeActionResult?
         
         if run {
-            sleep(1) // time for last one to get killed
+            sleep(XcodeConstants.runDelayInterval) // time for last one to get killed
             
             Task {
                 currentWorkspace.runWithCommandLineArguments?(nil, withEnvironmentVariables: nil)
@@ -54,7 +53,7 @@ class XcfScripting {
             
         // Wait for build to complete
         while !(result.completed ?? false) {
-            Thread.sleep(forTimeInterval: 0.5)
+            Thread.sleep(forTimeInterval: XcodeConstants.buildPollInterval)
         }
         
         var buildResults = ""
@@ -63,29 +62,29 @@ class XcfScripting {
 
         // Handle build errors with the original approach
         if let buildErrors = result.buildErrors?() {
-            processIssues(issues: buildErrors, issueType: "Error", buildResults: &buildResults)
+            processIssues(issues: buildErrors, issueType: XcodeConstants.errorIssueType, buildResults: &buildResults)
         }
         
         // Handle other issue types if they're available
         if let buildWarnings = result.buildWarnings?() {
-            processIssues(issues: buildWarnings, issueType: "Warning", buildResults: &buildResults)
+            processIssues(issues: buildWarnings, issueType: XcodeConstants.warningIssueType, buildResults: &buildResults)
         }
         
         if let analyzerIssues = result.analyzerIssues?() {
-            processIssues(issues: analyzerIssues, issueType: "Analyzer Issue", buildResults: &buildResults)
+            processIssues(issues: analyzerIssues, issueType: XcodeConstants.analyzerIssueType, buildResults: &buildResults)
         }
         
         if let testFailures = result.testFailures?() {
-            processIssues(issues: testFailures, issueType: "Test Failure", buildResults: &buildResults)
+            processIssues(issues: testFailures, issueType: XcodeConstants.testFailureIssueType, buildResults: &buildResults)
         }
         
          // Send entire file(s) at the end, uses a set to avoid duplicates
         for file in files {
-            buildResults += "File:`\(file)`:\(Format.newLine)"
+            buildResults += "\(XcodeConstants.filePrefix)\(file)\(XcodeConstants.fileSuffix)\(Format.newLine)"
             let (fileContent, language) = CaptureSnippet.getCodeSnippet(filePath: file, startLine: 1, endLine: Int.max, entireFile: true)
-            buildResults += "```\(language)\(Format.newLine)"
+            buildResults += "\(XcodeConstants.codeBlockStart)\(language)\(Format.newLine)"
             buildResults += fileContent
-            buildResults += "```\(Format.newLine)"
+            buildResults += "\(Format.newLine)\(XcodeConstants.codeBlockEnd)\(Format.newLine)"
         }
 
         // Return build results
@@ -101,7 +100,8 @@ class XcfScripting {
                    let startLine = issue.startingLineNumber,
                    let endLine = issue.endingLineNumber {
                     files.insert(filePath)
-                    buildResults += "\(filePath):\(startLine):\(startingColNum) [\(issueType)] \(issueMessage)\(Format.newLine)"
+                    buildResults += String(format: XcodeConstants.issueFormat, 
+                                         filePath, startLine, startingColNum, issueType, issueMessage) + Format.newLine
                     buildResults += formatCodeSnippet(filePath: filePath, startLine: startLine, endLine: endLine)
                 } else {
                     buildResults += "[\(issueType)] \(issueMessage)\(Format.newLine)"
@@ -113,9 +113,9 @@ class XcfScripting {
     // Helper function to format code snippets consistently
     private func formatCodeSnippet(filePath: String, startLine: Int, endLine: Int) -> String {
         let (snippet, language) = CaptureSnippet.getCodeSnippet(filePath: filePath, startLine: startLine, endLine: endLine)
-        var formattedSnippet = "```\(language)\(Format.newLine)"
+        var formattedSnippet = "\(XcodeConstants.codeBlockStart)\(language)\(Format.newLine)"
         formattedSnippet += snippet
-        formattedSnippet += "```\(Format.newLine)"
+        formattedSnippet += "\(Format.newLine)\(XcodeConstants.codeBlockEnd)\(Format.newLine)"
         return formattedSnippet
     }
     
@@ -124,7 +124,7 @@ class XcfScripting {
     /// - Returns: Array of document paths matching the criteria, or empty array if none found or error occurred
     func getXcodeDocumentPaths(ext: String) -> [String] {
         // Get Xcode application instance
-        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: "com.apple.dt.Xcode") else {
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
             print(ErrorMessages.failedToConnectXcode)
             return []
         }
