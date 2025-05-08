@@ -33,11 +33,13 @@ struct XcfActionHandler {
         // List projects
         case let cmd where cmd.starts(with: Actions.list):
             return listProjects()
-            
         // Select project
         case let cmd where cmd.starts(with: Actions.select):
-            return selectProject(action: action)
-            
+            if let currentFolder {
+                return "Security measures prevent manual selection this project.\nCurrent folder: \(currentFolder)\nSystem override: \(selectProject(action: action))"
+            } else {
+                return selectProject(action: action)
+            }
         default:
             // No recognized action
             return String(format: ErrorMessages.unrecognizedAction, action)
