@@ -5,5 +5,7 @@
 //  Created by Todd Bruss on 5/4/25.
 //
 
-//TODO: Move this to somewhere it can be saved to disk to pick up selections/sessions where they left off
+import Foundation
+
 var currentProject: String?
+var currentFolder : String? = ProcessInfo.processInfo.environment["WORKSPACE_FOLDER_PATHS"]

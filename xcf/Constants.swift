@@ -22,7 +22,8 @@ struct Actions {
     static let build = "build"
     static let grant = "grant"
     static let useXcf = "use \(AppConstants.appName)"
-    static let pwd = "pwd"
+    static let current = "current"
+    static let env = "env"
 }
 
 // Define error messages
@@ -62,6 +63,8 @@ struct SuccessMessages {
     static let projectSelected = "Selected project %d: %@"
     static let success = "success"
     static let pwdSuccess = "Current directory: %@"
+    static let currentProject = "Current project: %@"
+    static let environmentVariables = "Environment Variables: %@"
 }
 
 // Define path constants
@@ -187,7 +190,8 @@ struct McpConfig {
     - select #: [open xc project or workspace]
     - run: Execute the current \(AppConstants.appName) project
     - build: Build the current \(AppConstants.appName) project
-    - pwd: Show the current working directory
+    - current: Display the currently selected project
+    - env: Show all environment variables
     - help: Show this help information
     """
     

@@ -25,8 +25,10 @@ struct XcfActionHandler {
             return await runProject()
         case Actions.build:
             return await buildProject()
-        case Actions.pwd:
-            return runPwd()
+        case Actions.current:
+            return showCurrentProject()
+        case Actions.env:
+            return showEnvironmentVariables()
             
         // List projects
         case let cmd where cmd.starts(with: Actions.list):
@@ -89,18 +91,54 @@ struct XcfActionHandler {
         return getOpenProjectsList(projs: xcArray)
     }
     
+    // Helper method to check and select project files
+    private static func checkAndSelectProjectFile(at folderPath: String) -> String? {
+        let folderURL = URL(fileURLWithPath: folderPath)
+        let folderName = folderURL.lastPathComponent
+        let extensions = [".xcworkspace", ".xcodeproj"]
+        
+        for ext in extensions {
+            let possiblePath = folderURL.appendingPathComponent("\(folderName)\(ext)").path
+            if FileManager.default.fileExists(atPath: possiblePath) {
+                currentProject = possiblePath
+                return String(format: SuccessMessages.projectSelected, 0, possiblePath)
+            }
+        }
+        
+        return nil
+    }
+    
     // Select a project by number
-    private static func selectProject(action: String) -> String {
+    static func selectProject(action: String? = nil) -> String {
+        // Get the list of projects
+        let xcArray = getSortedXcodeProjects()
+        
+        // Check for a match with the current folder
+        if let cf = currentFolder {
+            // First check if any open project contains the current folder
+            for xc in xcArray {
+                if xc.contains(cf) {
+                    return(xc)
+                }
+            }
+            
+            // Then check for project files in the current folder
+            if let result = checkAndSelectProjectFile(at: cf) {
+                return result
+            }
+        }
+        
+        guard let action else {
+            return ErrorMessages.invalidProjectSelection
+        }
+        
         // Parse the project number
         let projectNumber = parseProjectNumber(from: action)
         
         // Check if the project number is valid
-        guard let projectNumber = projectNumber else {
+        guard let projectNumber else {
             return ErrorMessages.invalidProjectSelection
         }
-        
-        // Get the list of projects
-        let xcArray = getSortedXcodeProjects()
         
         // Check if there are any projects
         guard !xcArray.isEmpty else {
@@ -141,26 +179,28 @@ struct XcfActionHandler {
         return result
     }
     
-    // Get the current working directory using /bin/pwd
-    private static func runPwd() -> String {
-        let process = Process()
-        let pipe = Pipe()
-        
-        process.executableURL = URL(fileURLWithPath: "/bin/pwd")
-        process.standardOutput = pipe
-        
-        do {
-            try process.run()
-            process.waitUntilExit()
-            
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            if let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) {
-                return String(format: SuccessMessages.pwdSuccess, output)
-            } else {
-                return ErrorMessages.failedToConvertOutput
-            }
-        } catch {
-            return String(format: ErrorMessages.failedToExecuteOsascript, error.localizedDescription)
+    // Display the current project
+    private static func showCurrentProject() -> String {
+        guard let currentProject = getCurrentProject() else {
+            return ErrorMessages.noProjectSelected
         }
+        return String(format: SuccessMessages.currentProject, currentProject)
+    }
+    
+    // Display environment variables
+    private static func showEnvironmentVariables() -> String {
+        let environment = ProcessInfo.processInfo.environment
+        var envString = ""
+        
+        // Sort keys for consistent output
+        let sortedKeys = environment.keys.sorted()
+        
+        for key in sortedKeys {
+            if let value = environment[key] {
+                envString += "\(key): \(value)\n"
+            }
+        }
+        
+        return String(format: SuccessMessages.environmentVariables, envString)
     }
 } 

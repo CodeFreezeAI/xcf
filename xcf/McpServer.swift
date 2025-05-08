@@ -185,6 +185,8 @@ struct McpServer {
     /// - Returns: The configured MCP server
     /// - Throws: Errors from server initialization or start
     static func configureMcpServer() async throws -> Server {
+        currentProject = await XcfActionHandler.selectProject()
+
         // Set up the server with enhanced capabilities
         let server = Server(
             name: McpConfig.serverName,
