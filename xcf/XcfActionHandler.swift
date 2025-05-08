@@ -37,10 +37,10 @@ struct XcfActionHandler {
         case Actions.env:
             return showEnvironmentVariables()
             
-        // List projects
+        // Show projects (formerly list)
         case let cmd where cmd.starts(with: Actions.list):
             return listProjects()
-        // Select project
+        // Open project (formerly select)
         case let cmd where cmd.starts(with: Actions.select):
             if let currentFolder {
                 return String(format: SuccessMessages.securityPreventManualSelection, currentFolder, selectProject(action: action))
@@ -139,7 +139,7 @@ struct XcfActionHandler {
     }
     
     /// Parses a project number from an action string
-    /// - Parameter action: The action string to parse (format: "select N")
+    /// - Parameter action: The action string to parse (format: "open N")
     /// - Returns: The parsed project number, or nil if the format is invalid
     private static func parseProjectNumber(from action: String) -> Int? {
         let parts = action.split(separator: Format.spaceSeparator)

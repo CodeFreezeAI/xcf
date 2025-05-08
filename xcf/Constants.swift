@@ -16,8 +16,8 @@ struct AppConstants {
 struct Actions {
     static let xcf = AppConstants.appName
     static let help = "help"
-    static let list = "list"
-    static let select = "select"
+    static let list = "show"
+    static let select = "open"
     static let run = "run"
     static let build = "build"
     static let grant = "grant"
@@ -30,7 +30,7 @@ struct Actions {
 struct ErrorMessages {
     static let noProjectSelected = "Error: No project selected"
     static let noOpenProjects = "Error: No open projects."
-    static let invalidProjectSelection = "Error: Invalid project selection format. Use 'select N' where N is the project number."
+    static let invalidProjectSelection = "Error: Invalid project selection format. Use 'open N' where N is the project number."
     static let projectOutOfRange = "Error: Project number %@ is out of range. Available projects: 1-%@"
     static let unrecognizedAction = "Houston we have a problem: %@ is not recognized."
     
@@ -75,7 +75,7 @@ struct Paths {
 // Define MCP server configurations
 struct McpConfig {
     // Tool names
-    static let listToolsName = "tools"
+    static let listToolsName = "list"
     static let xcfToolName = AppConstants.appName
     static let snippetToolName = "snippet"
     static let helpToolName = "help"
@@ -186,8 +186,8 @@ struct McpConfig {
     \(AppConstants.appName) actions:
     - use \(AppConstants.appName): Activate \(AppConstants.appName) mode
     - grant: permission to use xcode automation
-    - list: [open xc projects and workspaces]
-    - select #: [open xc project or workspace]
+    - show: [open xc projects and workspaces]
+    - open #: [open xc project or workspace]
     - run: Execute the current \(AppConstants.appName) project
     - build: Build the current \(AppConstants.appName) project
     - current: Display the currently selected project

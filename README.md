@@ -33,8 +33,8 @@ This activates the xcf mode, which allows you to work with Xcode projects direct
 After activating xcf with the `use xcf` command, you can use the following commands:
 
 - `grant` - Grant permission to use Xcode automation
-- `list` - Show open Xcode projects and workspaces
-- `select #` - Select an open Xcode project or workspace by number
+- `show` - Show open Xcode projects and workspaces
+- `open #` - Open an Xcode project or workspace by number
 - `run` - Execute the currently selected Xcode project
 - `build` - Build the currently selected Xcode project
 - `current` - Display the currently selected project
@@ -45,16 +45,16 @@ After activating xcf with the `use xcf` command, you can use the following comma
 
 When using xcf through MCP in an AI assistant, you can also use these special commands:
 
-- `list tools` - Lists all available MCP tools provided by xcf
+- `list` - Lists all available MCP tools provided by xcf
 - `snippet` - Extract code snippets from files in the project
 - `help` - Displays detailed help about xcf actions and usage
 
-Example output of `list tools`:
+Example output of `list`:
 
 ```
 Available tools:
 - xcf: Execute an xcf action or command
-- tools: Lists all available tools on this server
+- list: Lists all available tools on this server
 - snippet: Extract code snippets from files in the current project (use entireFile=true to get full file content)
 - help: Displays help information about xcf actions and usage
 ```
@@ -78,8 +78,8 @@ This enables the AI to analyze specific parts of your codebase without needing t
 ### Example Workflow
 
 1. Start by activating xcf: `use xcf`
-2. List open Xcode projects: `list`
-3. Select a project: `select 1`
+2. Show open Xcode projects: `show`
+3. Select a project: `open 1`
 4. Build the selected project: `build`
 5. Run the selected project: `run`
 
