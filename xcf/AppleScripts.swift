@@ -5,6 +5,7 @@
 //  Created by Todd Bruss on 5/4/25.
 //
 
+//MARK: Some Systems only approve over OSAScript - this is a workaround, may not be needed on all systems
 func grantAutomation() -> String {
     """
     tell application "Xcode"
@@ -22,15 +23,6 @@ func grantAutomation() -> String {
             
             return "Xcode Automation permission has been granted"
         end tell
-    end tell
-    """
-}
-
-func getXcodeDocumentPaths(ext: String) -> String {
-    """
-    tell application "Xcode"
-        set p to get path of every document whose name contains "\(ext)"
-        return p
     end tell
     """
 }

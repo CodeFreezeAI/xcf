@@ -65,8 +65,7 @@ struct XcfActionHandler {
     /// - Parameter ext: The file extension to look for (defaults to .xc)
     /// - Returns: An array of paths to open Xcode projects, sorted alphabetically
     public static func getSortedXcodeProjects(ext: String = Format.xcodeFileExtension) -> [String] {
-        let xc = AppleScriptDescriptorToSet(script: getXcodeDocumentPaths(ext: ext))
-        return Array(xc).sorted() // Convert Set to Array and sort alphabetically
+        return XcfScripting().getXcodeDocumentPaths(ext: ext)
     }
     
     // MARK: - Project Selection
@@ -154,7 +153,7 @@ struct XcfActionHandler {
     /// - Returns: A message indicating the result of the run operation
     private static func runProject() async -> String {
         guard let currentProject else { return ErrorMessages.noProjectSelected }
-        let XcodeBuildScript = XcodeBuildScript()
+        let XcodeBuildScript = XcfScripting()
         let buildCheckForErrors = XcodeBuildScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
         
         if buildCheckForErrors.contains(SuccessMessages.success) {
@@ -168,7 +167,7 @@ struct XcfActionHandler {
     /// - Returns: A message indicating the result of the build operation
     private static func buildProject() async -> String {
         guard let currentProject else { return ErrorMessages.noProjectSelected }
-        return XcodeBuildScript().buildCurrentWorkspace(projectPath: currentProject, run: false)
+        return XcfScripting().buildCurrentWorkspace(projectPath: currentProject, run: false)
     }
     
     // MARK: - Utility Methods

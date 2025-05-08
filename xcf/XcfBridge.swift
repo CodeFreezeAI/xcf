@@ -1,5 +1,5 @@
 //
-//  Xcode.swift
+//  XcfBridge.swift
 //  xcf
 //
 //  Created by Todd Bruss on 5/7/25.
@@ -9,65 +9,242 @@ import AppKit
 import ScriptingBridge
 import Foundation
 
+/// # Xcode Scripting Bridge Interface
+///
+/// This file defines the protocol interfaces needed to interact with Xcode via the ScriptingBridge framework.
+/// These interfaces allow Swift code to communicate with Xcode programmatically, enabling automation of
+/// various Xcode operations like building, running, and manipulating projects and workspaces.
+///
+/// ## Usage Example:
+/// ```swift
+/// // Connect to Xcode
+/// guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: "com.apple.dt.Xcode") else {
+///     print("Failed to connect to Xcode")
+///     return
+/// }
+///
+/// // Open a project
+/// let projectPath = "/path/to/your/project.xcodeproj"
+/// if let workspace = xcode.open?(projectPath as Any) as? XcodeWorkspaceDocument {
+///     // Build the project
+///     let buildResult = workspace.build?()
+///     
+///     // Wait for build to complete
+///     while !(buildResult?.completed ?? false) {
+///         Thread.sleep(forTimeInterval: 0.5)
+///     }
+///     
+///     // Check build status
+///     if buildResult?.status == XcodeSchemeActionResultStatus.succeeded {
+///         print("Build succeeded")
+///     } else {
+///         print("Build failed")
+///     }
+/// }
+/// ```
+
+/// Protocol that all ScriptingBridge objects must conform to
+/// Provides basic functionality for retrieving values from AppleScript objects
 @objc public protocol SBObjectProtocol: NSObjectProtocol {
+    /// Gets the underlying AppleScript value
+    /// - Returns: The value from the AppleScript object, or nil if not available
     func get() -> Any!
 }
 
+/// Protocol that all ScriptingBridge applications must conform to
+/// Provides basic functionality for interacting with applications
 @objc public protocol SBApplicationProtocol: SBObjectProtocol {
+    /// Brings the application to the foreground
     func activate()
+    
+    /// The application's delegate for handling application events
     var delegate: SBApplicationDelegate! { get set }
+    
+    /// Indicates whether the application is currently running
+    /// - Returns: true if the application is running, false otherwise
     var isRunning: Bool { get }
 }
 
-// MARK: XcodeSaveOptions
+// MARK: - Enumerations
+
+/// Options for saving documents when closing
+/// Used when closing documents or quitting Xcode
 @objc public enum XcodeSaveOptions : AEKeyword {
+    /// Save changes before closing
     case yes = 0x79657320 /* b'yes ' */
+    
+    /// Discard changes before closing
     case no = 0x6e6f2020 /* b'no  ' */
+    
+    /// Prompt the user to decide whether to save changes
     case ask = 0x61736b20 /* b'ask ' */
 }
 
-// MARK: XcodeSchemeActionResultStatus
+/// Status values for scheme action results
+/// Indicates the current state of build, run, or test operations
 @objc public enum XcodeSchemeActionResultStatus : AEKeyword {
+    /// The action has not yet started
     case notYetStarted = 0x7372736e /* b'srsn' */
+    
+    /// The action is currently running
     case running = 0x73727372 /* b'srsr' */
+    
+    /// The action was cancelled by the user
     case cancelled = 0x73727363 /* b'srsc' */
+    
+    /// The action failed to complete successfully
     case failed = 0x73727366 /* b'srsf' */
+    
+    /// An error occurred during the action
     case errorOccurred = 0x73727365 /* b'srse' */
+    
+    /// The action completed successfully
     case succeeded = 0x73727373 /* b'srss' */
 }
 
-// MARK: XcodeGenericMethods
+// MARK: - Generic Methods
+
+/// Common methods available across multiple Xcode objects
+/// These methods provide basic functionality for manipulating Xcode items
 @objc public protocol XcodeGenericMethods {
-    @objc optional func closeSaving(_ saving: XcodeSaveOptions, savingIn: URL!) // Close a document.
-    @objc optional func delete() // Delete an object.
-    @objc optional func moveTo(_ to: SBObject!) // Move an object to a new location.
-    @objc optional func build() -> XcodeSchemeActionResult // Invoke the "build" scheme action. This command should be sent to a workspace document. The build will be performed using the workspace document's current active scheme and active run destination. This command does not wait for the action to complete; its progress can be tracked with the returned scheme action result.
-    @objc optional func clean() -> XcodeSchemeActionResult // Invoke the "clean" scheme action. This command should be sent to a workspace document. The clean will be performed using the workspace document's current active scheme and active run destination. This command does not wait for the action to complete; its progress can be tracked with the returned scheme action result.
-    @objc optional func stop() // Stop the active scheme action, if one is running. This command should be sent to a workspace document. This command does not wait for the action to stop.
-    @objc optional func runWithCommandLineArguments(_ withCommandLineArguments: Any!, withEnvironmentVariables: Any!) -> XcodeSchemeActionResult // Invoke the "run" scheme action. This command should be sent to a workspace document. The run action will be performed using the workspace document's current active scheme and active run destination. This command does not wait for the action to complete; its progress can be tracked with the returned scheme action result.
-    @objc optional func testWithCommandLineArguments(_ withCommandLineArguments: Any!, withEnvironmentVariables: Any!) -> XcodeSchemeActionResult // Invoke the "test" scheme action. This command should be sent to a workspace document. The test action will be performed using the workspace document's current active scheme and active run destination. This command does not wait for the action to complete; its progress can be tracked with the returned scheme action result.
-    @objc optional func attachToProcessIdentifier(_ toProcessIdentifier: Int, suspended: Bool) // Start a new debugging session in the workspace. This command should be sent to a workspace document. This command does not wait for the action to complete.
-    @objc optional func debugScheme(_ scheme: String!, runDestinationSpecifier: String!, skipBuilding: Bool, commandLineArguments: Any!, environmentVariables: Any!) -> XcodeSchemeActionResult // Start a debugging session using the "run" or "run without building" scheme action. This command should be sent to a workspace document. If no scheme is specified, the action will be performed using the workspace document's current active scheme. If no run destination is specified, the active run destination will be used. This command does not wait for the action to complete; its progress can be tracked with the returned scheme action result.
+    /// Closes a document with options for saving changes
+    /// - Parameters:
+    ///   - saving: How to handle unsaved changes (yes, no, or ask)
+    ///   - savingIn: Location to save the document if needed
+    @objc optional func closeSaving(_ saving: XcodeSaveOptions, savingIn: URL!)
+    
+    /// Deletes an object
+    @objc optional func delete()
+    
+    /// Moves an object to a new location
+    /// - Parameter to: The destination object
+    @objc optional func moveTo(_ to: SBObject!)
+    
+    /// Builds the current scheme
+    /// - Returns: A result object that can be used to track build progress
+    @objc optional func build() -> XcodeSchemeActionResult
+    
+    /// Cleans the current build
+    /// - Returns: A result object that can be used to track clean progress
+    @objc optional func clean() -> XcodeSchemeActionResult
+    
+    /// Stops the currently running scheme action
+    @objc optional func stop()
+    
+    /// Runs the current scheme with optional arguments and environment variables
+    /// - Parameters:
+    ///   - withCommandLineArguments: Command-line arguments to pass to the app
+    ///   - withEnvironmentVariables: Environment variables to set for the app
+    /// - Returns: A result object that can be used to track run progress
+    @objc optional func runWithCommandLineArguments(_ withCommandLineArguments: Any!, withEnvironmentVariables: Any!) -> XcodeSchemeActionResult
+    
+    /// Runs tests for the current scheme with optional arguments and environment variables
+    /// - Parameters:
+    ///   - withCommandLineArguments: Command-line arguments to pass to the tests
+    ///   - withEnvironmentVariables: Environment variables to set for the tests
+    /// - Returns: A result object that can be used to track test progress
+    @objc optional func testWithCommandLineArguments(_ withCommandLineArguments: Any!, withEnvironmentVariables: Any!) -> XcodeSchemeActionResult
+    
+    /// Attaches the debugger to a running process
+    /// - Parameters:
+    ///   - toProcessIdentifier: PID of the process to attach to
+    ///   - suspended: Whether to suspend the process when attaching
+    @objc optional func attachToProcessIdentifier(_ toProcessIdentifier: Int, suspended: Bool)
+    
+    /// Starts debugging a scheme
+    /// - Parameters:
+    ///   - scheme: Name of the scheme to debug (nil for active scheme)
+    ///   - runDestinationSpecifier: Run destination to use (nil for active destination)
+    ///   - skipBuilding: Whether to skip building before debugging
+    ///   - commandLineArguments: Command-line arguments to pass to the app
+    ///   - environmentVariables: Environment variables to set for the app
+    /// - Returns: A result object that can be used to track debug progress
+    @objc optional func debugScheme(_ scheme: String!, runDestinationSpecifier: String!, skipBuilding: Bool, commandLineArguments: Any!, environmentVariables: Any!) -> XcodeSchemeActionResult
 }
 
-// MARK: XcodeApplication
+// MARK: - XcodeApplication
+
+/// Protocol representing the Xcode application itself
+/// This is the main entry point for scripting Xcode
 @objc public protocol XcodeApplication: SBApplicationProtocol {
+    /// Returns all documents open in Xcode
     @objc optional func documents() -> SBElementArray
+    
+    /// Returns all windows open in Xcode
     @objc optional func windows() -> SBElementArray
-    @objc optional var name: String { get } // The name of the application.
-    @objc optional var frontmost: Bool { get } // Is this the active application?
-    @objc optional var version: String { get } // The version number of the application.
-    @objc optional func `open`(_ x: Any!) -> Any // Open a document.
-    @objc optional func quitSaving(_ saving: XcodeSaveOptions) // Quit the application.
-    @objc optional func exists(_ x: Any!) -> Bool // Verify that an object exists.
-    @objc optional func createTemporaryDebuggingWorkspace() -> XcodeWorkspaceDocument // Create a new temporary debugging workspace.
+    
+    /// The name of the application
+    @objc optional var name: String { get }
+    
+    /// Whether Xcode is the frontmost application
+    @objc optional var frontmost: Bool { get }
+    
+    /// The version number of Xcode
+    @objc optional var version: String { get }
+    
+    /// Opens a document
+    /// - Parameter x: Path to the document or URL object
+    /// - Returns: The opened document object
+    @objc optional func `open`(_ x: Any!) -> Any
+    
+    /// Quits Xcode with options for saving changes
+    /// - Parameter saving: How to handle unsaved changes (yes, no, or ask)
+    @objc optional func quitSaving(_ saving: XcodeSaveOptions)
+    
+    /// Checks if an object exists
+    /// - Parameter x: The object to check
+    /// - Returns: true if the object exists, false otherwise
+    @objc optional func exists(_ x: Any!) -> Bool
+    
+    /// Creates a temporary workspace for debugging
+    /// - Returns: The created workspace document
+    @objc optional func createTemporaryDebuggingWorkspace() -> XcodeWorkspaceDocument
+    
+    /// Returns all file documents open in Xcode
     @objc optional func fileDocuments() -> SBElementArray
+    
+    /// Returns all source code documents open in Xcode
     @objc optional func sourceDocuments() -> SBElementArray
+    
+    /// Returns all workspace documents open in Xcode
     @objc optional func workspaceDocuments() -> SBElementArray
-    @objc optional var activeWorkspaceDocument: XcodeWorkspaceDocument { get } // The active workspace document in Xcode.
-    @objc optional func setActiveWorkspaceDocument(_ activeWorkspaceDocument: XcodeWorkspaceDocument!) // The active workspace document in Xcode.
+    
+    /// The currently active workspace document
+    @objc optional var activeWorkspaceDocument: XcodeWorkspaceDocument { get }
+    
+    /// Sets the active workspace document
+    /// - Parameter activeWorkspaceDocument: The workspace document to make active
+    @objc optional func setActiveWorkspaceDocument(_ activeWorkspaceDocument: XcodeWorkspaceDocument!)
 }
 extension SBApplication: XcodeApplication {}
+
+/// Use the XcodeApplication protocol to interact with Xcode
+/// Example:
+/// ```swift
+/// func getXcodeDocumentPaths(ext: String) -> [String] {
+///     // Get Xcode application instance
+///     guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: "com.apple.dt.Xcode") else {
+///         print("Failed to connect to Xcode")
+///         return []
+///     }
+///     
+///     // Get all documents
+///     guard let documents = xcode.documents?() else {
+///         return []
+///     }
+///     
+///     var paths: [String] = []
+///     
+///     // Iterate through all documents and filter by extension
+///     for case let document as XcodeDocument in documents {
+///         if let name = document.name, name.contains(ext), let path = document.path {
+///             paths.append(path)
+///         }
+///     }
+///     
+///     return paths
+/// }
+/// ```
 
 // MARK: XcodeDocument
 @objc public protocol XcodeDocument: SBObjectProtocol, XcodeGenericMethods {

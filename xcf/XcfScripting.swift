@@ -9,7 +9,7 @@
 import Foundation
 import ScriptingBridge
 
-class XcodeBuildScript {
+class XcfScripting {
     private var files: Set<String> = []
     
     func buildCurrentWorkspace(projectPath: String, run: Bool = false) -> String {
@@ -94,7 +94,6 @@ class XcodeBuildScript {
     
     // Helper function to process different types of build issues
     private func processIssues(issues: SBElementArray, issueType: String, buildResults: inout String) {
-        
         for case let issue as XcodeBuildError in issues {
             if let issueMessage = issue.message {
                 if let filePath = issue.filePath,
@@ -103,15 +102,47 @@ class XcodeBuildScript {
                    let endLine = issue.endingLineNumber {
                     files.insert(filePath)
                     buildResults += "\(filePath):\(startLine):\(startingColNum) [\(issueType)] \(issueMessage)\(Format.newLine)"
-                    let (snippet, language) = CaptureSnippet.getCodeSnippet(filePath: filePath, startLine: startLine, endLine: endLine)
-                    buildResults += "```\(language)\(Format.newLine)"
-                    buildResults += snippet
-                    buildResults += "```\(Format.newLine)"
+                    buildResults += formatCodeSnippet(filePath: filePath, startLine: startLine, endLine: endLine)
                 } else {
                     buildResults += "[\(issueType)] \(issueMessage)\(Format.newLine)"
                 }
             }
         }
     }
-   
+    
+    // Helper function to format code snippets consistently
+    private func formatCodeSnippet(filePath: String, startLine: Int, endLine: Int) -> String {
+        let (snippet, language) = CaptureSnippet.getCodeSnippet(filePath: filePath, startLine: startLine, endLine: endLine)
+        var formattedSnippet = "```\(language)\(Format.newLine)"
+        formattedSnippet += snippet
+        formattedSnippet += "```\(Format.newLine)"
+        return formattedSnippet
+    }
+    
+    /// Gets paths of all open Xcode documents whose name contains the specified extension
+    /// - Parameter ext: The extension or substring to filter document names by
+    /// - Returns: Array of document paths matching the criteria, or empty array if none found or error occurred
+    func getXcodeDocumentPaths(ext: String) -> [String] {
+        // Get Xcode application instance
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: "com.apple.dt.Xcode") else {
+            print(ErrorMessages.failedToConnectXcode)
+            return []
+        }
+        
+        // Get all documents
+        guard let documents = xcode.documents?() else {
+            return []
+        }
+        
+        var paths: Set<String> = []
+        
+        // Iterate through all documents and filter by extension
+        for case let document as XcodeDocument in documents {
+            if let name = document.name, name.contains(ext), let path = document.path {
+                paths.insert(path)
+            }
+        }
+        
+        return Array(paths).sorted()
+    }
 }

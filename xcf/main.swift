@@ -10,7 +10,6 @@ import MCP
 
 // Print welcome message
 print(McpConfig.welcomeMessage)
-
 // Main async task
 Task {
     do {

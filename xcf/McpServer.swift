@@ -379,7 +379,7 @@ struct McpServer {
             throw MCPError.invalidParams(ErrorMessages.noProjectSelected)
         }
         
-        let buildResults = XcodeBuildScript().buildCurrentWorkspace(projectPath: currentProject, run: false)
+        let buildResults = XcfScripting().buildCurrentWorkspace(projectPath: currentProject, run: false)
         let content = Resource.Content.text(
             buildResults,
             uri: McpConfig.buildResultsResourceURI
@@ -502,13 +502,31 @@ struct McpServer {
         return filePath
     }
     
-    /// Handles a file contents resource request
+    /// Handles a request for the file contents resource
     /// - Parameter uri: The URI of the resource request
     /// - Returns: The file contents resource
     /// - Throws: Invalid parameter errors or file access errors
     private static func handleFileContentsResource(uri: String) throws -> ReadResource.Result {
         guard let filePath = extractFilePathFromUri(uri) else {
             throw MCPError.invalidParams(McpConfig.missingFilePathParamError)
+        }
+        
+        // Validate file exists before attempting to read
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: filePath) else {
+            throw MCPError.invalidParams("File does not exist: \(filePath)")
+        }
+        
+        // Check file size to avoid loading extremely large files
+        guard let attributes = try? fileManager.attributesOfItem(atPath: filePath),
+              let fileSize = attributes[.size] as? UInt64 else {
+            throw MCPError.invalidParams("Could not determine file size: \(filePath)")
+        }
+        
+        // Set a reasonable size limit (10MB)
+        let sizeLimit: UInt64 = 10 * 1024 * 1024
+        guard fileSize < sizeLimit else {
+            throw MCPError.invalidParams("File is too large (> 10MB): \(filePath)")
         }
         
         do {
@@ -519,8 +537,22 @@ struct McpServer {
                 mimeType: McpConfig.plainTextMimeType
             )
             return ReadResource.Result(contents: [content])
-        } catch {
-            throw MCPError.invalidParams(String(format: ErrorMessages.errorReadingFile, error.localizedDescription))
+        } catch let error as NSError {
+            // More specific error handling based on the error code
+            if error.domain == NSCocoaErrorDomain {
+                switch error.code {
+                case NSFileReadNoSuchFileError:
+                    throw MCPError.invalidParams("File not found: \(filePath)")
+                case NSFileReadNoPermissionError:
+                    throw MCPError.invalidParams("Permission denied to read file: \(filePath)")
+                case NSFileReadCorruptFileError:
+                    throw MCPError.invalidParams("File is corrupt: \(filePath)")
+                default:
+                    throw MCPError.invalidParams(String(format: ErrorMessages.errorReadingFile, error.localizedDescription))
+                }
+            } else {
+                throw MCPError.invalidParams(String(format: ErrorMessages.errorReadingFile, error.localizedDescription))
+            }
         }
     }
     
