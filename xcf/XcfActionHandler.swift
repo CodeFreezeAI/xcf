@@ -7,9 +7,16 @@
 
 import Foundation
 
+/// A class responsible for handling all XCodeFreeze (xcf) commands and actions.
+/// This actor-isolated struct provides methods for project management, building,
+/// running, and utility functions to interact with Xcode projects.
 @MainActor
 struct XcfActionHandler {
-    // Main entry point for handling actions
+    // MARK: - Action Handling
+    
+    /// Main entry point for handling xcf actions from the command line
+    /// - Parameter action: The string command to process (e.g., "build", "run", "list")
+    /// - Returns: A formatted string response to the action request
     static func handleAction(action: String) async -> String {
         // Convert action to lowercase for case-insensitive matching
         let lowercasedAction = action.lowercased()
@@ -36,7 +43,7 @@ struct XcfActionHandler {
         // Select project
         case let cmd where cmd.starts(with: Actions.select):
             if let currentFolder {
-                return "Security measures prevent manual selection this project.\nCurrent folder: \(currentFolder)\nSystem override: \(selectProject(action: action))"
+                return String(format: SuccessMessages.securityPreventManualSelection, currentFolder, selectProject(action: action))
             } else {
                 return selectProject(action: action)
             }
@@ -46,54 +53,27 @@ struct XcfActionHandler {
         }
     }
     
-    // NEW: Expose current project for status notifications
+    // MARK: - Public Methods
+    
+    /// Retrieves the currently selected project
+    /// - Returns: The path to the current project, or nil if no project is selected
     public static func getCurrentProject() -> String? {
         return currentProject
     }
     
-    // Get help information
-    private static func getHelpText() -> String {
-        return McpConfig.helpText
+    /// Gets a sorted list of open Xcode projects
+    /// - Parameter ext: The file extension to look for (defaults to .xc)
+    /// - Returns: An array of paths to open Xcode projects, sorted alphabetically
+    public static func getSortedXcodeProjects(ext: String = Format.xcodeFileExtension) -> [String] {
+        let xc = AppleScriptDescriptorToSet(script: getXcodeDocumentPaths(ext: ext))
+        return Array(xc).sorted() // Convert Set to Array and sort alphabetically
     }
     
-    // Grant permission to use Xcode automation
-    private static func grantPermission() -> String {
-        // May not be needed anymore... leave for now.
-        let script = grantAutomation()
-        return executeWithOsascript(script: script)
-    }
+    // MARK: - Project Selection
     
-    // Run the current project
-    private static func runProject() async -> String {
-        guard let currentProject else { return ErrorMessages.noProjectSelected }
-        let XcodeBuildScript = XcodeBuildScript()
-        let buildCheckForErrors = XcodeBuildScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
-        
-        if buildCheckForErrors.contains(SuccessMessages.success) {
-            return XcodeBuildScript.buildCurrentWorkspace(projectPath: currentProject, run: true)
-        } else {
-            return buildCheckForErrors
-        }
-    }
-    
-    // Build the current project
-    private static func buildProject() async -> String {
-        guard let currentProject else { return ErrorMessages.noProjectSelected }
-        return XcodeBuildScript().buildCurrentWorkspace(projectPath: currentProject, run: false)
-    }
-    
-    // List all open Xcode projects
-    private static func listProjects() -> String {
-        let xcArray = getSortedXcodeProjects()
-
-        if xcArray.isEmpty {
-            return ErrorMessages.noOpenProjects
-        }
-        
-        return getOpenProjectsList(projs: xcArray)
-    }
-    
-    // Helper method to check and select project files
+    /// Checks if a project file exists at the specified folder path
+    /// - Parameter folderPath: The folder path to check for project files
+    /// - Returns: A success message if a project file is found and selected, nil otherwise
     private static func checkAndSelectProjectFile(at folderPath: String) -> String? {
         let folderURL = URL(fileURLWithPath: folderPath)
         let folderName = folderURL.lastPathComponent
@@ -110,7 +90,9 @@ struct XcfActionHandler {
         return nil
     }
     
-    // Select a project by number
+    /// Selects a project based on various criteria
+    /// - Parameter action: Optional action string containing a project number to select
+    /// - Returns: A message indicating the result of the selection process
     static func selectProject(action: String? = nil) -> String {
         // Get the list of projects
         let xcArray = getSortedXcodeProjects()
@@ -157,20 +139,69 @@ struct XcfActionHandler {
         return String(format: SuccessMessages.currentProject, currentProject ?? "")
     }
     
-    // Parse the project number from an action
+    /// Parses a project number from an action string
+    /// - Parameter action: The action string to parse (format: "select N")
+    /// - Returns: The parsed project number, or nil if the format is invalid
     private static func parseProjectNumber(from action: String) -> Int? {
         let parts = action.split(separator: Format.spaceSeparator)
         guard parts.count >= 2, let n = Int(parts[1]) else { return nil }
         return n
     }
     
-    // Get a sorted list of open Xcode projects
-    public static func getSortedXcodeProjects(ext: String = Format.xcodeFileExtension) -> [String] {
-        let xc = AppleScriptDescriptorToSet(script: getXcodeDocumentPaths(ext: ext))
-        return Array(xc).sorted() // Convert Set to Array and sort alphabetically
+    // MARK: - Project Operations
+    
+    /// Runs the current project
+    /// - Returns: A message indicating the result of the run operation
+    private static func runProject() async -> String {
+        guard let currentProject else { return ErrorMessages.noProjectSelected }
+        let XcodeBuildScript = XcodeBuildScript()
+        let buildCheckForErrors = XcodeBuildScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
+        
+        if buildCheckForErrors.contains(SuccessMessages.success) {
+            return XcodeBuildScript.buildCurrentWorkspace(projectPath: currentProject, run: true)
+        } else {
+            return buildCheckForErrors
+        }
     }
     
-    // Get a formatted list of open projects
+    /// Builds the current project
+    /// - Returns: A message indicating the result of the build operation
+    private static func buildProject() async -> String {
+        guard let currentProject else { return ErrorMessages.noProjectSelected }
+        return XcodeBuildScript().buildCurrentWorkspace(projectPath: currentProject, run: false)
+    }
+    
+    // MARK: - Utility Methods
+    
+    /// Gets help information about available commands
+    /// - Returns: A formatted string containing help information
+    private static func getHelpText() -> String {
+        return McpConfig.helpText
+    }
+    
+    /// Grants permission to use Xcode automation
+    /// - Returns: A message indicating the result of the permission operation
+    private static func grantPermission() -> String {
+        // May not be needed anymore... leave for now.
+        let script = grantAutomation()
+        return executeWithOsascript(script: script)
+    }
+    
+    /// Lists all open Xcode projects
+    /// - Returns: A formatted string containing a list of open projects
+    private static func listProjects() -> String {
+        let xcArray = getSortedXcodeProjects()
+
+        if xcArray.isEmpty {
+            return ErrorMessages.noOpenProjects
+        }
+        
+        return getOpenProjectsList(projs: xcArray)
+    }
+    
+    /// Formats a list of open projects
+    /// - Parameter projs: Array of project paths to format
+    /// - Returns: A formatted string listing projects with numbers
     private static func getOpenProjectsList(projs: [String]) -> String {
         var result = ""
         
@@ -181,7 +212,8 @@ struct XcfActionHandler {
         return result
     }
     
-    // Display the current project
+    /// Displays information about the current project
+    /// - Returns: A formatted string showing the current project
     private static func showCurrentProject() -> String {
         guard let currentProject = getCurrentProject() else {
             return ErrorMessages.noProjectSelected
@@ -189,7 +221,8 @@ struct XcfActionHandler {
         return String(format: SuccessMessages.currentProject, currentProject)
     }
     
-    // Display environment variables
+    /// Displays all environment variables
+    /// - Returns: A formatted string showing all environment variables
     private static func showEnvironmentVariables() -> String {
         let environment = ProcessInfo.processInfo.environment
         var envString = ""

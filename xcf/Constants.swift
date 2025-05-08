@@ -64,6 +64,7 @@ struct SuccessMessages {
     static let pwdSuccess = "Current directory: %@"
     static let currentProject = "Current project: %@"
     static let environmentVariables = "Environment Variables: %@"
+    static let securityPreventManualSelection = "Security measures prevent manual selection this project.\nCurrent folder: %@\nSystem override: %@"
 }
 
 // Define path constants
