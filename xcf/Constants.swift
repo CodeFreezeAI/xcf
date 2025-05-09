@@ -68,7 +68,7 @@ struct SuccessMessages {
     static let permissionGranted = "Permission Granted"
     static let success = "success"
     static let pwdSuccess = "Current directory: %@"
-    static let currentProject = "Current project: %@"
+    static let currentProject = "%@"
     static let environmentVariables = "Environment Variables: %@"
     static let securityPreventManualSelection = "Staying safe! I've kept you in your workspace.\nYour workspace: %@\nUsing: %@"
 }

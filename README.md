@@ -83,12 +83,16 @@ mcp_xcf_snippet(filePath="/full/path/to/file.swift", startLine=10, endLine=20)
 
 ### For Human Commands
 
-To get an entire file:
+xcf now supports simplified, user-friendly snippet commands:
+
+To get an entire file, just use the filename:
 ```
-snippet /full/path/to/file.swift
+snippet filename.swift
 ```
 
-For specific line ranges:
+No need for full paths or additional parameters - xcf will intelligently find and display the complete file contents.
+
+For specific line ranges (still available but typically not needed):
 ```
 snippet /full/path/to/file.swift 10 20
 ```
@@ -102,11 +106,13 @@ When a file isn't found at the exact path, xcf will intelligently search for it 
 3. Subdirectories (one level deep) in the workspace
 4. The current project directory
 
-This means you can often just use the filename:
+This means you can usually just use the filename without any path:
 
 ```
-mcp_xcf_snippet(filePath="Constants.swift", entireFile=true)
+snippet Constants.swift
 ```
+
+The simplified syntax makes code exploration much faster and more intuitive during conversations with your AI assistant.
 
 ## Security Features
 

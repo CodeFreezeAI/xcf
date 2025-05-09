@@ -1,0 +1,4 @@
+# XCF Build Commands
+
+# Build the xcf project with release configuration
+cd /Users/toddbruss/Documents/GitHub/xcf && xcodebuild -project xcf.xcodeproj -scheme xcf -configuration Release 

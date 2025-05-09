@@ -240,7 +240,7 @@ struct XcfActionHandler {
         guard let currentProject = getCurrentProject() else {
             return ErrorMessages.noProjectSelected
         }
-        return String(format: SuccessMessages.currentProject, currentProject)
+        return "Current project: " + String(format: SuccessMessages.currentProject, currentProject)
     }
     
     /// Displays all environment variables
