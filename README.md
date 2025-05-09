@@ -1,5 +1,6 @@
 # xcf XCodeFreeze : Xcode Automation with MCP and AI
 MCP Server written in Swift, uses stdio, easy to use and install
+Requires Xcode 16, Apps can be in older version of Xcode
 
 ## Get Started
 Add an `xcf` entry to the `mcpServers` block of `~/.cursor/mcp.json` for Cursor, or `~/Library/Application Support/Claude/claude_desktop_config.json` for Claude Desktop for macOS.
