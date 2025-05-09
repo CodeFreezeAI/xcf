@@ -1,8 +1,37 @@
-# xcf Xcode MCP Server
+# 🚀 XCF - The Swift Way to Supercharge Your Xcode Workflow
+
+Speed up writing Xcode apps with xcf, a dead simple MCP server written in Swift specifically for Cursor. Works seamlessly with VSCode and Claude, but may require additional setup.
+
+## 📺 Watch XCF in Action
+
+<div align="center">
+  <iframe width="100%" height="400" src="https://www.youtube.com/embed/7KfrsZfQIIg" title="XCF Demo Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="max-width:800px;"></iframe>
+</div>
+
+## ✨ Key Features
+- **Zero Dependencies**: Easy to install, no reliance on other MCP servers to use with Cursor
+- **Automatic Project Detection**: Auto-selects your Xcode project so you can start coding immediately
+- **Real-time Error Handling**: `xcf build` or `xcf run` sends errors and warnings from Xcode directly to your AI IDE
+- **AI-Powered Fixes**: Let Claude fix bugs and mistakes during your Vibe coding sessions
+- **Intuitive Commands**: Simple, developer-friendly command structure for maximum productivity
+
+## 🛠️ Perfect for Swift Developers
+The tool is designed by Swift developers, for Swift developers. Commands like `build`, `run`, and `show` make the workflow intuitive and natural.
+
+## 🤝 Open Source Community
+Swift Engineers are welcome to contribute! Help us make xcf even better.
+
+## 💯 Pure Swift, Purely Open
+100% Swift. 100% Open Source.
+https://github.com/codefreezeai/xcf
+
+XCF (XCodeFreeze) by CodeFreeze.ai - Bringing the future of Swift development to your fingertips!
+
+# 📚 xcf Xcode MCP Server
 
 XCF (XCodeFreeze) is simple MCP server that lets AI assistants control Xcode. Works with Cursor, VSCode and Claude Desktop.
 
-## Quick Setup
+## 🔧 Quick Setup
 
 Add xcf to your MCP config:
 
@@ -23,7 +52,7 @@ Config location:
 
 Restart your AI tool after setup.
 
-## Advanced Configuration (Optional)
+## 🔍 Advanced Configuration (Optional)
 
 For non-Cursor clients or users who want more project-level control, you can add these optional environment variables:
 
@@ -47,7 +76,7 @@ Note: Remove the "_optional" suffix from variable names in the actual config. Th
 - Pre-select a specific Xcode project to work with
 - Define a custom workspace boundary for security
 
-## Commands
+## 📋 Commands
 
 | Command | Description |
 |---------|-------------|
@@ -60,7 +89,7 @@ Note: Remove the "_optional" suffix from variable names in the actual config. Th
 | `env` | Show environment variables |
 | `help` | Display all available commands |
 
-## MCP Tools
+## 🛠️ MCP Tools
 
 ### Function-Based Tools
 - `mcp_xcf_xcf`: Execute xcf actions/commands
@@ -68,7 +97,7 @@ Note: Remove the "_optional" suffix from variable names in the actual config. Th
 - `mcp_xcf_snippet`: Access file contents
 - `mcp_xcf_help`: Get help information
 
-## Using Snippets
+## 📄 Using Snippets
 
 ### For AI Function Calls
 
@@ -115,14 +144,14 @@ snippet Constants.swift
 
 The simplified syntax makes code exploration much faster and more intuitive during conversations with your AI assistant.
 
-## Security Features
+## 🔒 Security Features
 
 - Safely works with projects in your designated workspace
 - Automatically prevents access outside your workspace boundaries
 - Redirects to safe alternatives when needed
 - Uses environment variables to define secure boundaries
 
-## Workflow Examples
+## 🔄 Workflow Examples
 
 ### Basic Workflow
 1. `use xcf` - Activate the tool
@@ -131,10 +160,11 @@ The simplified syntax makes code exploration much faster and more intuitive duri
 4. `build` - Build the project
 5. `run` - Run the project
 
-## Troubleshooting
+## ❓ Troubleshooting
 
 If commands fail, check:
 - xcf installation is correct
+- Refreshing xcf MCP Server
 - Configuration settings are valid
 - Permissions are properly set
 - Environment variables with `env`
