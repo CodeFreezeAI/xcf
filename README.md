@@ -1,4 +1,4 @@
-# xcf XCodeFreeze : Xcode Automation with AI
+# xcf XCodeFreeze : Xcode Automation with MCP and AI
 XCodeFreeze MCP local stdio server
 
 ## Get Started
