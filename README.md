@@ -1,4 +1,4 @@
-# XCF: XCodeFreeze : Xcode Automation with MCP and AI
+# XCF : XCodeFreeze : Xcode Automation with MCP and AI
 - MCP Server written in Swift
 - uses stdio
 - easy to use and install
