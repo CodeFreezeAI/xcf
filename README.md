@@ -2,11 +2,11 @@
 - xcf is an MCP Server written in Swift
 - uses stdio
 - easy to use and install
-- do not require Node, NPM or any other MCP server for its automation
-- some MCP clients like Claude Desktop may require another MCP server for filesystem
 - written and tested with Cursor
+- no need to install Node or NPM
+- our own filesystem MCP server is in the works!
 - To compile requires Xcode 16, compiled releases are coming soon!
-- Apps can be in older version of Xcode as long as your OS supports it
+- Apps can be in older version of Xcode as long as your macOS version supports it
 
 ## Get Started
 Add an `xcf` entry to the `mcpServers` block of `~/.cursor/mcp.json` for Cursor, or `~/Library/Application Support/Claude/claude_desktop_config.json` for Claude Desktop for macOS.
