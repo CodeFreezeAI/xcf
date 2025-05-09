@@ -1,6 +1,6 @@
-# xcf - AI-Powered Xcode Automation
+# xcf Xcode MCP Server
 
-A simple MCP server that lets AI assistants control Xcode. Works with Cursor, VSCode and Claude Desktop.
+XCF (XCodeFreeze) is simple MCP server that lets AI assistants control Xcode. Works with Cursor, VSCode and Claude Desktop.
 
 ## Quick Setup
 
