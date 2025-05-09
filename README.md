@@ -31,11 +31,12 @@ For non-Cursor clients or users who want more project-level control, you can add
 {
   "mcpServers": {
     "xcf": {
-      "command": "/path/to/xcf",
+      "type": "stdio",
+      "command": "/Users/username/xcf/xcf",
       "args": [],
       "env": {
-        "WORKSPACE_FOLDER_PATHS": "/path/to/your/workspace/",
-        "XCODE_PROJECT": "/path/to/your/project.xcodeproj"
+          "XCODE_PROJECT_FOLDER_optional": "/path/to/project/",
+          "XCODE_PROJECT_optional": "/path/to/project/project.xcodeproj"
       }
     }
   }
