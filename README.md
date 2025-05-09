@@ -4,9 +4,9 @@
 - easy to use and install
 - written and tested with Cursor
 - for VSCode or Cursor, there is no need to install Node or NPM*
-- *Some MCP clients may require its own file system MCP Server
 - Requires Xcode 16 to compile XCF, compiled releases are coming soon!
 - Apps can be in older version of Xcode as long as your macOS version supports it
+- *Some MCP clients may require its own file system MCP Server
 
 ## Get Started
 Add an `xcf` entry to the `mcpServers` block of `~/.cursor/mcp.json` for Cursor, or `~/Library/Application Support/Claude/claude_desktop_config.json` for Claude Desktop for macOS.
