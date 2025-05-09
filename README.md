@@ -1,4 +1,4 @@
-# xcf - AI-Powered Xcode Automation
+# xcf AI-Powered Xcode Automation
 
 A simple MCP server that lets AI assistants control Xcode. Works with Cursor, VSCode and Claude Desktop.
 
