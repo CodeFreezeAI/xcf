@@ -76,28 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Setup copy button for code blocks
-    document.querySelectorAll('.code-block pre').forEach(block => {
-        const copyButton = document.createElement('button');
-        copyButton.className = 'copy-button';
-        copyButton.innerHTML = '<i class="fas fa-copy"></i>';
-        copyButton.ariaLabel = 'Copy code';
-        
-        block.parentNode.style.position = 'relative';
-        block.parentNode.appendChild(copyButton);
-        
-        copyButton.addEventListener('click', function() {
-            const code = block.textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                copyButton.innerHTML = '<i class="fas fa-check"></i>';
-                setTimeout(() => {
-                    copyButton.innerHTML = '<i class="fas fa-copy"></i>';
-                }, 2000);
-            }).catch(err => {
-                console.error('Could not copy text: ', err);
-            });
-        });
-    });
+    // NOTE: Removed the code that adds copy buttons to code blocks
+    // This functionality is now handled directly in the HTML with inline scripts
     
     // Create directory for images if they don't exist (placeholder)
     console.log('XCF.ai website loaded successfully');

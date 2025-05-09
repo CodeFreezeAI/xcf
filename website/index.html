@@ -9,6 +9,43 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .code-container {
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .checkmark {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            display: none;
+            color: #34C759; /* Apple system green color */
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            font-weight: bold;
+        }
+        .copied .checkmark {
+            display: inline;
+        }
+        .copied .copy-btn {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -43,7 +80,7 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1>Accelerate Xcode Development <span class="highlight">10x</span> with AI</h1>
+                <h1>Accelerate Xcode Development <span class="highlight">10x</span> with XCF and AI</h1>
                 <p>XCF connects your AI assistants to Xcode, providing real-time error reporting, code navigation, and project automation.</p>
                 <p><strong>Built with 100% Swift</strong> for perfect integration with the Apple development ecosystem.</p>
                 <div class="hero-buttons">
@@ -132,14 +169,12 @@
         </div>
     </section>
 
-    <section class="demo">
+    <section class="demo section-dark">
         <div class="container">
-            <div class="demo-content">
-                <h2>See XCF in Action</h2>
-                <p>Watch how XCF transforms your development workflow by connecting AI to Xcode.</p>
-            </div>
-            <div class="demo-video">
-                <iframe width="100%" height="500" src="https://www.youtube.com/embed/7KfrsZfQIIg" title="XCF Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <h2 class="text-center text-light margin-bottom-md">See XCF in Action</h2>
+            <p class="text-center text-light margin-bottom-lg">Watch how XCF transforms your development workflow by connecting AI to Xcode.</p>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/7KfrsZfQIIg" title="XCF Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             </div>
         </div>
     </section>
@@ -245,26 +280,26 @@ func processValue() {
             <div class="setup-steps">
                 <div class="setup-step">
                     <h3>1. Installation</h3>
-                    <div class="installation-options">
-                        <div class="install-option">
-                            <h4>Homebrew</h4>
-                            <pre><code>brew install xcf-ai/tools/xcf</code></pre>
-                        </div>
-                        <div class="install-option">
-                            <h4>Manual</h4>
+                    <div class="installation-container">
+                        <div class="installation-code">
+                            <button class="copy-btn" onclick="copyToClipboard(this.parentNode.querySelector('code').textContent, this.parentNode)">Copy</button>
                             <pre><code>git clone https://github.com/codefreezeai/xcf.git
 cd xcf
 xcodebuild -project xcf.xcodeproj -scheme xcf -configuration Release</code></pre>
+                            <span class="checkmark">✓</span>
                         </div>
                     </div>
                 </div>
                 <div class="setup-step">
                     <h3>2. Configure Your AI Assistant</h3>
                     <p>XCF is written in 100% Swift and integrates smoothly with the Apple ecosystem.</p>
-                    <div class="config-options">
-                        <div class="config-option">
-                            <h4>Cursor</h4>
-                            <p>Edit <code>~/.cursor/mcp.json</code>:</p>
+                    
+                    <div class="config-section">
+                        <h4>Cursor</h4>
+                        <p>Edit <code>~/.cursor/mcp.json</code>:</p>
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyToClipboard(this.parentNode.querySelector('code').textContent, this.parentNode)">Copy</button>
+                            <span class="checkmark">✓</span>
                             <pre><code>{
   "mcpServers": {
     "xcf": {
@@ -274,14 +309,24 @@ xcodebuild -project xcf.xcodeproj -scheme xcf -configuration Release</code></pre
   }
 }</code></pre>
                         </div>
-                        <div class="config-option">
-                            <h4>Claude Desktop</h4>
-                            <p>Edit <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>:</p>
+                    </div>
+                    
+                    <div class="config-section-alt">
+                        <h4>Claude Desktop</h4>
+                        <p>Edit <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>:</p>
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyToClipboard(this.parentNode.querySelector('code').textContent, this.parentNode)">Copy</button>
+                            <span class="checkmark">✓</span>
                             <pre><code>{
   "mcpServers": {
     "xcf": {
       "type": "stdio",
-      "command": "/path/to/xcf"
+      "command": "/path/to/xcf",
+      "args": [],
+      "env": {
+        "XCODE_PROJECT_FOLDER": "/path/to/project/",
+        "XCODE_PROJECT": "/path/to/project/project.xcodeproj"
+      }
     }
   }
 }</code></pre>
@@ -379,7 +424,9 @@ xcodebuild -project xcf.xcodeproj -scheme xcf -configuration Release</code></pre
                         <p>XCF's snippet tool makes code viewing simple:</p>
                         
                         <h4>Human Commands</h4>
-                        <div class="code-block">
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyToClipboard(this.parentNode.querySelector('code').textContent, this.parentNode)">Copy</button>
+                            <span class="checkmark">✓</span>
                             <pre><code># View entire file with just filename
 snippet AppDelegate.swift
 
@@ -388,12 +435,107 @@ snippet AppDelegate.swift 10 20</code></pre>
                         </div>
                         
                         <h4>Function Calls</h4>
-                        <div class="code-block">
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyToClipboard(this.parentNode.querySelector('code').textContent, this.parentNode)">Copy</button>
+                            <span class="checkmark">✓</span>
                             <pre><code># Get entire file
 mcp_xcf_snippet(filePath="AppDelegate.swift", entireFile=true)
 
 # Get specific lines
 mcp_xcf_snippet(filePath="AppDelegate.swift", startLine=10, endLine=20)</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div id="security" class="docs-section">
+                        <h3>Security Features</h3>
+                        <div>
+                            <p class="marketing-text margin-bottom-md">XCF is designed with security in mind, providing:</p>
+                            
+                            <div class="security-item">
+                                <span class="marketing-heading">Workspace protection</span>
+                                <span>Safely works with projects in your designated workspace</span>
+                            </div>
+                            
+                            <div class="security-item">
+                                <span class="marketing-heading">Boundary enforcement</span>
+                                <span>Automatically prevents access outside your workspace boundaries</span>
+                            </div>
+                            
+                            <div class="security-item">
+                                <span class="marketing-heading">Safe alternatives</span>
+                                <span>Redirects to secure options when needed</span>
+                            </div>
+                            
+                            <div class="security-item">
+                                <span class="marketing-heading">Environment controls</span>
+                                <span>Uses environment variables to define secure boundaries</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="advanced" class="docs-section">
+                        <h3>Advanced Configuration</h3>
+                        <p>For non-Cursor clients or users who want more project-level control, you can add these optional environment variables:</p>
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyToClipboard(this.parentNode.querySelector('code').textContent, this.parentNode)">Copy</button>
+                            <span class="checkmark">✓</span>
+                            <pre><code>{
+  "mcpServers": {
+    "xcf": {
+      "type": "stdio",
+      "command": "/path/to/xcf",
+      "args": [],
+      "env": {
+        "XCODE_PROJECT_FOLDER": "/path/to/project/",
+        "XCODE_PROJECT": "/path/to/project/project.xcodeproj"
+      }
+    }
+  }
+}</code></pre>
+                        </div>
+                        <p class="margin-top-sm">These environment variables let you:</p>
+                        <div>
+                            <div class="security-item">
+                                <span class="marketing-heading">Project selection</span>
+                                <span>Pre-select a specific Xcode project to work with</span>
+                            </div>
+                            
+                            <div class="security-item">
+                                <span class="marketing-heading">Security boundaries</span>
+                                <span>Define a custom workspace boundary for security</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="troubleshooting" class="docs-section">
+                        <h3>Troubleshooting</h3>
+                        <div>
+                            <p class="marketing-text margin-bottom-md">If you're having issues with XCF, check these common solutions:</p>
+                            
+                            <div class="security-item">
+                                <span class="marketing-heading">Verify installation</span>
+                                <span>Make sure XCF is correctly installed</span>
+                            </div>
+                            
+                            <div class="security-item">
+                                <span class="marketing-heading">Check configuration</span>
+                                <span>Confirm your settings are valid in the configuration file</span>
+                            </div>
+                            
+                            <div class="security-item">
+                                <span class="marketing-heading">Permission issues</span>
+                                <span>Ensure permissions are properly set for Xcode access</span>
+                            </div>
+                            
+                            <div class="security-item">
+                                <span class="marketing-heading">Environment variables</span>
+                                <span>Use the <code>env</code> command to verify your environment setup</span>
+                            </div>
+                            
+                            <div class="security-item">
+                                <span class="marketing-heading">Restart your assistant</span>
+                                <span>Sometimes a simple restart will resolve connection issues</span>
+                            </div>
                         </div>
                     </div>
                     <!-- More documentation sections would go here -->
@@ -411,7 +553,7 @@ mcp_xcf_snippet(filePath="AppDelegate.swift", startLine=10, endLine=20)</code></
                         <p>"XCF has completely transformed how I work with Xcode. The error reporting alone saves me hours of debugging time every week."</p>
                     </div>
                     <div class="testimonial-author">
-                        <img src="images/testimonial-1.jpg" alt="Developer">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=250&h=250&q=80&crop=faces&bg=white" alt="Developer" style="filter: grayscale(100%);">
                         <div class="author-info">
                             <h4>Sarah Johnson</h4>
                             <p>iOS Developer, TechStart</p>
@@ -423,7 +565,7 @@ mcp_xcf_snippet(filePath="AppDelegate.swift", startLine=10, endLine=20)</code></
                         <p>"The simplicity of the snippet tool is genius. Just type the filename and you're good to go. It's these small things that make a huge difference in workflow."</p>
                     </div>
                     <div class="testimonial-author">
-                        <img src="images/testimonial-2.jpg" alt="Developer">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=250&h=250&q=80&crop=faces&bg=white" alt="Developer" style="filter: grayscale(100%);">
                         <div class="author-info">
                             <h4>Michael Chen</h4>
                             <p>Senior Developer, AppWorks</p>
@@ -435,7 +577,7 @@ mcp_xcf_snippet(filePath="AppDelegate.swift", startLine=10, endLine=20)</code></
                         <p>"My AI assistant can now fix complex Swift errors without me having to explain every detail. XCF provides all the context it needs automatically."</p>
                     </div>
                     <div class="testimonial-author">
-                        <img src="images/testimonial-3.jpg" alt="Developer">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=250&h=250&q=80&crop=faces&bg=white" alt="Developer" style="filter: grayscale(100%);">
                         <div class="author-info">
                             <h4>Alex Rodriguez</h4>
                             <p>Lead iOS Developer, TechGiant</p>
@@ -504,5 +646,36 @@ mcp_xcf_snippet(filePath="AppDelegate.swift", startLine=10, endLine=20)</code></
     </footer>
 
     <script src="script.js"></script>
+    <script>
+    function copyToClipboard(text, container) {
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                // Handle different container structures
+                const checkmark = container.querySelector('.checkmark');
+                const copyBtn = container.querySelector('button');
+                
+                if (checkmark && copyBtn) {
+                    // Show checkmark
+                    checkmark.style.display = 'inline';
+                    copyBtn.style.display = 'none';
+                    
+                    // Reset after 2 seconds
+                    setTimeout(() => {
+                        checkmark.style.display = 'none';
+                        copyBtn.style.display = 'block';
+                    }, 2000);
+                } else {
+                    // Fallback for older structure
+                    container.classList.add('copied');
+                    setTimeout(() => {
+                        container.classList.remove('copied');
+                    }, 2000);
+                }
+            })
+            .catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+    }
+    </script>
 </body>
 </html> 
