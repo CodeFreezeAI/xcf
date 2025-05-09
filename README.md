@@ -4,7 +4,7 @@ Speed up writing Xcode apps with xcf, a dead simple MCP server written in Swift 
 
 ## 📺 Watch XCF in Action
 
-https://www.youtube.com/embed/7KfrsZfQIIg"
+https://www.youtube.com/embed/7KfrsZfQIIg
 
 ## ✨ Key Features
 - **Zero Dependencies**: Easy to install, no reliance on other MCP servers to use with Cursor
