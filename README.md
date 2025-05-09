@@ -1,5 +1,5 @@
 # XCF : XCodeFreeze : Xcode Automation with MCP and AI
-- MCP Server written in Swift
+- xcf MCP Server written in Swift
 - uses stdio
 - easy to use and install
 - To compile requires Xcode 16, compiled releases are coming soon!
