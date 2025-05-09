@@ -564,15 +564,18 @@ struct McpServer {
     ///   - endLine: The line to end extraction at
     /// - Returns: The extracted code snippet
     private static func handleCodeSnippet(filePath: String, entireFile: Bool, startLine: Int? = nil, endLine: Int? = nil) -> CallTool.Result {
-        // Validate file path
-        guard FileManager.default.fileExists(atPath: filePath) else {
-            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, "File not found"))])
+        // Resolve the file path using multiple strategies
+        let resolvedPath = CaptureSnippet.resolveFilePath(filePath)
+        
+        // Validate file path - use the resolved path
+        guard FileManager.default.fileExists(atPath: resolvedPath) else {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, "File not found. Tried searching for \(filePath) in multiple locations."))])
         }
         
         if entireFile {
-            return handleEntireFileSnippet(filePath: filePath)
+            return handleEntireFileSnippet(filePath: resolvedPath)
         } else if let startLine = startLine, let endLine = endLine {
-            return handleLineRangeSnippet(filePath: filePath, startLine: startLine, endLine: endLine)
+            return handleLineRangeSnippet(filePath: resolvedPath, startLine: startLine, endLine: endLine)
         } else {
             return CallTool.Result(content: [.text(McpConfig.missingLineParamsError)])
         }

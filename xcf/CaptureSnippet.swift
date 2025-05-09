@@ -12,8 +12,11 @@ struct CaptureSnippet {
         var snippet = ""
         let language = determineLanguage(from: filePath)
         
+        // Try to find the file using multiple strategies
+        let resolvedPath = resolveFilePath(filePath)
+        
         do {
-            let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
+            let fileContents = try String(contentsOfFile: resolvedPath, encoding: .utf8)
             
             if entireFile {
                 // If entireFile is true, return the whole file content regardless of line numbers
@@ -41,6 +44,64 @@ struct CaptureSnippet {
         }
         
         return (snippet, language)
+    }
+    
+    /// Attempts to intelligently resolve a file path using multiple strategies
+    /// - Parameter originalPath: The original path provided
+    /// - Returns: The resolved path, or the original if no resolution strategies succeed
+    static func resolveFilePath(_ originalPath: String) -> String {
+        let fileManager = FileManager.default
+        
+        // Strategy 1: Try the original path
+        if fileManager.fileExists(atPath: originalPath) {
+            return originalPath
+        }
+        
+        // Get the filename component
+        let filename = (originalPath as NSString).lastPathComponent
+        
+        // Strategy 2: Try in current working directory
+        if let currentDirectory = ProcessInfo.processInfo.environment["PWD"] {
+            let currentDirPath = (currentDirectory as NSString).appendingPathComponent(filename)
+            if fileManager.fileExists(atPath: currentDirPath) {
+                return currentDirPath
+            }
+        }
+        
+        // Strategy 3: Try in the workspace folder if defined
+        if let workspaceFolder = ProcessInfo.processInfo.environment["WORKSPACE_FOLDER_PATHS"] {
+            let workspacePath = (workspaceFolder as NSString).appendingPathComponent(filename)
+            if fileManager.fileExists(atPath: workspacePath) {
+                return workspacePath
+            }
+            
+            // Strategy 4: Search 1 level deep in workspace folder
+            if let items = try? fileManager.contentsOfDirectory(atPath: workspaceFolder) {
+                for item in items {
+                    let itemPath = (workspaceFolder as NSString).appendingPathComponent(item)
+                    let isDirectory = (try? fileManager.attributesOfItem(atPath: itemPath)[.type] as? FileAttributeType) == .typeDirectory
+                    
+                    if isDirectory {
+                        let potentialPath = (itemPath as NSString).appendingPathComponent(filename)
+                        if fileManager.fileExists(atPath: potentialPath) {
+                            return potentialPath
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Strategy 5: Try in current project directory if available
+        if let projectPath = currentProject {
+            let projectDir = (projectPath as NSString).deletingLastPathComponent
+            let projectFilePath = (projectDir as NSString).appendingPathComponent(filename)
+            if fileManager.fileExists(atPath: projectFilePath) {
+                return projectFilePath
+            }
+        }
+        
+        // If all strategies fail, return the original path
+        return originalPath
     }
     
     public static func determineLanguage(from filePath: String) -> String {

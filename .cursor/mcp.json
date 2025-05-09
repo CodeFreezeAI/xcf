@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "xcf": {
+      "type": "stdio",
+      "command": "/Users/username/xcf/xcf",
+      "args": [],
+      "env": {
+          "WORKSPACE_FOLDER_PATHS_optional": "/path/to/workspace/",
+          "XCODE_PROJECT_optional": "/path/to/project/project.xcodeproj"
+      }
+    }
+  }
+}
+
+
