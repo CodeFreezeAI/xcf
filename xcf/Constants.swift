@@ -184,7 +184,7 @@ struct McpConfig {
     static let filePathPlaceholder = "{{filePath}}"
     
     // Main app messages
-    static let welcomeMessage = "welcome to \(AppConstants.appName) in pure swift\nxcodefreeze mcp local server\ncopyright 2025 codefreeze.ai\n"
+    static let welcomeMessage = "*\(AppConstants.appName) Xcode MCP Server*\n**** 1.0.1 xfc.ai ****\n*** Copyright 2025 ***\nXCodeFreeze Automation\n***** V IX MMXXV *****\n"
     static let errorStartingServer = "Error starting MCP server: %@"
     
     // Help text
