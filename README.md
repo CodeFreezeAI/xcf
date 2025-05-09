@@ -3,8 +3,8 @@
 - uses stdio
 - easy to use and install
 - written and tested with Cursor
-- no need to install Node or NPM
-- our own filesystem MCP server is in the works!
+- for VSCode or Cursor, there is no need to install Node or NPM*
+- *Some MCP clients may require its own file system MCP Server
 - Requires Xcode 16 to compile XCF, compiled releases are coming soon!
 - Apps can be in older version of Xcode as long as your macOS version supports it
 
