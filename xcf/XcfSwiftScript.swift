@@ -181,6 +181,16 @@ class XcfSwiftScript {
             return nil
         }
         
-        return activeWorkspace.path
+        let projectPath = activeWorkspace.path
+        
+        // Only return the path if currentFolder exists and path contains currentFolder
+        if let currentFolder {
+            if let path = projectPath, path.contains(currentFolder) {
+                return path
+            }
+            return nil
+        }
+        
+        return projectPath
     }
 }
