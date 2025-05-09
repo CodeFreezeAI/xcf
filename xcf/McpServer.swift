@@ -12,7 +12,7 @@ import MCP
 /// It defines tools, resources, and prompts, and configures the MCP server with appropriate handlers.
 struct McpServer {
     // MARK: - Tool Definitions
-    
+    static var XcfScript = XcfSwiftScript.shared
     /// Tool for listing available tools
     static let listToolsTool = Tool(
         name: McpConfig.listToolsName,
@@ -379,7 +379,7 @@ struct McpServer {
             throw MCPError.invalidParams(ErrorMessages.noProjectSelected)
         }
         
-        let buildResults = XcfScripting().buildCurrentWorkspace(projectPath: currentProject, run: false)
+        let buildResults = XcfScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
         let content = Resource.Content.text(
             buildResults,
             uri: McpConfig.buildResultsResourceURI

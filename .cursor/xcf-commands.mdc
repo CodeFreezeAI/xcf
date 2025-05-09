@@ -1,0 +1,103 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# XCodeFreeze MCP Server Commands
+
+This document provides comprehensive information about using the XCodeFreeze (xcf) MCP Server in Cursor and Claude.
+
+## Overview
+
+XCodeFreeze (xcf) is an MCP (Model Context Protocol) server that allows AI assistants to interact directly with Xcode projects. This integration enables automation of various Xcode operations, including building, running, and managing projects.
+
+## Setup
+
+Add an `xcf` entry to the `mcpServers` block in your configuration file:
+
+- For Cursor: `~/.cursor/mcp.json`
+- For Claude Desktop: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "xcf": {
+      "type": "stdio",
+      "command": "/path/to/xcf"
+    }
+  }
+}
+```
+
+Replace `/path/to/xcf` with the actual path to your xcf executable.
+
+## Activation
+
+To start using xcf in your AI assistant, type:
+
+```
+use xcf
+```
+
+This activates xcf mode, allowing you to issue xcf commands.
+
+## Available Commands
+
+XCodeFreeze supports the following commands:
+
+| Command | Description |
+|---------|-------------|
+| `use xcf` | Activate xcf mode |
+| `grant` | Grant permission to use Xcode automation |
+| `show` | Show a list of open Xcode projects and workspaces |
+| `open #` | Open Xcode project or workspace by number |
+| `run` | Execute the current xcf project |
+| `build` | Build the current xcf project |
+| `current` | Display the currently selected project |
+| `env` | Show all environment variables |
+| `help` | Show this help information |
+
+## Security Features
+
+When using `xcf` with Cursor, the `WORKSPACE_FOLDER_PATHS` environment variable restricts project selection to the current workspace directory. This is a security measure to prevent potential unauthorized access to projects outside your workspace.
+
+## Using MCP Tools
+
+The following MCP tools are available when using xcf:
+
+- `xcf`: Execute an xcf action or command
+- `list`: Lists all available tools on this server
+- `snippet`: Extract code snippets from files in the current project
+- `help`: Displays help information about xcf actions and usage
+
+### Snippet Tool Usage
+
+The snippet tool allows accessing code from the current project:
+
+```
+mcp_XCodeFreeze_snippet(filePath="/path/to/file.swift", entireFile=true)
+```
+
+Or for specific line ranges:
+
+```
+mcp_XCodeFreeze_snippet(filePath="/path/to/file.swift", startLine=10, endLine=20)
+```
+
+## Example Workflow
+
+1. Activate xcf: `use xcf`
+2. Show available projects: `show`
+3. Open a specific project: `open 1`
+4. Build the project: `build`
+5. Run the project: `run`
+
+## Troubleshooting
+
+If commands don't work as expected:
+- Ensure xcf is properly installed
+- Verify the MCP server configuration in your settings
+- Check that you have granted appropriate permissions
+- Review environment variables with the `env` command
+
+For more information, refer to the xcf documentation or repository.

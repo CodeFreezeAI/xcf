@@ -1,5 +1,5 @@
 //
-//  XcodeBuildScript.swift
+//  XcodeSwiftScript.swift
 //  xcf
 //
 //  Created by Todd Bruss on 5/7/25.
@@ -8,10 +8,12 @@
 import Foundation
 import ScriptingBridge
 
-class XcfScripting {
+class XcfSwiftScript {
+    static let shared = XcfSwiftScript()
     private var files: Set<String> = []
-    
+
     func buildCurrentWorkspace(projectPath: String, run: Bool = false) -> String {
+
         // Get Xcode application instance
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
             return ErrorMessages.failedToConnectXcode
@@ -144,5 +146,41 @@ class XcfScripting {
         }
         
         return Array(paths).sorted()
+    }
+
+     // New method to get schemes
+    func getSchemes() -> [String] {
+        // Get Xcode application instance
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
+            print(ErrorMessages.failedToConnectXcode)
+            return []
+        }
+        
+        // Get the active workspace document
+        guard let activeWorkspace = xcode.activeWorkspaceDocument else {
+            print("No active workspace document.")
+            return []
+        }
+        
+        // Retrieve the schemes
+        if let schemes = activeWorkspace.schemes?() as? [XcodeScheme] {
+            return schemes.compactMap { $0.name }
+        } else {
+            print("No schemes found.")
+            return []
+        }
+    }
+    
+    func activeWorkspacePath() -> String? {
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
+            print(ErrorMessages.failedToConnectXcode)
+            return nil
+        }
+        
+        guard let activeWorkspace = xcode.activeWorkspaceDocument else {
+            return nil
+        }
+        
+        return activeWorkspace.path
     }
 }

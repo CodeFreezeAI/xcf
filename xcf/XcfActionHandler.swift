@@ -12,6 +12,7 @@ import Foundation
 /// running, and utility functions to interact with Xcode projects.
 @MainActor
 struct XcfActionHandler {
+    static var XcfScript = XcfSwiftScript.shared
     // MARK: - Action Handling
     
     /// Main entry point for handling xcf actions from the command line
@@ -65,7 +66,7 @@ struct XcfActionHandler {
     /// - Parameter ext: The file extension to look for (defaults to .xc)
     /// - Returns: An array of paths to open Xcode projects, sorted alphabetically
     public static func getSortedXcodeProjects(ext: String = Format.xcodeFileExtension) -> [String] {
-        return XcfScripting().getXcodeDocumentPaths(ext: ext)
+        return XcfScript.getXcodeDocumentPaths(ext: ext)
     }
     
     // MARK: - Project Selection
@@ -153,11 +154,10 @@ struct XcfActionHandler {
     /// - Returns: A message indicating the result of the run operation
     private static func runProject() async -> String {
         guard let currentProject else { return ErrorMessages.noProjectSelected }
-        let XcodeBuildScript = XcfScripting()
-        let buildCheckForErrors = XcodeBuildScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
+        let buildCheckForErrors = XcfScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
         
         if buildCheckForErrors.contains(SuccessMessages.success) {
-            return XcodeBuildScript.buildCurrentWorkspace(projectPath: currentProject, run: true)
+            return XcfScript.buildCurrentWorkspace(projectPath: currentProject, run: true)
         } else {
             return buildCheckForErrors
         }
@@ -167,7 +167,7 @@ struct XcfActionHandler {
     /// - Returns: A message indicating the result of the build operation
     private static func buildProject() async -> String {
         guard let currentProject else { return ErrorMessages.noProjectSelected }
-        return XcfScripting().buildCurrentWorkspace(projectPath: currentProject, run: false)
+        return XcfScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
     }
     
     // MARK: - Utility Methods

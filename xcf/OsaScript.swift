@@ -23,7 +23,7 @@ func grantAutomation() -> String {
                 end if
                 delay 0.5
             end repeat
-            x
+    
             return "Xcode Automation permission has been granted"
         end tell
     end tell

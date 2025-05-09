@@ -33,8 +33,8 @@ This activates the xcf mode, which allows you to work with Xcode projects direct
 After activating xcf with the `use xcf` command, you can use the following commands:
 
 - `grant` - Grant permission to use Xcode automation
-- `list` - Show open Xcode projects and workspaces
-- `select #` - Open an Xcode project or workspace by number
+- `show` - Show open Xcode projects and workspaces
+- `open #` - Open an Xcode project or workspace by number
 - `run` - Execute the currently selected Xcode project
 - `build` - Build the currently selected Xcode project
 - `current` - Display the currently selected project
@@ -78,8 +78,8 @@ This enables the AI to analyze specific parts of your codebase without needing t
 ### Example Workflow
 
 1. Start by activating xcf: `use xcf`
-2. Show open Xcode projects: `list`
-3. Select a project: `select 1`
+2. Show open Xcode projects: `show`
+3. Open a project: `open 1`
 4. Build the selected project: `build`
 5. Run the selected project: `run`
 
@@ -89,11 +89,7 @@ The AI can now interact with your Xcode project for automation tasks.
 
 ### Workspace Protection
 
-When using xcf with Cursor, a security feature automatically restricts project selection to the current workspace directory. This protection mechanism uses the `WORKSPACE_FOLDER_PATHS` environment variable to determine which projects are safe to access.
-
-Despite its plural name, `WORKSPACE_FOLDER_PATHS` currently represents a single workspace path. Users can manually set this environment variable, but it can only contain one workspace folder path at a time.
-
-> **Note:** The `WORKSPACE_FOLDER_PATHS` environment variable is specific to Cursor and is not used by standard VS Code. This is a Cursor-specific security enhancement that prevents access to projects outside your authorized workspace.
+When using `xcf` with Cursor, the `WORKSPACE_FOLDER_PATHS` environment variable restricts project selection to the current workspace directory. It can only contain one workspace folder path at a time and is specific to Cursor for security purposes.
 
 If you attempt to select a project outside your current workspace, you'll see a message like:
 
