@@ -1,0 +1,147 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# xcf MCP Rules
+
+## Overview
+
+xcf is an MCP (Model Context Protocol) server that allows AI assistants to interact directly with Xcode projects. This integration enables automation of various Xcode operations, including building, running, and managing projects.
+
+## Setup
+
+Add an `xcf` entry to the `mcpServers` block in your configuration file:
+
+- For Cursor: `~/.cursor/mcp.json`
+- For Claude Desktop: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "xcf": {
+      "type": "stdio",
+      "command": "/path/to/xcf"
+    }
+  }
+}
+```
+
+Replace `/path/to/xcf` with the actual path to your xcf executable.
+
+## Available Commands
+
+xcf supports the following commands:
+
+| Command | Description |
+|---------|-------------|
+| `use xcf` | Activate xcf mode |
+| `grant` | Grant permission to use Xcode automation |
+| `show` | Show a list of open Xcode projects and workspaces |
+| `open #` | Open Xcode project or workspace by number |
+| `run` | Execute the current xcf project |
+| `build` | Build the current xcf project |
+| `current` | Display the currently selected project |
+| `env` | Show all environment variables |
+| `help` | Show this help information |
+
+## Command Usage
+
+- When working with Xcode projects, start by using `use xcf` to activate the xcf mode
+- Use `show` to view available Xcode projects
+- Use `current` to verify the selected project before running commands
+- Use `open #` to select a specific project by number
+- Use `build` to compile the current project
+- Use `run` to execute the current project
+- Use `help` to see all available commands
+
+## Security
+
+- xcf can only access projects within the current workspace folder
+- The workspace location is controlled by the `WORKSPACE_FOLDER_PATHS` environment variable
+- Never attempt to override security restrictions
+
+## MCP Tools
+
+The following MCP tools are available when using xcf:
+
+- `xcf`: Execute an xcf action or command
+- `list`: Lists all available tools on this server
+- `snippet`: Extract code snippets from files in the current project
+- `help`: Displays help information about xcf actions and usage
+
+## Snippet Usage
+
+### For AI Internal Function Calls
+
+```
+mcp_xcf_snippet(filePath="/path/to/file.swift", entireFile=true)
+```
+
+Or for specific line ranges:
+
+```
+mcp_xcf_snippet(filePath="/path/to/file.swift", startLine=10, endLine=20)
+```
+
+### For Human Usage in Conversation
+
+#### Using the simple syntax (if supported by the implementation):
+
+To get an entire file:
+
+```
+snippet path/to/file.swift
+```
+
+Or for specific line ranges:
+
+```
+snippet path/to/file.swift 10 20
+```
+
+#### Using the full MCP tool syntax:
+
+To get an entire file:
+
+```
+mcp_xcf_snippet filePath="/path/to/file.swift" entireFile=true
+```
+
+To get specific lines:
+
+```
+mcp_xcf_snippet filePath="/path/to/file.swift" startLine=10 endLine=20
+```
+
+Note: Always use full paths to files when requesting snippets.
+
+## Best Practices
+
+- Use `build` to compile the current project before suggesting code changes
+- Use `run` after confirming a build was successful
+- When examining errors, analyze the build output carefully
+- When switching between projects, use `open #` with the corresponding project number
+- When using the snippet tool, always verify file paths are correct
+
+## Example Workflow
+
+1. Activate xcf: `use xcf`
+2. Show available projects: `show`
+3. Open a specific project: `open 1`
+4. Build the project: `build`
+5. Run the project: `run`
+
+## Troubleshooting
+
+If commands don't work as expected:
+- Ensure xcf is properly installed
+- Verify the MCP server configuration in your settings
+- Check that you have granted appropriate permissions
+- Review environment variables with the `env` command
+
+If the xcf MCP server doesn't appear to be working:
+1. Check that the path in the configuration file is correct
+2. Ensure the xcf executable has execution permissions
+3. Restart the AI assistant completely
+4. Check the MCP settings page for any errors
