@@ -28,30 +28,36 @@ struct Actions {
 
 // Define error messages
 struct ErrorMessages {
-    static let noProjectSelected = "Error: No project selected"
-    static let noOpenProjects = "Error: No open projects."
-    static let invalidProjectSelection = "Error: Invalid project selection format. Use 'select N' where N is the project number."
-    static let projectOutOfRange = "Error: Project number %@ is out of range. Available projects: 1-%@"
-    static let unrecognizedAction = "Houston we have a problem: %@ is not recognized."
+    // MARK: - Project Selection Errors
+    static let noProjectSelected = "No project selected yet. Use 'show' to see available projects."
+    static let noOpenProjects = "I don't see any open Xcode projects. Try opening one first."
+    static let invalidProjectSelection = "That's not a valid selection. Try 'open 1' to select the first project."
+    static let projectOutOfRange = "Project %@ doesn't exist. I only found %@ projects."
+    static let noProjectInWorkspace = "I couldn't find a project in your workspace folder."
     
-    // Xcode build errors
-    static let failedToConnectXcode = "Failed to connect to Xcode"
-    static let noWorkspaceFound = "No workspace document found"
-    static let failedToStartBuild = "Failed to start build"
-    static let failedToGetBuildResult = "Failed to get build result"
+    // MARK: - Action Errors
+    static let unrecognizedAction = "I don't understand '%@'. Try 'help' to see what I can do."
     
-    // Osascript errors
+    // MARK: - Xcode Connection Errors
+    static let failedToConnectXcode = "I couldn't connect to Xcode. Is it running?"
+    static let noWorkspaceFound = "I couldn't find a workspace document. Try opening an Xcode project first."
+    
+    // MARK: - Build Errors
+    static let failedToStartBuild = "I had trouble starting the build. Please try again."
+    static let failedToGetBuildResult = "I couldn't get the build results. Something went wrong."
+    
+    // MARK: - Osascript Errors
     static let failedToConvertOutput = "Failed to convert output data to string."
     static let failedToExecuteOsascript = "Failed to execute osascript: %@"
     static let failedToCreateAppleScript = "Failed to create AppleScript."
     static let appleScriptError = "Error: %@"
     
-    // MCP errors
+    // MARK: - MCP Errors
     static let unknownTool = "Unknown tool: %@"
     
-    // Code snippet errors
-    static let invalidLineNumbers = "Code Snippet Error: Invalid line numbers."
-    static let errorReadingFile = "Code Snippet Error reading file: %@"
+    // MARK: - Code Snippet Errors
+    static let invalidLineNumbers = "Those line numbers don't look right. Please check them."
+    static let errorReadingFile = "I had trouble reading the file: %@"
 }
 
 // Define success messages
@@ -64,7 +70,7 @@ struct SuccessMessages {
     static let pwdSuccess = "Current directory: %@"
     static let currentProject = "Current project: %@"
     static let environmentVariables = "Environment Variables: %@"
-    static let securityPreventManualSelection = "Security measures prevent manual selection this project.\nCurrent folder: %@\nSystem override: %@"
+    static let securityPreventManualSelection = "Staying safe! I've kept you in your workspace.\nYour workspace: %@\nUsing: %@"
 }
 
 // Define path constants

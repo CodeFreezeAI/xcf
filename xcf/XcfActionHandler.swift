@@ -43,11 +43,33 @@ struct XcfActionHandler {
             return listProjects()
         // Open project (formerly select)
         case let cmd where cmd.starts(with: Actions.open):
+            // Check if we have a workspace folder restriction
             if let currentFolder {
-                return String(format: SuccessMessages.securityPreventManualSelection, currentFolder, selectProject(action: action))
-            } else {
-                return selectProject(action: action)
+                // Parse the project number from the command
+                if let projectNumber = parseProjectNumber(from: action) {
+                    // Get the list of projects
+                    let xcArray = getSortedXcodeProjects()
+                    
+                    // Only apply security check if user is trying to select a specific project by number
+                    if (1...xcArray.count).contains(projectNumber) {
+                        let requestedProject = xcArray[projectNumber - 1]
+                        
+                        // Check if the requested project is within the workspace folder
+                        if isProjectInWorkspaceFolder(projectPath: requestedProject, workspaceFolder: currentFolder) {
+                            // If it's a valid selection within the workspace, allow it
+                            currentProject = requestedProject
+                            return String(format: SuccessMessages.currentProject, requestedProject)
+                        } else {
+                            // Security prevention - only override if user tried to select outside workspace
+                            let safeProject = await findSafeProjectInWorkspace(workspaceFolder: currentFolder)
+                            return String(format: SuccessMessages.securityPreventManualSelection, currentFolder, safeProject)
+                        }
+                    }
+                }
             }
+            
+            // Default case - just run the normal selection logic
+            return await selectProject(action: action)
         default:
             // No recognized action
             return String(format: ErrorMessages.unrecognizedAction, action)
@@ -93,7 +115,7 @@ struct XcfActionHandler {
     /// Selects a project based on various criteria
     /// - Parameter action: Optional action string containing a project number to select
     /// - Returns: A message indicating the result of the selection process
-    static func selectProject(action: String? = nil) -> String {
+    static func selectProject(action: String? = nil) async -> String {
         // Get the list of projects
         let xcArray = getSortedXcodeProjects()
         
@@ -102,7 +124,8 @@ struct XcfActionHandler {
             // First check if any open project contains the current folder
             for xc in xcArray {
                 if xc.contains(cf) {
-                    return(xc)
+                    currentProject = xc
+                    return String(format: SuccessMessages.currentProject, xc)
                 }
             }
             
@@ -236,5 +259,41 @@ struct XcfActionHandler {
         }
         
         return String(format: SuccessMessages.environmentVariables, envString)
+    }
+    
+    /// Checks if a project path is within the specified workspace folder
+    /// - Parameters:
+    ///   - projectPath: The path to the project
+    ///   - workspaceFolder: The workspace folder path
+    /// - Returns: True if the project is within the workspace folder
+    private static func isProjectInWorkspaceFolder(projectPath: String, workspaceFolder: String) -> Bool {
+        // Convert to URL to properly handle path comparisons
+        let projectURL = URL(fileURLWithPath: projectPath)
+        let workspaceFolderURL = URL(fileURLWithPath: workspaceFolder)
+        
+        // Check if the project path contains the workspace folder path
+        return projectURL.path.contains(workspaceFolderURL.path)
+    }
+    
+    /// Finds a safe project within the workspace folder
+    /// - Parameter workspaceFolder: The workspace folder to search in
+    /// - Returns: A safe project path within the workspace, or a message if none found
+    private static func findSafeProjectInWorkspace(workspaceFolder: String) async -> String {
+        // First try to find a match from existing open projects
+        let projects = getSortedXcodeProjects()
+        for project in projects {
+            if isProjectInWorkspaceFolder(projectPath: project, workspaceFolder: workspaceFolder) {
+                currentProject = project
+                return String(format: SuccessMessages.currentProject, project)
+            }
+        }
+        
+        // If no match found, check for project files in the workspace folder
+        if let result = checkAndSelectProjectFile(at: workspaceFolder) {
+            return result
+        }
+        
+        // No suitable project found
+        return "I couldn't find a project in your workspace. Open an Xcode project in this folder."
     }
 } 

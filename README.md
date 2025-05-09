@@ -1,111 +1,66 @@
-# xcf : XCodeFreeze : Xcode Automation with MCP and AI
-- xcf is an MCP Server written in Swift
-- uses stdio
-- easy to use and install
-- written and tested with Cursor
-- for VSCode or Cursor, there is no need to install Node or NPM*
-- Requires Xcode 16 to compile XCF, compiled releases are coming soon!
-- Apps can be in older version of Xcode as long as your macOS version supports it
-- *Some MCP clients may require its own file system MCP Server
+# xcf - AI-Powered Xcode Automation
 
-## Get Started
-Add an `xcf` entry to the `mcpServers` block of `~/.cursor/mcp.json` for Cursor, or `~/Library/Application Support/Claude/claude_desktop_config.json` for Claude Desktop for macOS.
+A simple MCP server that lets AI assistants control Xcode. Works with Cursor, VSCode and Claude Desktop.
 
-Like this:
+## Quick Setup
+
+Add xcf to your MCP config:
+
 ```json
 {
   "mcpServers": {
     "xcf": {
       "type": "stdio",
-      "command": "/Users/username/pathto/xcf"
+      "command": "/path/to/xcf"
     }
   }
 }
 ```
 
-Restart Cursor or Claude.
+Config location:
+- Cursor: `~/.cursor/mcp.json`
+- Claude Desktop: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
-## Usage
+Restart your AI tool after setup.
 
-Once the xcf MCP server is configured, you can use it in your AI assistant by typing:
+## Basic Commands
 
-```
-use xcf
-```
+Start with `use xcf` to activate. Then use:
 
-This activates the xcf mode, which allows you to work with Xcode projects directly from your AI assistant.
+- `show` - See open Xcode projects
+- `open #` - Select project by number
+- `build` - Build current project
+- `run` - Run current project
+- `current` - Show selected project
+- `help` - See all commands
 
-### Available Commands
+## MCP Tools
 
-After activating xcf with the `use xcf` command, you can use the following commands:
+- `list` - Show available tools
+- `snippet` - Get code from files
+- `help` - Show commands
 
-- `grant` - Grant permission to use Xcode automation
-- `show` - Show open Xcode projects and workspaces
-- `open #` - Open an Xcode project or workspace by number
-- `run` - Execute the currently selected Xcode project
-- `build` - Build the currently selected Xcode project
-- `current` - Display the currently selected project
-- `env` - Show all environment variables
-- `help` - Show help information
+## Using Snippets
 
-### MCP Tool Commands
-
-When using xcf through MCP in an AI assistant, you can also use these special commands:
-
-- `list` - Lists all available MCP tools provided by xcf
-- `snippet` - Extract code snippets from files in the project
-- `help` - Displays detailed help about xcf actions and usage
-
-Example output of `list`:
+The AI can access your code with:
 
 ```
-Available tools:
-- xcf: Execute an xcf action or command
-- list: Lists all available tools on this server
-- snippet: Extract code snippets from files in the current project (use entireFile=true to get full file content)
-- help: Displays help information about xcf actions and usage
+mcp_xcf_snippet(filePath="/path/to/file.swift", entireFile=true)
 ```
 
-#### Using the Snippet Tool
-
-The snippet tool allows the AI to access and analyze code files. When used by the AI assistant, it can:
-
-1. Get an entire file:
-   ```
-   mcp_XCodeFreeze_snippet(filePath="/path/to/your/file.swift", entireFile=true)
-   ```
-
-2. Get a specific line range:
-   ```
-   mcp_XCodeFreeze_snippet(filePath="/path/to/your/file.swift", startLine=10, endLine=20)
-   ```
-
-This enables the AI to analyze specific parts of your codebase without needing to see the entire project.
-
-### Example Workflow
-
-1. Start by activating xcf: `use xcf`
-2. Show open Xcode projects: `show`
-3. Open a project: `open 1`
-4. Build the selected project: `build`
-5. Run the selected project: `run`
-
-The AI can now interact with your Xcode project for automation tasks.
-
-## Security Features
-
-### Workspace Protection
-
-When using `xcf` with Cursor, the `WORKSPACE_FOLDER_PATHS` environment variable restricts project selection to the current workspace directory. It can only contain one workspace folder path at a time and is specific to Cursor for security purposes.
-
-If you attempt to select a project outside your current workspace, you'll see a message like:
-
+For specific lines:
 ```
-Security measures prevent manual selection this project.
-Current folder: /path/to/your/workspace
-System override: /path/to/your/workspace/project.xcodeproj
+mcp_xcf_snippet(filePath="/path/to/file.swift", startLine=10, endLine=20)
 ```
 
-The system will automatically select the project within your current workspace instead. This prevents potentially malicious actions and ensures your AI assistant only works with authorized projects.
+Quick access with @ shorthand:
+```
+mcp_xcf_snippet(filePath="@filename.swift", entireFile=true)
+```
 
-You can verify your current workspace path with the `env` command, which shows all environment variables including `WORKSPACE_FOLDER_PATHS`.
+## Security
+
+- Works safely with projects in your workspace 
+- Smart enough to stay within your project boundaries
+- No need to worry about access to external files
+- Use `env` command to view your workspace boundaries
