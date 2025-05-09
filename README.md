@@ -1,5 +1,5 @@
-# xcf
-XCodeFreeze MCP Xcode Automation local server
+# xcf XCodeFreeze : Xcode Automation with AI
+XCodeFreeze MCP local stdio server
 
 ## Get Started
 Add an `xcf` entry to the `mcpServers` block of `~/.cursor/mcp.json` for Cursor, or `~/Library/Application Support/Claude/claude_desktop_config.json` for Claude Desktop for macOS.
