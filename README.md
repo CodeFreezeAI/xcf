@@ -171,4 +171,4 @@ If commands fail, check:
 - Environment variables with `env`
 - Try restarting your AI assistant
 
-* Created by XCodeFreeze Automation and CodeFreeze.ai, joining forces for a better AI future. *
+Created by XCodeFreeze Automation and CodeFreeze.ai Joint forces for a Better Future in AI*
