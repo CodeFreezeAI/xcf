@@ -5,6 +5,68 @@ XCF Website: https://xcf.ai No TS, No JS, No BS!
 
 Speed up writing Xcode apps with xcf, a dead simple Swift based MCP server written in Swift specifically for Cursor. Works seamlessly with VSCode and Claude, but may require additional setup.
 
+# XCF by XCodeFreeze Automation
+## Xcode XMP Server
+
+Install XCF to your Applications Folder.
+
+Double Click the app approve the  internet download 
+
+<img width="414" alt="image" src="https://github.com/user-attachments/assets/e84c4ed5-2e17-4064-8871-b35f07af20e8" />
+
+Click the Quit button to continue. XCF is a command line Xcode MCP Server.
+
+If XCP does not display the alert to run in your AI Assistant code sign for local development:
+`codesign --force --deep --sign - /Applications/xcf.app`
+
+You call build xcf from source in Xcode. It is 100% Swift and is super easy to build locally from Xcode directly.
+
+Add xcf to your MCP configuration file:
+
+## 🔧 Quick Setup
+
+### Minimum Requirements:
+
+```json
+{
+  "mcpServers": {
+    "xcf": {
+      "type": "stdio",
+      "command": "/Applications/xcf.app/Contents/MacOS/xcf server"
+    }
+  }
+}
+```
+
+### Configuration Locations
+- **Cursor**: `~/.cursor/mcp.json`
+- **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+Restart your AI assistant after setup or refresh the tool.
+
+## Advanced Configuration
+
+For non-Cursor clients or users requiring project-level control, add these optional environment variables:
+
+```json
+{
+  "mcpServers": {
+    "xcf": {
+      "type": "stdio",
+      "command": "/Applications/xcf.app/Contents/MacOS/xcf server",
+      "env": {
+          "XCODE_PROJECT_FOLDER_optional": "/path/to/project/",
+          "XCODE_PROJECT_optional": "/path/to/project/project.xcodeproj"
+      }
+    }
+  }
+}
+```
+
+Note: Remove the "_optional" suffix from variable names in the actual config. These environment variables let you:
+- Pre-select a specific Xcode project to work with
+- Define a custom workspace boundary for security
+
 ## 📺 Watch XCF in Action
 
 https://www.youtube.com/embed/7KfrsZfQIIg
@@ -32,50 +94,8 @@ XCF (XCodeFreeze) by CodeFreeze.ai - Bringing the future of Swift development to
 
 XCF (XCodeFreeze) is simple MCP server that lets AI assistants control Xcode. Works with Cursor, VSCode and Claude Desktop.
 
-## 🔧 Quick Setup
 
-Add xcf to your MCP config:
 
-```json
-{
-  "mcpServers": {
-    "xcf": {
-      "type": "stdio",
-      "command": "/Applications/xcf.app/Contents/MacOS/xcf"
-    }
-  }
-}
-
-```
-
-Config location:
-- Cursor: `~/.cursor/mcp.json`
-- Claude Desktop: `~/Library/Application Support/Claude/claude_desktop_config.json`
-
-Restart your AI tool after setup.
-
-## 🔍 Advanced Configuration (Optional)
-
-For non-Cursor clients or users who want more project-level control, you can add these optional environment variables:
-
-```json
-{
-  "mcpServers": {
-    "xcf": {
-      "type": "stdio",
-      "command": "/Applications/xcf.app/Contents/MacOS/xcf",
-      "env": {
-          "XCODE_PROJECT_FOLDER_optional": "/path/to/project/",
-          "XCODE_PROJECT_optional": "/path/to/project/project.xcodeproj"
-      }
-    }
-  }
-}
-```
-
-Note: Remove the "_optional" suffix from variable names in the actual config. These environment variables let you:
-- Pre-select a specific Xcode project to work with
-- Define a custom workspace boundary for security
 
 ## 📋 Commands
 
