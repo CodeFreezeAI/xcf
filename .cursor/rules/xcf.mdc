@@ -18,12 +18,7 @@ Add xcf to your MCP configuration file:
   "mcpServers": {
     "xcf": {
       "type": "stdio",
-      "command": "/Users/username/xcf/xcf",
-      "args": [],
-      "env": {
-          "XCODE_PROJECT_FOLDER_optional": "/path/to/project/",
-          "XCODE_PROJECT_optional": "/path/to/project/project.xcodeproj"
-      }
+      "command": "/Applications/xcf.app/Contents/MacOS/xcf"
     }
   }
 }
@@ -44,10 +39,10 @@ For non-Cursor clients or users requiring project-level control, add these optio
   "mcpServers": {
     "xcf": {
       "type": "stdio",
-      "command": "/path/to/xcf",
+      "command": "/Applications/xcf.app/Contents/MacOS/xcf",
       "env": {
-        "WORKSPACE_FOLDER_PATHS": "/path/to/workspace/",
-        "XCODE_PROJECT": "/path/to/project.xcodeproj"
+          "XCODE_PROJECT_FOLDER_optional": "/path/to/project/",
+          "XCODE_PROJECT_optional": "/path/to/project/project.xcodeproj"
       }
     }
   }
