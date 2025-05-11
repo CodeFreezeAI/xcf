@@ -1,4 +1,4 @@
-# 🚀 XCF - The Swift Way to Supercharge Your Xcode Workflow
+# 🚀 XCF - Xcode MCP Server - The Swift way to SuperCharge your AI Workflow!
 
 XCF Website: https://xcf.ai No TS, No JS, No BS!
 
