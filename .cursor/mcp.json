@@ -2,7 +2,7 @@
   "mcpServers": {
     "xcf": {
       "type": "stdio",
-      "command": "/Applications/xcf.app/Contents/MacOS/xcf",
+      "command": "/Applications/xcf.app/Contents/MacOS/xcf server",
       "env": {
           "XCODE_PROJECT_FOLDER_optional": "/path/to/project/",
           "XCODE_PROJECT_optional": "/path/to/project/project.xcodeproj"
