@@ -1,30 +1,32 @@
 # 🚀 XCF Xcode MCP Server
 ## The Swift way to Super Charge your AI Workflow!
 
-XCF Website: https://xcf.ai
+[![XCF Website](https://img.shields.io/badge/Website-xcf.ai-blue)](https://xcf.ai) [![Pure Swift](https://img.shields.io/badge/100%25-Swift-orange)](https://github.com/codefreezeai/xcf)
 
-Speed up writing Xcode apps with xcf, a dead simple Swift based MCP server written in Swift specifically for Cursor. Works seamlessly with VSCode and Claude, but may require additional setup.
+Speed up writing Xcode apps with xcf, a dead simple Swift-based MCP server specifically designed for Cursor. Works seamlessly with VSCode and Claude, with no TypeScript, no JavaScript, no BS!
 
-## Xcode XMP Server
+## 🧰 Installation
 
-Install XCF to your Applications Folder.
+1. Download and install XCF to your Applications folder
+2. Double-click the app to approve the internet download 
+3. You'll see this alert (it's expected):
 
-Double Click the app approve the  internet download 
+<img width="414" alt="XCF Alert" src="https://github.com/user-attachments/assets/e84c4ed5-2e17-4064-8871-b35f07af20e8" />
 
-<img width="414" alt="image" src="https://github.com/user-attachments/assets/e84c4ed5-2e17-4064-8871-b35f07af20e8" />
+4. Click the "I Understand, Quit" button - XCF is a command-line MCP server
 
-Click the Quit button to continue. XCF is a command line Xcode MCP Server.
+> 💡 **Troubleshooting:** If XCF doesn't display the alert, run this command:
+> ```bash
+> codesign --force --deep --sign - /Applications/xcf.app
+> ```
 
-If XCP does not display the alert to run in your AI Assistant code sign for local development:
-`codesign --force --deep --sign - /Applications/xcf.app`
-
-You call build xcf from source in Xcode. It is 100% Swift and is super easy to build locally from Xcode directly.
-
-Add xcf to your MCP configuration file:
+You can also build xcf from source using Xcode. It's 100% Swift and easy to build locally.
 
 ## 🔧 Quick Setup
 
 ### Minimum Requirements:
+
+Add xcf to your MCP configuration file:
 
 ```json
 {
@@ -41,11 +43,11 @@ Add xcf to your MCP configuration file:
 - **Cursor**: `~/.cursor/mcp.json`
 - **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
-Restart your AI assistant after setup or refresh the tool.
+⚠️ **Important:** Restart your AI assistant after setup or refresh the tool.
 
-## Advanced Configuration
+## ⚙️ Advanced Configuration
 
-For non-Cursor clients or users requiring project-level control, add these optional environment variables:
+For non-Cursor clients or users requiring project-level control:
 
 ```json
 {
@@ -54,49 +56,31 @@ For non-Cursor clients or users requiring project-level control, add these optio
       "type": "stdio",
       "command": "/Applications/xcf.app/Contents/MacOS/xcf server",
       "env": {
-          "XCODE_PROJECT_FOLDER_optional": "/path/to/project/",
-          "XCODE_PROJECT_optional": "/path/to/project/project.xcodeproj"
+          "XCODE_PROJECT_FOLDER": "/path/to/project/",
+          "XCODE_PROJECT": "/path/to/project/project.xcodeproj"
       }
     }
   }
 }
 ```
 
-Note: Remove the "_optional" suffix from variable names in the actual config. These environment variables let you:
+These environment variables let you:
 - Pre-select a specific Xcode project to work with
 - Define a custom workspace boundary for security
 
-## 📺 Watch XCF in Action
-
-https://www.youtube.com/embed/7KfrsZfQIIg
-
 ## ✨ Key Features
-- **Zero Dependencies**: Easy to install, no reliance on other MCP servers to use with Cursor
-- **Automatic Project Detection**: Auto-selects your Xcode project so you can start coding immediately
-- **Real-time Error Handling**: `xcf build` or `xcf run` sends errors and warnings from Xcode directly to your AI IDE
-- **AI-Powered Fixes**: Let Claude fix bugs and mistakes during your Vibe coding sessions
-- **Intuitive Commands**: Simple, developer-friendly command structure for maximum productivity
+
+- **Zero Dependencies:** Easy to install, no reliance on other MCP servers
+- **Automatic Project Detection:** Auto-selects your Xcode project so you can start coding immediately
+- **Real-time Error Handling:** `xcf build` or `xcf run` sends errors and warnings from Xcode directly to your AI IDE
+- **AI-Powered Fixes:** Let Claude fix bugs and mistakes during your coding sessions
+- **Intuitive Commands:** Simple, developer-friendly command structure for maximum productivity
 
 ## 🛠️ Perfect for Swift Developers
+
 The tool is designed by Swift developers, for Swift developers. Commands like `build`, `run`, and `show` make the workflow intuitive and natural.
 
-## 🤝 Open Source Community
-Swift Engineers are welcome to contribute! Help us make xcf even better.
-
-## 💯 Pure Swift, Purely Open
-100% Swift. 100% Open Source.
-https://github.com/codefreezeai/xcf
-
-XCF (XCodeFreeze) by CodeFreeze.ai - Bringing the future of Swift development to your fingertips!
-
-# 📚 xcf Xcode MCP Server
-
-XCF (XCodeFreeze) is simple MCP server that lets AI assistants control Xcode. Works with Cursor, VSCode and Claude Desktop.
-
-
-
-
-## 📋 Commands
+## 📋 Commands Reference
 
 | Command | Description |
 |---------|-------------|
@@ -109,7 +93,7 @@ XCF (XCodeFreeze) is simple MCP server that lets AI assistants control Xcode. Wo
 | `env` | Show environment variables |
 | `help` | Display all available commands |
 
-## 🛠️ MCP Tools
+## 🧩 MCP Tools
 
 ### Function-Based Tools
 - `mcp_xcf_xcf`: Execute xcf actions/commands
@@ -133,7 +117,7 @@ mcp_xcf_snippet(filePath="/full/path/to/file.swift", startLine=10, endLine=20)
 
 ### For Human Commands
 
-xcf now supports simplified, user-friendly snippet commands:
+xcf supports simplified, user-friendly snippet commands:
 
 To get an entire file, just use the filename:
 ```
@@ -142,7 +126,7 @@ snippet filename.swift
 
 No need for full paths or additional parameters - xcf will intelligently find and display the complete file contents.
 
-For specific line ranges (still available but typically not needed):
+For specific line ranges:
 ```
 snippet /full/path/to/file.swift 10 20
 ```
@@ -162,8 +146,6 @@ This means you can usually just use the filename without any path:
 snippet Constants.swift
 ```
 
-The simplified syntax makes code exploration much faster and more intuitive during conversations with your AI assistant.
-
 ## 🔒 Security Features
 
 - Safely works with projects in your designated workspace
@@ -180,6 +162,10 @@ The simplified syntax makes code exploration much faster and more intuitive duri
 4. `build` - Build the project
 5. `run` - Run the project
 
+## 📺 Demo
+
+Watch XCF in action: [YouTube Demo](https://www.youtube.com/embed/7KfrsZfQIIg)
+
 ## ❓ Troubleshooting
 
 If commands fail, check:
@@ -190,4 +176,15 @@ If commands fail, check:
 - Environment variables with `env`
 - Try restarting your AI assistant
 
-Created by XCodeFreeze Automation and CodeFreeze.ai Joined Forces for a Better Future in AI
+## 🤝 Open Source Community
+
+Swift Engineers are welcome to contribute! Help us make xcf even better.
+
+## 💯 Pure Swift, Purely Open
+
+100% Swift. 100% Open Source.  
+[GitHub Repository](https://github.com/codefreezeai/xcf)
+
+---
+
+Created by XCodeFreeze Automation and CodeFreeze.ai - Bringing the future of Swift development to your fingertips!
