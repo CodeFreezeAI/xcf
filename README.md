@@ -1,4 +1,4 @@
-# 🚀 XCF - Xcode MCP Server
+# 🚀 XCF Xcode MCP Server
 ## The Swift way to Super Charge your AI Workflow!
 
 XCF Website: https://xcf.ai No TS, No JS, No BS!
@@ -170,3 +170,5 @@ If commands fail, check:
 - Permissions are properly set
 - Environment variables with `env`
 - Try restarting your AI assistant
+
+* Created by XCodeFreeze Automation and CodeFreeze.ai, joining forces for a better AI future. *
