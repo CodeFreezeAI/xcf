@@ -2,7 +2,7 @@
 
 XCF Website: https://xcf.ai No TS, No JS, No BS!
 
-Speed up writing Xcode apps with xcf, a dead simple MCP server written in Swift specifically for Cursor. Works seamlessly with VSCode and Claude, but may require additional setup.
+Speed up writing Xcode apps with xcf, a dead simple Swift based MCP server written in Swift specifically for Cursor. Works seamlessly with VSCode and Claude, but may require additional setup.
 
 ## 📺 Watch XCF in Action
 
