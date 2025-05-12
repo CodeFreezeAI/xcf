@@ -11,7 +11,7 @@ Speed up writing Xcode apps with xcf, a dead simple Swift-based MCP server speci
 
 ### Installation Steps
 
-1. Download the XCF application.
+1. Download the XCF application and drag it to your /Applications folder.
 2. Launch the application to approve the internet download.
 
 <img width="372" alt="Screenshot 2025-05-11 at 9 15 35 PM" src="https://github.com/user-attachments/assets/da8fe321-7292-4985-a08e-c07ed2f9be59" />
