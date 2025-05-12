@@ -1,0 +1,114 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# XCF User Guide
+
+## Overview
+XCF is a command-line tool for managing, building, and running Xcode projects through automation. It provides a streamlined interface for common Xcode operations without needing to open the Xcode UI.
+
+## Installation
+*Note: Installation details will depend on your specific setup.*
+
+## Getting Started
+
+### Activating XCF
+```
+xcf use xcf
+```
+This command activates XCF mode and prepares the system for Xcode automation. A successful activation will display "All xcf systems go!"
+
+### Granting Permissions
+```
+xcf grant
+```
+This command requests and grants permission to use Xcode automation features. This is a required step for XCF to interact with Xcode.
+
+## Project Management
+
+### Listing Available Projects
+```
+xcf show
+```
+This command displays a numbered list of all open Xcode projects and workspaces.
+
+Example output:
+```
+1. /Users/toddbruss/Documents/GitHub/xcf/xcf.xcodeproj
+```
+
+### Opening Projects
+```
+xcf open #
+```
+Replace `#` with the number of the project from the `show` command to open that specific project or workspace.
+
+### Viewing Current Project
+```
+xcf current
+```
+Displays the path to the currently selected Xcode project.
+
+Example output:
+```
+Current project: /Users/toddbruss/Documents/GitHub/xcf/xcf.xcodeproj
+```
+
+## Build and Run Operations
+
+### Building the Project
+```
+xcf build
+```
+Builds the current Xcode project. A successful build will display "🐦📜 Built successfully".
+
+### Running the Project
+```
+xcf run
+```
+Executes the current Xcode project after building. A successful run will display "🐦📜 Ran successfully".
+
+## System Information
+
+### Environment Variables
+```
+xcf env
+```
+Shows all environment variables currently available to the XCF process. This is useful for debugging and understanding the execution context.
+
+## Help and Documentation
+
+### Getting Help
+```
+xcf help
+```
+Displays a list of all available XCF actions and their brief descriptions.
+
+## Workflow Examples
+
+### Typical Development Workflow
+
+1. Activate XCF: `xcf use xcf`
+2. Grant permissions: `xcf grant`
+3. List projects: `xcf show`
+4. Select project (if needed): `xcf open 1`
+5. Build the project: `xcf build`
+6. Run the project: `xcf run`
+
+### Automation Tips
+
+XCF can be integrated into scripts and automation workflows to streamline Xcode project management, continuous integration, and testing procedures.
+
+## Troubleshooting
+
+If you encounter issues with XCF:
+
+1. Ensure Xcode is properly installed
+2. Verify permissions are granted with `xcf grant`
+3. Check your environment variables with `xcf env`
+4. Confirm the correct project is selected with `xcf current`
+
+## Conclusion
+
+XCF provides a powerful command-line interface to Xcode operations, enabling faster development workflows and better integration with other tools and scripts.
