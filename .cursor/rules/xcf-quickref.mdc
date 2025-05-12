@@ -1,5 +1,77 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+# XCF Quick Reference
+
+A concise reference guide for the XCF tool commands.
+
+## Command Usage
+
+After running `use xcf` to activate the tool, you can use simplified commands without the xcf prefix:
+
+```
+// Initial activation
+use xcf
+
+// Then use simplified commands
+current     // instead of xcf current
+build       // instead of xcf build
+run         // instead of xcf run
+env         // instead of xcf env
+```
+
+## Core Commands
+
+| Command | Purpose | Example | Success Output |
+|---------|---------|---------|---------------|
+| `use xcf` | Activate xcf | `use xcf` | All xcf systems go! |
+| `grant` | Grant permissions | `grant` | Xcode Automation permission has been granted |
+| `show` | List projects | `show` | 1. /path/to/project.xcodeproj |
+| `open #` | Select project | `open 1` | [No output, selects project] |
+| `current` | Show current project | `current` | Current project: /path/to/project.xcodeproj |
+| `build` | Build project | `build` | 🐦📜 Built successfully |
+| `run` | Run project | `run` | 🐦📜 Ran successfully |
+| `env` | Show environment | `env` | Environment Variables: [list of variables] |
+| `help` | Show help | `help` | [Lists all commands] |
+
+## MCP Tool Functions
+
+| Function | Parameters | Example |
+|----------|------------|---------|
+| `mcp_xcf_xcf` | action | `mcp_xcf_xcf(action="build")` |
+| `mcp_xcf_list` | random_string | `mcp_xcf_list(random_string="list")` |
+| `mcp_xcf_help` | random_string | `mcp_xcf_help(random_string="help")` |
+| `mcp_xcf_snippet` | filePath, entireFile, startLine, endLine | `mcp_xcf_snippet(filePath="file.swift", entireFile=true)` |
+
+## Snippet Tool Usage
+
+### Full File
+```
+mcp_xcf_snippet(filePath="file.swift", entireFile=true)
+```
+
+### Line Range
+```
+mcp_xcf_snippet(filePath="file.swift", startLine=10, endLine=20)
+```
+
+## Common Workflows
+
+### Basic Project Workflow
+```
+use xcf
+grant
+show
+open 1
+build
+run
+```
+
+### Examining Code
+```
+use xcf
+current
+mcp_xcf_snippet(filePath="Main.swift", entireFile=true)
+```
