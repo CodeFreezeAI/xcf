@@ -1,88 +1,17 @@
 //
-//  CodeSnippets.swift
+//  FileFinder.swift
 //  xcf
 //
-//  Created by Todd Bruss on 5/6/25.
+//  Created by Todd Bruss on 5/9/25.
 //
 
 import Foundation
 
-/// A utility struct that provides functionality for capturing code snippets from files.
-/// This struct offers methods to extract specific line ranges from source code files,
-/// resolve file paths through various strategies, and determine the programming language
-/// based on file extensions.
-struct CaptureSnippet {
-    /// Extracts a code snippet from a file at the specified line range.
-    ///
-    /// This function attempts to locate the file using multiple resolution strategies,
-    /// then extracts either the specified line range or the entire file content.
-    /// It also determines the programming language based on the file extension.
-    ///
-    /// - Parameters:
-    ///   - filePath: The path to the source code file
-    ///   - startLine: The first line to include in the snippet (1-indexed)
-    ///   - endLine: The last line to include in the snippet (1-indexed)
-    ///   - entireFile: If true, returns the entire file content regardless of line numbers
-    /// - Returns: A tuple containing (snippet text with any warnings, detected language)
-    static func getCodeSnippet(filePath: String, startLine: Int, endLine: Int, entireFile: Bool = false) -> (String, String) {
-        var snippet = ""
-        let language = FileFinder.determineLanguage(from: filePath)
-        
-        // Try to find the file using multiple strategies
-        let (resolvedPath, warning) = FileFinder.resolveFilePath(filePath)
-        
-        // If we got a warning about duplicate files, prepend it to the snippet
-        var warningMessage = ""
-        if !warning.isEmpty {
-            warningMessage = warning + Format.newLine + Format.newLine
-        }
-        
-        do {
-            let fileContents = try String(contentsOfFile: resolvedPath, encoding: .utf8)
-            
-            if entireFile {
-                // If entireFile is true, return the whole file content regardless of line numbers
-                return (warningMessage + fileContents, language)
-            }
-            
-            let lines = fileContents.components(separatedBy: Format.newlinesCharSet())
-            
-            // Validate line numbers
-            if startLine < 1 || endLine > lines.count || endLine < startLine {
-                return (warningMessage + ErrorMessages.invalidLineNumbers, language)
-            }
-            
-            // Extract the snippet
-            for i in startLine...min(endLine, lines.count) {
-                if i > startLine {
-                    snippet += Format.newLine
-                }
-                if i-1 < lines.count {
-                    snippet += lines[i-1]
-                }
-            }
-        } catch {
-            return (String(format: ErrorMessages.errorReadingFile, error.localizedDescription), language)
-        }
-        
-        return (warningMessage + snippet, language)
-    }
-    
-    /// Attempts to intelligently resolve a file path using multiple strategies.
-    ///
-    /// This method employs a series of progressive strategies to locate a file:
-    /// 1. First tries the exact path as provided
-    /// 2. Resolves relative paths using the current working directory
-    /// 3. Searches in the current project directory
-    /// 4. Searches recursively in the workspace, with limited depth
-    /// 5. As a last resort, performs a fuzzy search for similar filenames
-    ///
-    /// If multiple matching files are found, returns the first match with a warning.
-    ///
-    /// - Parameter originalPath: The original file path provided by the user
-    /// - Returns: A tuple containing (resolvedPath, warningMessage) where:
-    ///   - resolvedPath: The successfully resolved path, or the original if no match found
-    ///   - warningMessage: Any warnings about duplicate files or similar matches found
+/// A utility class to find files in the workspace using multiple strategies.
+struct FileFinder {
+    /// Attempts to intelligently resolve a file path using multiple strategies
+    /// - Parameter originalPath: The original path provided
+    /// - Returns: A tuple containing (resolvedPath, warningMessage) where resolvedPath is the resolved path or original if no strategies succeed, and warningMessage contains any warnings about duplicate files
     static func resolveFilePath(_ originalPath: String) -> (String, String) {
         let fileManager = FileManager.default
         var duplicates: [String] = []
@@ -170,19 +99,13 @@ struct CaptureSnippet {
         return (originalPath, "")
     }
     
-    /// Recursively searches a directory structure for files matching the target filename.
-    ///
-    /// This method traverses the directory tree up to a specified maximum depth,
-    /// collecting all occurrences of the target filename along the way. It uses
-    /// a depth-first search approach and guards against excessive recursion with
-    /// the maxDepth parameter.
-    /// 
+    /// Search recursively in a directory for a file with the given name
     /// - Parameters:
-    ///   - directory: The root directory to begin the search
-    ///   - filename: The target filename to search for (without path)
-    ///   - currentDepth: The current recursive depth (used internally, defaults to 0)
-    ///   - maxDepth: The maximum depth to recurse into the directory tree
-    ///   - duplicates: An array that collects all matching file paths found
+    ///   - directory: The directory to search in
+    ///   - filename: The filename to search for
+    ///   - currentDepth: The current depth of recursion
+    ///   - maxDepth: The maximum depth to search
+    ///   - duplicates: Array to collect duplicate files found
     private static func searchRecursively(in directory: String, forFile filename: String, currentDepth: Int = 0, maxDepth: Int, duplicates: inout [String]) {
         guard currentDepth <= maxDepth else { return }
         
@@ -205,19 +128,11 @@ struct CaptureSnippet {
         }
     }
     
-    /// Finds the file with the most similar name to the target filename in a directory.
-    ///
-    /// When an exact filename match cannot be found, this method attempts to locate files
-    /// with similar names using string similarity algorithms (Levenshtein distance). This
-    /// provides a "fuzzy matching" capability that can help recover from minor typos or
-    /// naming differences in file references.
-    ///
+    /// Find a file with a similar name to the given filename in the directory
     /// - Parameters:
-    ///   - filename: The target filename to find similar matches for
-    ///   - directory: The directory to search in (including subdirectories)
-    /// - Returns: A tuple containing:
-    ///   - The path to the most similar filename found (or nil if no suitable match)
-    ///   - The similarity score (0.0-1.0) where 1.0 represents an exact match
+    ///   - filename: The filename to find similar matches for
+    ///   - directory: The directory to search in
+    /// - Returns: A tuple containing the path to the most similar file and its similarity score (0-1)
     private static func findSimilarFilename(_ filename: String, in directory: String) -> (String?, Double) {
         var bestMatch: String? = nil
         var bestScore = 0.0
@@ -250,17 +165,11 @@ struct CaptureSnippet {
         return (bestMatch, bestScore)
     }
     
-    /// Calculates the similarity between two strings using the Levenshtein distance algorithm.
-    ///
-    /// The Levenshtein distance measures the minimum number of single-character edits
-    /// (insertions, deletions, or substitutions) required to change one string into another.
-    /// This implementation normalizes the result to a similarity score between 0.0 and 1.0,
-    /// where 1.0 represents identical strings and 0.0 represents completely different strings.
-    ///
+    /// Calculate string similarity using Levenshtein distance
     /// - Parameters:
-    ///   - a: The first string to compare
-    ///   - b: The second string to compare
-    /// - Returns: A normalized similarity score between 0.0 and 1.0
+    ///   - a: First string
+    ///   - b: Second string
+    /// - Returns: Similarity score between 0 and 1, where 1 is exact match
     private static func calculateStringSimilarity(_ a: String, _ b: String) -> Double {
         let a = Array(a.lowercased())
         let b = Array(b.lowercased())
@@ -301,14 +210,9 @@ struct CaptureSnippet {
         return 1.0 - (distance / Double(maxLen))
     }
     
-    /// Determines the programming language based on the file extension
-    /// 
-    /// This function examines the file extension and maps it to a language
-    /// identifier string that can be used for syntax highlighting or other
-    /// language-specific processing.
-    ///
+    /// Determines the language of a file based on its extension
     /// - Parameter filePath: The path to the file
-    /// - Returns: A string identifier for the detected programming language
+    /// - Returns: A string indicating the language of the file
     public static func determineLanguage(from filePath: String) -> String {
         let fileExtension = (filePath as NSString).pathExtension.lowercased()
         
@@ -339,4 +243,4 @@ struct CaptureSnippet {
             return "text"
         }
     }
-}
+} 

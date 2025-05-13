@@ -1,5 +1,5 @@
 {
-  "originHash" : "0bf417fd79d33a52ec3432f171c6a1f84ce5ef86d96adf4b24a60858943a49f6",
+  "originHash" : "9ec1c89ea374275bf540fe00ef9934daf5436fdb30676dc998e5bb9f932bc7e6",
   "pins" : [
     {
       "identity" : "eventsource",
@@ -29,12 +29,30 @@
       }
     },
     {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-syntax.git",
+      "state" : {
+        "revision" : "f99ae8aa18f0cf0d53481901f88a0991dc3bd4a2",
+        "version" : "601.0.1"
+      }
+    },
+    {
       "identity" : "swift-system",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-system.git",
       "state" : {
         "revision" : "a34201439c74b53f0fd71ef11741af7e7caf01e1",
         "version" : "1.4.2"
+      }
+    },
+    {
+      "identity" : "xcf-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/codefreezeai/xcf-swift",
+      "state" : {
+        "branch" : "main",
+        "revision" : "914bc702121ced89ea66f5170cdaeaca79ac88c4"
       }
     }
   ],

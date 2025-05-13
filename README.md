@@ -107,30 +107,96 @@ xcf supports simplified, user-friendly snippet commands:
 
 To get an entire file, just use the filename:
 ```
-snippet filename.swift
+xcf snippet filename.swift
 ```
 
-No need for full paths or additional parameters - xcf will intelligently find and display the complete file contents.
+No need for full paths in many cases - xcf will intelligently find and display the complete file contents.
 
 For specific line ranges:
 ```
-snippet /full/path/to/file.swift 10 20
+xcf snippet filename.swift 10 20
+```
+
+### For AI Assistants
+
+When using xcf through MCP tools, use this syntax:
+
+```
+mcp_xcf_snippet filePath="filename.swift" entireFile=true
+```
+
+For specific line ranges:
+```
+mcp_xcf_snippet filePath="filename.swift" startLine=10 endLine=20
 ```
 
 ### Smart Path Resolution
 
 When a file isn't found at the exact path, xcf will intelligently search for it in:
 
-1. The current working directory
-2. The workspace folder specified in the environment
-3. Subdirectories (one level deep) in the workspace
-4. The current project directory
+1. First tries the exact path provided
+2. Resolves relative paths using the current working directory
+3. Searches in the current project directory and one level up
+4. Searches in the workspace folder defined by WORKSPACE_FOLDER_PATHS
+5. Searches recursively in workspace folders with limited depth
+6. As a last resort, performs a fuzzy search for similar filenames
 
 This means you can usually just use the filename without any path:
 
 ```
-snippet Constants.swift
+xcf snippet Constants.swift    // For humans
 ```
+
+Or for AI assistants:
+
+```
+mcp_xcf_snippet filePath="Constants.swift" entireFile=true
+```
+
+## 🔍 Swift Code Analysis
+
+### For Human Commands
+
+Analyze an entire Swift file for potential issues:
+```
+xcf analyze filename.swift
+```
+
+Or use the shorthand version:
+```
+xcf lz filename.swift
+```
+
+For specific line ranges:
+```
+xcf analyze filename.swift --startLine 10 --endLine 50
+```
+
+### For AI Assistants
+
+When using xcf through MCP tools, use this syntax:
+
+```
+mcp_xcf_analyzer filePath="filename.swift" entireFile=true
+```
+
+Or use the shorthand version:
+```
+mcp_xcf_xcf action="lz filename.swift"
+```
+
+For specific line ranges:
+```
+mcp_xcf_analyzer filePath="filename.swift" startLine=10 endLine=50
+```
+
+The analysis identifies issues like:
+- Code style and formatting problems
+- Functions with high complexity
+- Unused variables and symbols
+- Magic numbers
+- Long methods
+- And more
 
 ## 🧩 MCP Tools
 
@@ -138,6 +204,7 @@ snippet Constants.swift
 - `mcp_xcf_xcf`: Execute xcf actions/commands
 - `mcp_xcf_list`: Show all available tools
 - `mcp_xcf_snippet`: Access file contents
+- `mcp_xcf_analyzer`: Analyze Swift code for potential issues
 - `mcp_xcf_help`: Get help information
 
 ### For AI Function Calls
@@ -152,6 +219,16 @@ For specific line ranges:
 mcp_xcf_snippet(filePath="/full/path/to/file.swift", startLine=10, endLine=20)
 ```
 
+To analyze an entire file:
+```
+mcp_xcf_analyzer(filePath="/full/path/to/file.swift", entireFile=true)
+```
+
+For specific line ranges:
+```
+mcp_xcf_analyzer(filePath="/full/path/to/file.swift", startLine=10, endLine=50)
+```
+
 ## 🔒 Security Features
 
 - Safely works with projects in your designated workspace
@@ -161,12 +238,33 @@ mcp_xcf_snippet(filePath="/full/path/to/file.swift", startLine=10, endLine=20)
 
 ## 🔄 Workflow Examples
 
-### Basic Workflow
-1. `use xcf` - Activate the tool
-2. `show` - See available projects
-3. `open #` - Select a project 
-4. `build` - Build the project
-5. `run` - Run the project
+### Basic Workflow (For Humans)
+1. `xcf use xcf` - Activate the tool
+2. `xcf show` - See available projects
+3. `xcf open 1` - Select a project 
+4. `xcf build` - Build the project
+5. `xcf run` - Run the project
+
+### Code Analysis Workflow (For Humans)
+1. `xcf use xcf` - Activate the tool
+2. `xcf current` - Check current project
+3. `xcf snippet filename.swift` - Examine code
+4. `xcf lz filename.swift` - Analyze code
+5. `xcf build` - Build after fixing issues
+
+### Basic Workflow (For AI Assistants)
+1. `mcp_xcf_xcf action="use xcf"` - Activate the tool
+2. `mcp_xcf_xcf action="show"` - See available projects
+3. `mcp_xcf_xcf action="open 1"` - Select a project 
+4. `mcp_xcf_xcf action="build"` - Build the project
+5. `mcp_xcf_xcf action="run"` - Run the project
+
+### Code Analysis Workflow (For AI Assistants)
+1. `mcp_xcf_xcf action="use xcf"` - Activate the tool
+2. `mcp_xcf_xcf action="current"` - Check current project
+3. `mcp_xcf_snippet filePath="filename.swift" entireFile=true` - Examine code
+4. `mcp_xcf_analyzer filePath="filename.swift" entireFile=true` - Analyze code
+5. `mcp_xcf_xcf action="build"` - Build after fixing issues
 
 ## 📺 Demo
 

@@ -19,6 +19,7 @@ use xcf
 current     // instead of xcf current
 build       // instead of xcf build
 run         // instead of xcf run
+lz          // instead of xcf lz (code analyzer)
 env         // instead of xcf env
 pwd         // instead of xcf pwd
 ```
@@ -34,6 +35,8 @@ pwd         // instead of xcf pwd
 | `current` | Show current project | `current` | Current project: /path/to/project.xcodeproj |
 | `build` | Build project | `build` | 🐦📜 Built successfully |
 | `run` | Run project | `run` | 🐦📜 Ran successfully |
+| `analyze` | Analyze Swift code | `analyze file.swift` | # Swift Code Analysis Report... |
+| `lz` | Shorthand for analyze | `lz file.swift` | # Swift Code Analysis Report... |
 | `env` | Show environment | `env` | Environment Variables: [list of variables] |
 | `pwd` | Show current folder | `pwd` | Current folder: /path/to/folder |
 | `help` | Show help | `help` | [Lists all commands] |
@@ -46,6 +49,7 @@ pwd         // instead of xcf pwd
 | `mcp_xcf_list` | random_string | `mcp_xcf_list(random_string="list")` |
 | `mcp_xcf_help` | random_string | `mcp_xcf_help(random_string="help")` |
 | `mcp_xcf_snippet` | filePath, entireFile, startLine, endLine | `mcp_xcf_snippet(filePath="file.swift", entireFile=true)` |
+| `mcp_xcf_analyzer` | filePath, entireFile, startLine, endLine | `mcp_xcf_analyzer(filePath="file.swift", entireFile=true)` |
 
 ## Snippet Tool Usage
 
@@ -57,6 +61,31 @@ mcp_xcf_snippet(filePath="file.swift", entireFile=true)
 ### Line Range
 ```
 mcp_xcf_snippet(filePath="file.swift", startLine=10, endLine=20)
+```
+
+### Human Command
+```
+mcp_xcf_snippet filePath="file.swift" entireFile=true     // Entire file
+mcp_xcf_snippet filePath="file.swift" startLine=10 endLine=20     // Line range
+```
+
+## Analyzer Tool Usage
+
+### Full File Analysis
+```
+mcp_xcf_analyzer(filePath="file.swift", entireFile=true)
+```
+
+### Line Range Analysis
+```
+mcp_xcf_analyzer(filePath="file.swift", startLine=10, endLine=20)
+```
+
+### Human Command
+```
+mcp_xcf_analyzer filePath="file.swift" entireFile=true           // Entire file
+mcp_xcf_xcf action="lz file.swift"                               // Shorthand (entire file)
+mcp_xcf_analyzer filePath="file.swift" startLine=10 endLine=20   // Line range
 ```
 
 ## Common Workflows
@@ -71,9 +100,10 @@ build
 run
 ```
 
-### Examining Code
+### Code Analysis Workflow
 ```
-use xcf
-current
-mcp_xcf_snippet(filePath="Main.swift", entireFile=true)
+mcp_xcf_xcf action="use xcf"
+mcp_xcf_xcf action="current"
+mcp_xcf_snippet filePath="Main.swift" entireFile=true
+mcp_xcf_analyzer filePath="Main.swift" entireFile=true
 ```

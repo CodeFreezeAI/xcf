@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA284A9B2DD2CBCE00920DB6 /* xcf-swift in Frameworks */ = {isa = PBXBuildFile; productRef = EA284A9A2DD2CBCE00920DB6 /* xcf-swift */; };
 		EA8D403E2DD0618900464A89 /* MCP in Frameworks */ = {isa = PBXBuildFile; productRef = EA8D403D2DD0618900464A89 /* MCP */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA284A9B2DD2CBCE00920DB6 /* xcf-swift in Frameworks */,
 				EA8D403E2DD0618900464A89 /* MCP in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -71,6 +73,7 @@
 			name = xcf;
 			packageProductDependencies = (
 				EA8D403D2DD0618900464A89 /* MCP */,
+				EA284A9A2DD2CBCE00920DB6 /* xcf-swift */,
 			);
 			productName = xcf;
 			productReference = EA8D401C2DD0533700464A89 /* xcf.app */;
@@ -102,6 +105,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				EA8D403C2DD0618900464A89 /* XCRemoteSwiftPackageReference "swift-sdk" */,
+				EA284A992DD2CBCE00920DB6 /* XCRemoteSwiftPackageReference "xcf-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EA8D401D2DD0533700464A89 /* Products */;
@@ -340,6 +344,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		EA284A992DD2CBCE00920DB6 /* XCRemoteSwiftPackageReference "xcf-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/codefreezeai/xcf-swift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		EA8D403C2DD0618900464A89 /* XCRemoteSwiftPackageReference "swift-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/modelcontextprotocol/swift-sdk.git";
@@ -351,6 +363,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		EA284A9A2DD2CBCE00920DB6 /* xcf-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA284A992DD2CBCE00920DB6 /* XCRemoteSwiftPackageReference "xcf-swift" */;
+			productName = "xcf-swift";
+		};
 		EA8D403D2DD0618900464A89 /* MCP */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = EA8D403C2DD0618900464A89 /* XCRemoteSwiftPackageReference "swift-sdk" */;

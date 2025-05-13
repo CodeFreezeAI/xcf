@@ -40,6 +40,10 @@ struct XcfActionHandler {
         case Actions.pwd, Actions.dir, Actions.path:
             return showCurrentFolder()
             
+        // Handle analyze command (full and short form)
+        case let cmd where cmd.starts(with: Actions.analyze) || cmd.starts(with: Actions.lz):
+            return handleAnalyzeAction(action: action)
+            
         // Show projects (formerly list)
         case let cmd where cmd.starts(with: Actions.show):
             return listProjects()
@@ -306,5 +310,141 @@ struct XcfActionHandler {
         
         // No suitable project found
         return "I couldn't find a project in your workspace. Open an Xcode project in this folder."
+    }
+    
+    // MARK: - Handle Analyze Action
+    
+    /// Handles the analyze action to analyze Swift code
+    /// - Parameter action: The action string containing analyze command and arguments
+    /// - Returns: A message containing the analysis results
+    private static func handleAnalyzeAction(action: String) -> String {
+        // Parse the analyze command
+        let parts = action.components(separatedBy: Format.spaceSeparator)
+        
+        // Need at least 2 parts: "analyze" and a file path
+        guard parts.count >= 2 else {
+            return """
+                Usage: analyze [fileName] [options]
+                
+                Examples:
+                  analyze MyFile.swift                    Analyze entire file with all checks
+                  analyze MyFile.swift 10 20              Analyze lines 10-20 with all checks
+                  analyze MyFile.swift syntax             Analyze with syntax checks only
+                  analyze MyFile.swift style safety       Analyze with style and safety checks
+                  analyze MyFile.swift 10 20 style        Analyze lines 10-20 with style checks only
+                
+                Available check groups: all, syntax, style, safety, performance, bestPractices
+                Available checks: syntax, unusedVars, immutables, unreachable, forcedUnwraps, 
+                                 operators, style, refactor, symbols, macros, complexity, 
+                                 guards, longMethods, emptyCatch, magicNumbers, optionalChain, naming
+                """
+        }
+        
+        // Get the file path (which is the 2nd argument)
+        let providedPath = parts[1]
+        
+        // Default analysis parameters
+        var entireFile = true
+        var startLine: Int? = nil
+        var endLine: Int? = nil
+        let format = "markdown"
+        var checkGroups: [CheckGroup] = [.all]
+        var individualChecks: [IndividualCheck] = []
+        
+        // Determine command format:
+        if parts.count >= 4, let start = Int(parts[2]), let end = Int(parts[3]) {
+            // Format: analyze file.swift 10 20 [checks...]
+            entireFile = false
+            startLine = start
+            endLine = end
+            
+            // Process any check groups or checks after line numbers
+            if parts.count > 4 {
+                // Clear the default "all" check group, as specific checks are provided
+                checkGroups = []
+                
+                for i in 4..<parts.count {
+                    processCheckArg(parts[i], &checkGroups, &individualChecks)
+                }
+                
+                // If no valid checks were found, revert to "all"
+                if checkGroups.isEmpty && individualChecks.isEmpty {
+                    checkGroups = [.all]
+                }
+            }
+        } else if parts.count >= 3 {
+            // Format: analyze file.swift [checks...]
+            // Process check groups or individual checks
+            // First, clear the default "all" group if specific checks are mentioned
+            checkGroups = []
+            
+            for i in 2..<parts.count {
+                processCheckArg(parts[i], &checkGroups, &individualChecks)
+            }
+            
+            // If no valid checks were provided, revert to "all"
+            if checkGroups.isEmpty && individualChecks.isEmpty {
+                checkGroups = [.all]
+            }
+        }
+        
+        // Verify we have start and end lines if not analyzing the entire file
+        if !entireFile && (startLine == nil || endLine == nil) {
+            return "Error: When analyzing a line range, please specify both start and end line numbers."
+        }
+        
+        // Run the analysis
+        let (result, language) = SwiftAnalyzer.analyzeCode(
+            filePath: providedPath,  // FileFinder will resolve this path intelligently
+            entireFile: entireFile,
+            startLine: startLine,
+            endLine: endLine,
+            checkGroups: checkGroups,
+            individualChecks: individualChecks,
+            format: format
+        )
+        
+        // Format the result based on the language
+        if language == "markdown" {
+            return result
+        } else {
+            return String(format: McpConfig.codeBlockFormat, language, result)
+        }
+    }
+    
+    /// Process a check argument (either a group or individual check)
+    /// - Parameters:
+    ///   - arg: The argument to process
+    ///   - checkGroups: The array of check groups to update
+    ///   - individualChecks: The array of individual checks to update
+    private static func processCheckArg(_ arg: String, _ checkGroups: inout [CheckGroup], _ individualChecks: inout [IndividualCheck]) {
+        // Try as a check group first
+        let matchingGroup = CheckGroup.allCases.first { 
+            $0.rawValue.lowercased() == arg.lowercased() 
+        }
+        
+        if let group = matchingGroup {
+            // If this is the first group and it's not "all", clear the default "all" group
+            if checkGroups == [.all] && group != .all {
+                checkGroups = [group]
+            } else if !checkGroups.contains(group) {
+                checkGroups.append(group)
+            }
+            return
+        }
+        
+        // Try as an individual check
+        let matchingCheck = IndividualCheck.allCases.first { 
+            $0.rawValue.lowercased() == arg.lowercased() 
+        }
+        
+        if let check = matchingCheck {
+            if !individualChecks.contains(check) {
+                individualChecks.append(check)
+            }
+            return
+        }
+        
+        // If not recognized, it's ignored
     }
 } 

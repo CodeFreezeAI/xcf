@@ -27,6 +27,8 @@ struct Actions {
     static let pwd = "pwd"
     static let dir = "dir"
     static let path = "path"
+    static let analyze = "analyze"
+    static let lz = "lz" // Short alias for analyze
 }
 
 // Define error messages
@@ -88,12 +90,14 @@ struct McpConfig {
     static let xcfToolName = AppConstants.appName
     static let snippetToolName = "snippet"
     static let helpToolName = "help"
+    static let analyzerToolName = "analyzer"
     
     // Tool descriptions
     static let listToolsDesc = "Lists all available tools on this server"
     static let xcfToolDesc = "Execute an \(AppConstants.appName) action or command"
     static let snippetToolDesc = "Extract code snippets from files in the current project (use entireFile=true to get full file content)"
     static let helpToolDesc = "Displays help information about \(AppConstants.appName) actions and usage"
+    static let analyzerToolDesc = "Analyze Swift code for potential issues (use entireFile=true to analyze the full file)"
     
     // Server config
     static let serverName = AppConstants.appName
@@ -202,6 +206,8 @@ struct McpConfig {
     - current: Display the currently selected project
     - env: Show all environment variables
     - pwd: Show current working folder (aliases: dir, path)
+    - analyze [filePath] [--entireFile | --startLine # --endLine #]: Analyze Swift code for potential issues
+    - lz [filePath] [--entireFile | --startLine # --endLine #]: Short alias for analyze command
     - help: Show this help information
     """
     
