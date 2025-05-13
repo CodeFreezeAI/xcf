@@ -186,9 +186,7 @@ If commands fail, check:
 
 Swift Engineers are welcome to contribute! Help us make xcf even better.
 
-## 💯 Pure Swift, Purely Open
-
-100% Swift. 100% Open Source.  
+## 💯 100% Swift. 100% Open Source.  
 [GitHub Repository](https://github.com/codefreezeai/xcf)
 
 ---
