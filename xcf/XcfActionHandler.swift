@@ -37,6 +37,8 @@ struct XcfActionHandler {
             return showCurrentProject()
         case Actions.env:
             return showEnvironmentVariables()
+        case Actions.pwd, Actions.dir, Actions.path:
+            return showCurrentFolder()
             
         // Show projects (formerly list)
         case let cmd where cmd.starts(with: Actions.show):
@@ -241,6 +243,15 @@ struct XcfActionHandler {
             return ErrorMessages.noProjectSelected
         }
         return "Current project: " + String(format: SuccessMessages.currentProject, currentProject)
+    }
+    
+    /// Displays the current working folder
+    /// - Returns: A formatted string showing the current folder path
+    private static func showCurrentFolder() -> String {
+        guard let cf = currentFolder else {
+            return "Current folder is not set"
+        }
+        return "Current folder: \(cf)"
     }
     
     /// Displays all environment variables

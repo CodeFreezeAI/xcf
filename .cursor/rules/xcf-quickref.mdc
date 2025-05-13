@@ -20,6 +20,7 @@ current     // instead of xcf current
 build       // instead of xcf build
 run         // instead of xcf run
 env         // instead of xcf env
+pwd         // instead of xcf pwd
 ```
 
 ## Core Commands
@@ -34,6 +35,7 @@ env         // instead of xcf env
 | `build` | Build project | `build` | 🐦📜 Built successfully |
 | `run` | Run project | `run` | 🐦📜 Ran successfully |
 | `env` | Show environment | `env` | Environment Variables: [list of variables] |
+| `pwd` | Show current folder | `pwd` | Current folder: /path/to/folder |
 | `help` | Show help | `help` | [Lists all commands] |
 
 ## MCP Tool Functions

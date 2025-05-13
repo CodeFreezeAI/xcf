@@ -24,6 +24,9 @@ struct Actions {
     static let useXcf = "use \(AppConstants.appName)"
     static let current = "current"
     static let env = "env"
+    static let pwd = "pwd"
+    static let dir = "dir"
+    static let path = "path"
 }
 
 // Define error messages
@@ -198,6 +201,7 @@ struct McpConfig {
     - build: Build the current \(AppConstants.appName) project
     - current: Display the currently selected project
     - env: Show all environment variables
+    - pwd: Show current working folder (aliases: dir, path)
     - help: Show this help information
     """
     

@@ -565,17 +565,23 @@ struct McpServer {
     /// - Returns: The extracted code snippet
     private static func handleCodeSnippet(filePath: String, entireFile: Bool, startLine: Int? = nil, endLine: Int? = nil) -> CallTool.Result {
         // Resolve the file path using multiple strategies
-        let resolvedPath = CaptureSnippet.resolveFilePath(filePath)
+        let (resolvedPath, warning) = CaptureSnippet.resolveFilePath(filePath)
         
         // Validate file path - use the resolved path
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, "File not found. Tried searching for \(filePath) in multiple locations."))])
         }
         
+        // Add warning message if there is one
+        var warningText = ""
+        if !warning.isEmpty {
+            warningText = warning + Format.newLine + Format.newLine
+        }
+        
         if entireFile {
-            return handleEntireFileSnippet(filePath: resolvedPath)
+            return handleEntireFileSnippet(filePath: resolvedPath, warning: warningText)
         } else if let startLine = startLine, let endLine = endLine {
-            return handleLineRangeSnippet(filePath: resolvedPath, startLine: startLine, endLine: endLine)
+            return handleLineRangeSnippet(filePath: resolvedPath, startLine: startLine, endLine: endLine, warning: warningText)
         } else {
             return CallTool.Result(content: [.text(McpConfig.missingLineParamsError)])
         }
@@ -584,13 +590,13 @@ struct McpServer {
     /// Handles extracting an entire file as a code snippet
     /// - Parameter filePath: Path to the file to extract
     /// - Returns: The extracted code snippet
-    private static func handleEntireFileSnippet(filePath: String) -> CallTool.Result {
+    private static func handleEntireFileSnippet(filePath: String, warning: String = "") -> CallTool.Result {
         do {
             let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
             let language = CaptureSnippet.determineLanguage(from: filePath)
-            return CallTool.Result(content: [.text(String(format: McpConfig.codeBlockFormat, language, fileContents))])
+            return CallTool.Result(content: [.text(warning + String(format: McpConfig.codeBlockFormat, language, fileContents))])
         } catch {
-            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, error.localizedDescription))])
+            return CallTool.Result(content: [.text(warning + String(format: ErrorMessages.errorReadingFile, error.localizedDescription))])
         }
     }
     
@@ -600,13 +606,13 @@ struct McpServer {
     ///   - startLine: The line to start extraction from
     ///   - endLine: The line to end extraction at
     /// - Returns: The extracted code snippet
-    private static func handleLineRangeSnippet(filePath: String, startLine: Int, endLine: Int) -> CallTool.Result {
+    private static func handleLineRangeSnippet(filePath: String, startLine: Int, endLine: Int, warning: String = "") -> CallTool.Result {
         let (snippet, language) = CaptureSnippet.getCodeSnippet(
             filePath: filePath,
             startLine: startLine,
             endLine: endLine
         )
         
-        return CallTool.Result(content: [.text(String(format: McpConfig.codeBlockFormat, language, snippet))])
+        return CallTool.Result(content: [.text(warning + String(format: McpConfig.codeBlockFormat, language, snippet))])
     }
 } 

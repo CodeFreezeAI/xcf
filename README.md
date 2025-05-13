@@ -98,6 +98,7 @@ The tool is designed by Swift developers, for Swift developers. Commands like `b
 | `build` | Build current project |
 | `current` | Show selected project |
 | `env` | Show environment variables |
+| `pwd` | Show current folder (aliases: dir, path) |
 | `help` | Display all available commands |
 
 ## 🧩 MCP Tools
