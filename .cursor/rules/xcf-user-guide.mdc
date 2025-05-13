@@ -77,6 +77,17 @@ xcf env
 ```
 Shows all environment variables currently available to the XCF process. This is useful for debugging and understanding the execution context.
 
+### Current Working Directory
+```
+xcf pwd
+```
+Displays the current working directory path. This command also has two aliases: `dir` and `path`.
+
+Example output:
+```
+Current folder: /Users/toddbruss/Documents/GitHub/xcf
+```
+
 ## Help and Documentation
 
 ### Getting Help
@@ -108,6 +119,7 @@ If you encounter issues with XCF:
 2. Verify permissions are granted with `xcf grant`
 3. Check your environment variables with `xcf env`
 4. Confirm the correct project is selected with `xcf current`
+5. Check your current directory with `xcf pwd`
 
 ## Conclusion
 
