@@ -5,9 +5,7 @@
 
 Speed up writing Xcode apps with xcf, a dead simple Swift-based MCP server specifically designed for Cursor. Works seamlessly with VSCode and Claude, with no TypeScript, no JavaScript, no BS!
 
-## 🧰 Installation
-
-## XCF Installation & Configuration
+## 🧰 XCF Installation & Configuration
 
 ### Installation Steps
 
