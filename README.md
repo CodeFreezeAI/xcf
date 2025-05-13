@@ -5,14 +5,16 @@
 
 Speed up writing Xcode apps with xcf, a dead simple Swift-based MCP server specifically designed for Cursor. Works seamlessly with VSCode and Claude, with no TypeScript, no JavaScript, no BS!
 
-## 🧰 XCF Installation & Configuration
+## 🧰 Installation
+
+## XCF Installation & Configuration
 
 ### Installation Steps
 
 1. Download the XCF application and drag it to your /Applications folder.
 2. Launch the application to approve the internet download.
 
-<img width="372" alt="Screenshot 2025-05-11 at 9 15 35 PM" src="https://github.com/user-attachments/assets/da8fe321-7292-4985-a08e-c07ed2f9be59" />
+<img width="372" alt="Screenshot 2025-05-11 at 9 15 35 PM" src="https://github.com/user-attachments/assets/da8fe321-7292-4985-a08e-c07ed2f9be59" />
 
 4. You will see the following alert (this is expected):
 
@@ -99,27 +101,7 @@ The tool is designed by Swift developers, for Swift developers. Commands like `b
 | `pwd` | Show current folder (aliases: dir, path) |
 | `help` | Display all available commands |
 
-## 🧩 MCP Tools
-
-### Function-Based Tools
-- `mcp_xcf_xcf`: Execute xcf actions/commands
-- `mcp_xcf_list`: Show all available tools
-- `mcp_xcf_snippet`: Access file contents
-- `mcp_xcf_help`: Get help information
-
 ## 📄 Using Snippets
-
-### For AI Function Calls
-
-To get an entire file:
-```
-mcp_xcf_snippet(filePath="/full/path/to/file.swift", entireFile=true)
-```
-
-For specific line ranges:
-```
-mcp_xcf_snippet(filePath="/full/path/to/file.swift", startLine=10, endLine=20)
-```
 
 ### For Human Commands
 
@@ -150,6 +132,26 @@ This means you can usually just use the filename without any path:
 
 ```
 snippet Constants.swift
+```
+
+## 🧩 MCP Tools
+
+### Function-Based Tools
+- `mcp_xcf_xcf`: Execute xcf actions/commands
+- `mcp_xcf_list`: Show all available tools
+- `mcp_xcf_snippet`: Access file contents
+- `mcp_xcf_help`: Get help information
+
+### For AI Function Calls
+
+To get an entire file:
+```
+mcp_xcf_snippet(filePath="/full/path/to/file.swift", entireFile=true)
+```
+
+For specific line ranges:
+```
+mcp_xcf_snippet(filePath="/full/path/to/file.swift", startLine=10, endLine=20)
 ```
 
 ## 🔒 Security Features
