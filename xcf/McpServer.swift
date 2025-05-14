@@ -18,7 +18,7 @@ struct McpServer {
         name: McpConfig.listToolsName,
         description: McpConfig.listToolsDesc,
         inputSchema: .object([
-            McpConfig.typeKey: .string(McpConfig.objectType)
+            McpConfig.typeKey: .string(McpConfig.stringType)
         ])
     )
 
@@ -27,7 +27,7 @@ struct McpServer {
         name: McpConfig.helpToolName,
         description: McpConfig.helpToolDesc,
         inputSchema: .object([
-            McpConfig.typeKey: .string(McpConfig.objectType)
+            McpConfig.typeKey: .string(McpConfig.stringType)
         ])
     )
 
