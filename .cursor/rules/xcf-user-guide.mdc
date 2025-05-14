@@ -69,6 +69,57 @@ xcf run
 ```
 Executes the current Xcode project after building. A successful run will display "🐦📜 Ran successfully".
 
+## Code Analysis and Access
+
+### Accessing Code Snippets
+To access file contents using XCF, use the MCP snippet function:
+
+```
+mcp_xcf_snippet filePath="path/to/file.swift" entireFile=true
+```
+
+This displays the entire content of the specified file. You can also specify a line range:
+
+```
+mcp_xcf_snippet filePath="path/to/file.swift" startLine=10 endLine=20
+```
+
+This displays lines 10 through 20 of the file.
+
+XCF uses smart path resolution to find files even when the exact path isn't provided. You can often use just the filename:
+
+```
+mcp_xcf_snippet filePath="AppDelegate.swift" entireFile=true
+```
+
+### Analyzing Swift Code
+To analyze Swift code for potential issues, use:
+
+```
+mcp_xcf_analyzer filePath="path/to/file.swift" entireFile=true
+```
+
+Performs a comprehensive analysis of Swift code, checking for issues like:
+- Syntax and style issues
+- Unused variables
+- Functions with high complexity
+- Magic numbers
+- Refactoring opportunities
+- Long methods
+- And more
+
+For convenience, there's also a shorthand command:
+```
+mcp_xcf_xcf action="lz path/to/file.swift"
+```
+
+You can analyze specific line ranges:
+```
+mcp_xcf_analyzer filePath="path/to/file.swift" startLine=50 endLine=100
+```
+
+The analysis output is formatted in Markdown and includes a summary of issues by category.
+
 ## System Information
 
 ### Environment Variables
@@ -100,12 +151,20 @@ Displays a list of all available XCF actions and their brief descriptions.
 
 ### Typical Development Workflow
 
-1. Activate XCF: `xcf use xcf`
-2. Grant permissions: `xcf grant`
-3. List projects: `xcf show`
-4. Select project (if needed): `xcf open 1`
-5. Build the project: `xcf build`
-6. Run the project: `xcf run`
+1. Activate XCF: `mcp_xcf_xcf action="use xcf"`
+2. Grant permissions: `mcp_xcf_xcf action="grant"`
+3. List projects: `mcp_xcf_xcf action="show"`
+4. Select project (if needed): `mcp_xcf_xcf action="open 1"`
+5. Build the project: `mcp_xcf_xcf action="build"`
+6. Run the project: `mcp_xcf_xcf action="run"`
+
+### Code Analysis Workflow
+
+1. Activate XCF: `mcp_xcf_xcf action="use xcf"`
+2. View current project: `mcp_xcf_xcf action="current"`
+3. Examine code: `mcp_xcf_snippet filePath="MyClass.swift" entireFile=true`
+4. Analyze code: `mcp_xcf_analyzer filePath="MyClass.swift" entireFile=true`
+5. Fix issues and build: `mcp_xcf_xcf action="build"`
 
 ### Automation Tips
 
