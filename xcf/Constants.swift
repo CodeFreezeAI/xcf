@@ -38,10 +38,11 @@ struct ErrorMessages {
     static let noOpenProjects = "I don't see any open Xcode projects. Try opening one first."
     static let invalidProjectSelection = "That's not a valid selection. Try 'open 1' to select the first project."
     static let projectOutOfRange = "Project %@ doesn't exist. I only found %@ projects."
-    static let noProjectInWorkspace = "I couldn't find a project in your workspace folder."
+    static let noProjectInWorkspace = "I couldn't find a project in your workspace."
     
     // MARK: - Action Errors
     static let unrecognizedAction = "I don't understand '%@'. Try 'help' to see what I can do."
+    static let toolCallError = "Error executing tool '%@': %@"
     
     // MARK: - Xcode Connection Errors
     static let failedToConnectXcode = "I couldn't connect to Xcode. Is it running?"
@@ -50,6 +51,28 @@ struct ErrorMessages {
     // MARK: - Build Errors
     static let failedToStartBuild = "I had trouble starting the build. Please try again."
     static let failedToGetBuildResult = "I couldn't get the build results. Something went wrong."
+    static let errorGettingBuildResults = "Error getting build results: %@"
+    
+    // MARK: - File Operation Errors
+    static let errorReadingFile = "Error reading file: %@"
+    static let errorWritingFile = "Error writing file: %@"
+    static let errorCreatingFile = "Error creating file: %@"
+    static let errorEditingFile = "Error editing file: %@"
+    static let errorDeletingFile = "Error deleting file: %@"
+    static let errorOpeningFile = "Error opening file: %@"
+    static let errorClosingFile = "Error closing file: %@"
+    static let errorReadingDirectory = "Error reading directory: %@"
+    static let errorCreatingDirectory = "Error creating directory: %@"
+    static let errorSelectingDirectory = "Error selecting directory: %@"
+    static let errorListingProjects = "Error listing projects: %@"
+    static let fileNotFound = "File not found: %@"
+    static let directoryNotFound = "Directory not found: %@"
+    static let invalidFilePath = "Invalid file path: %@"
+    static let invalidDirectoryPath = "Invalid directory path: %@"
+    static let fileAlreadyExists = "File already exists: %@"
+    static let directoryAlreadyExists = "Directory already exists: %@"
+    static let permissionDenied = "Permission denied: %@"
+    static let unknownFileError = "Unknown error occurred while operating on: %@"
     
     // MARK: - Osascript Errors
     static let failedToConvertOutput = "Failed to convert output data to string."
@@ -61,8 +84,15 @@ struct ErrorMessages {
     static let unknownTool = "Unknown tool: %@"
     
     // MARK: - Code Snippet Errors
+    static let missingLineParamsError = "Missing required line parameters when entireFile is false"
+    static let missingFilePathError = "Missing required filePath parameter"
     static let invalidLineNumbers = "Those line numbers don't look right. Please check them."
-    static let errorReadingFile = "I had trouble reading the file: %@"
+    
+    // Resource error messages
+    static let missingFilePathParamError = "Missing required filePath parameter for file operation"
+    static let missingDirectoryPathParamError = "Missing required directoryPath parameter"
+    static let unknownResourceUriError = "Unknown resource URI: %@"
+    static let unknownPromptNameError = "Unknown prompt name: %@"
 }
 
 // Define success messages
@@ -92,12 +122,40 @@ struct McpConfig {
     static let helpToolName = "help"
     static let analyzerToolName = "analyzer"
     
+    // Filesystem tool names
+    static let readFileToolName = "read_file"
+    static let writeFileToolName = "write_file"
+    static let createFileToolName = "create_file"
+    static let editFileToolName = "edit_file"
+    static let deleteFileToolName = "delete_file"
+    static let openFileToolName = "open_file"
+    static let closeFileToolName = "close_file"
+    static let newFileToolName = "new_file"
+    static let removeFileToolName = "remove_file"
+    static let readDirToolName = "read_dir"
+    static let createDirToolName = "create_dir"
+    static let selectDirToolName = "select_dir"
+    
     // Tool descriptions
     static let listToolsDesc = "Lists all available tools on this server"
     static let xcfToolDesc = "Execute an \(AppConstants.appName) action or command"
     static let snippetToolDesc = "Extract code snippets from files in the current project (use entireFile=true to get full file content)"
     static let helpToolDesc = "Displays help information about \(AppConstants.appName) actions and usage"
     static let analyzerToolDesc = "Analyze Swift code for potential issues (use entireFile=true to analyze the full file)"
+    
+    // Filesystem tool descriptions
+    static let readFileToolDesc = "Read the contents of a file using FileManager"
+    static let writeFileToolDesc = "Write content to a file using FileManager"
+    static let createFileToolDesc = "Create a new file with optional content using FileManager"
+    static let editFileToolDesc = "Edit specific lines in a file"
+    static let deleteFileToolDesc = "Delete a file using FileManager"
+    static let openFileToolDesc = "Open a file in Xcode using ScriptingBridge"
+    static let closeFileToolDesc = "Close a file in Xcode using ScriptingBridge"
+    static let newFileToolDesc = "Create a new file in Xcode using ScriptingBridge"
+    static let removeFileToolDesc = "Remove a file from Xcode using ScriptingBridge"
+    static let readDirToolDesc = "List contents of a directory using FileManager"
+    static let createDirToolDesc = "Create a new directory using FileManager"
+    static let selectDirToolDesc = "Show a dialog to select a directory using FileManager"
     
     // Server config
     static let serverName = AppConstants.appName
@@ -131,6 +189,18 @@ struct McpConfig {
     static let filePathArgDesc = "Path to the file to analyze"
     static let includeSnippetArgName = "includeSnippet"
     static let includeSnippetArgDesc = "Include code snippet in results"
+    
+    // Filesystem parameter names and descriptions
+    static let directoryPathParamName = "directoryPath"
+    static let directoryPathParamDesc = "Path to the directory"
+    static let fileExtensionParamName = "fileExtension"
+    static let fileExtensionParamDesc = "Filter files by extension (e.g., 'swift')"
+    static let contentParamName = "content"
+    static let contentParamDesc = "Content to write to the file"
+    static let replacementParamName = "replacement"
+    static let replacementParamDesc = "Replacement text for the specified lines"
+    static let useScriptingBridgeParamName = "useScriptingBridge"
+    static let useScriptingBridgeParamDesc = "Whether to use ScriptingBridge or FileManager for the operation"
     
     // Schema parameters
     static let actionParamName = "action"
@@ -168,12 +238,25 @@ struct McpConfig {
     
     // Code snippet error messages
     static let missingLineParamsError = "Missing required line parameters when entireFile is false"
-    static let missingFilePathError = "Missing required filePath parameter for code snippet"
+    static let missingFilePathError = "Missing required filePath parameter"
     
     // Resource error messages
-    static let missingFilePathParamError = "Missing filePath parameter"
+    static let missingFilePathParamError = "Missing required filePath parameter for file operation"
+    static let missingDirectoryPathParamError = "Missing required directoryPath parameter"
     static let unknownResourceUriError = "Unknown resource URI: %@"
     static let unknownPromptNameError = "Unknown prompt name: %@"
+    
+    // File operation success messages
+    static let fileReadSuccessfully = "File read successfully"
+    static let fileWrittenSuccessfully = "File written successfully"
+    static let fileCreatedSuccessfully = "File created successfully"
+    static let fileEditedSuccessfully = "File edited successfully"
+    static let fileDeletedSuccessfully = "File deleted successfully"
+    static let fileOpenedSuccessfully = "File opened successfully"
+    static let fileClosedSuccessfully = "File closed successfully"
+    static let directoryCreatedSuccessfully = "Directory created successfully"
+    static let directoryReadSuccessfully = "Directory read successfully"
+    static let directorySelectedSuccessfully = "Directory selected successfully"
     
     // Prompt templates
     static let buildProjectTemplate = "Please build the project at path: %@"
@@ -208,7 +291,6 @@ struct McpConfig {
     - pwd: Show current working folder (aliases: dir, path)
     - analyze [filePath] [--entireFile | --startLine # --endLine #]: Analyze Swift code for potential issues
     - lz [filePath] [--entireFile | --startLine # --endLine #]: Short alias for analyze command
-    - help: Show this help information
     """
     
     // MIME types
@@ -263,3 +345,98 @@ struct XcodeConstants {
     static let codeBlockEnd = "```"
     static let issueFormat = "%@:%d:%d [%@] %@"
 }
+
+// Help text for tools
+ let toolsHelpText = """
+Available Tools:
+
+File Operations:
+- read_file: Read contents of a file
+  Parameters:
+    - filePath: Path to the file to read
+    Example: {"name": "read_file", "arguments": {"filePath": "path/to/file"}}
+
+- write_file: Write content to a file
+  Parameters:
+    - filePath: Path to the file to write
+    - content: Content to write to the file
+    Example: {"name": "write_file", "arguments": {"filePath": "path/to/file", "content": "file content"}}
+
+- create_file: Create a new file with FileManager
+  Parameters:
+    - filePath: Path where to create the file
+    - content: Initial content (optional)
+    Example: {"name": "create_file", "arguments": {"filePath": "path/to/file", "content": "initial content"}}
+
+- new_file: Create a new file in Xcode
+  Parameters:
+    - filePath: Path where to create the file
+    - content: Initial content (optional)
+    Example: {"name": "new_file", "arguments": {"filePath": "path/to/file", "content": "initial content"}}
+
+- delete_file: Delete a file with FileManager
+  Parameters:
+    - filePath: Path to the file to delete
+    Example: {"name": "delete_file", "arguments": {"filePath": "path/to/file"}}
+
+- remove_file: Remove a file from Xcode
+  Parameters:
+    - filePath: Path to the file to remove
+    Example: {"name": "remove_file", "arguments": {"filePath": "path/to/file"}}
+
+- open_file: Open a file in Xcode
+  Parameters:
+    - filePath: Path to the file to open
+    Example: {"name": "open_file", "arguments": {"filePath": "path/to/file"}}
+
+- close_file: Close a file in Xcode
+  Parameters:
+    - filePath: Path to the file to close
+    Example: {"name": "close_file", "arguments": {"filePath": "path/to/file"}}
+
+Directory Operations:
+- read_dir: List contents of a directory
+  Parameters:
+    - directoryPath: Path to the directory to read
+    - fileExtension: Filter by file extension
+    Example: {"name": "read_dir", "arguments": {"directoryPath": "path/to/dir", "fileExtension": "swift"}}
+
+- create_dir: Create a new directory
+  Parameters:
+    - directoryPath: Path where to create the directory
+    Example: {"name": "create_dir", "arguments": {"directoryPath": "path/to/dir"}}
+
+- select_dir: Show a dialog to select a directory
+  Parameters: none
+  Example: {"name": "select_dir", "arguments": {}}
+
+Code Analysis:
+- snippet: Extract code snippets from files
+  Parameters:
+    - filePath: Path to the file
+    - entireFile: true to get entire file, false for line range
+    - startLine: Starting line number (when entireFile is false)
+    - endLine: Ending line number (when entireFile is false)
+    Example: {"name": "snippet", "arguments": {"filePath": "path/to/file", "entireFile": true}}
+    Example: {"name": "snippet", "arguments": {"filePath": "path/to/file", "startLine": 10, "endLine": 20}}
+
+- analyzer: Analyze Swift code for potential issues
+  Parameters:
+    - filePath: Path to the file to analyze
+    - entireFile: true to analyze entire file, false for line range
+    - startLine: Starting line number (when entireFile is false)
+    - endLine: Ending line number (when entireFile is false)
+    Example: {"name": "analyzer", "arguments": {"filePath": "path/to/file", "entireFile": true}}
+    Example: {"name": "analyzer", "arguments": {"filePath": "path/to/file", "startLine": 10, "endLine": 20}}
+
+Other Tools:
+- list: List all available tools
+  Parameters: none
+  Example: {"name": "list", "arguments": {}}
+
+- help: Show this help information
+  Parameters: none
+  Example: {"name": "help", "arguments": {}}
+
+Note: All file paths can be absolute or relative to the current working directory.
+"""

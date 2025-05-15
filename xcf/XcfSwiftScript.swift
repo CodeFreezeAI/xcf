@@ -5,12 +5,14 @@
 //  Created by Todd Bruss on 5/7/25.
 //
 
+import AppKit
 import Foundation
 import ScriptingBridge
 
 class XcfSwiftScript {
     static let shared = XcfSwiftScript()
     private var files: Set<String> = []
+    private var currentFolder: String? = nil
 
     func buildCurrentWorkspace(projectPath: String, run: Bool = false) -> String {
 
@@ -184,7 +186,7 @@ class XcfSwiftScript {
         let projectPath = activeWorkspace.path
         
         // Only return the path if currentFolder exists and path contains currentFolder
-        if let currentFolder {
+        if let currentFolder = self.currentFolder {
             if let path = projectPath, path.contains(currentFolder) {
                 return path
             }
@@ -192,5 +194,395 @@ class XcfSwiftScript {
         }
         
         return projectPath
+    }
+    
+    // MARK: - Swift Document Management
+    
+    /// Opens a Swift document in Xcode
+    /// - Parameter filePath: The path to the Swift file to open
+    /// - Returns: True if successful, false otherwise
+    func openSwiftDocument(filePath: String) -> Bool {
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
+            print(ErrorMessages.failedToConnectXcode)
+            return false
+        }
+        
+        // Verify the file exists and is a Swift file
+        if !filePath.hasSuffix(".swift") || !FileManager.default.fileExists(atPath: filePath) {
+            print("File does not exist or is not a Swift file: \(filePath)")
+            return false
+        }
+        
+        // Try to open the document
+        if let _ = xcode.open?(filePath as Any) {
+            return true
+        }
+        
+        return false
+    }
+    
+    /// Creates a new Swift document with FileManager
+    /// - Parameters:
+    ///   - filePath: The path where the Swift file should be created
+    ///   - content: Initial content of the Swift file (optional)
+    /// - Returns: True if successful, false otherwise
+    func createSwiftDocumentWithFileManager(filePath: String, content: String = "") -> Bool {
+        do {
+            // Ensure the file path ends with .swift
+            let path = filePath.hasSuffix(".swift") ? filePath : filePath + ".swift"
+            
+            // Check if file already exists
+            if FileManager.default.fileExists(atPath: path) {
+                print("File already exists at: \(path)")
+                return false
+            }
+            
+            // Create the directory structure if it doesn't exist
+            let directory = (path as NSString).deletingLastPathComponent
+            try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+            
+            // Write the content to the new file
+            try content.write(toFile: path, atomically: true, encoding: .utf8)
+            return true
+        } catch {
+            print("Error creating file: \(error.localizedDescription)")
+            return false
+        }
+    }
+    
+    /// Creates a new Swift document using Xcode ScriptingBridge
+    /// - Parameters:
+    ///   - filePath: The path where the Swift file should be created
+    ///   - content: Initial content of the Swift file (optional)
+    /// - Returns: True if successful, false otherwise
+    func createSwiftDocumentWithScriptingBridge(filePath: String, content: String = "") -> Bool {
+        // First create the file using FileManager
+        if !createSwiftDocumentWithFileManager(filePath: filePath, content: content) {
+            return false
+        }
+        
+        // Then open it in Xcode
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
+            print(ErrorMessages.failedToConnectXcode)
+            return false
+        }
+        
+        // Ensure the file path ends with .swift
+        let path = filePath.hasSuffix(".swift") ? filePath : filePath + ".swift"
+        
+        // Open the document in Xcode
+        if let _ = xcode.open?(path as Any) {
+            return true
+        }
+        
+        return false
+    }
+    
+    // MARK: - Document Reading
+    
+    /// Reads the contents of a Swift document using FileManager
+    /// - Parameter filePath: The path to the Swift file to read
+    /// - Returns: The file contents as a string, or nil if the operation failed
+    func readSwiftDocumentWithFileManager(filePath: String) -> String? {
+        do {
+            // Ensure the file exists and is a Swift file
+            if !filePath.hasSuffix(".swift") || !FileManager.default.fileExists(atPath: filePath) {
+                print("File does not exist or is not a Swift file: \(filePath)")
+                return nil
+            }
+            
+            // Read the file contents
+            return try String(contentsOfFile: filePath, encoding: .utf8)
+        } catch {
+            print("Error reading file: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    
+    /// Reads the contents of a Swift document using Xcode ScriptingBridge
+    /// - Parameter filePath: The path to the Swift file to read
+    /// - Returns: The file contents as a string, or nil if the operation failed
+    func readSwiftDocumentWithScriptingBridge(filePath: String) -> String? {
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
+            print(ErrorMessages.failedToConnectXcode)
+            return nil
+        }
+        
+        // Open the document in Xcode if it's not already open
+        guard let document = xcode.open?(filePath as Any) as? XcodeSourceDocument else {
+            print("Failed to open document in Xcode")
+            return nil
+        }
+        
+        // Return the document text
+        return document.text
+    }
+    
+    // MARK: - Document Writing
+    
+    /// Writes content to a Swift document using FileManager
+    /// - Parameters:
+    ///   - filePath: The path to the Swift file to write to
+    ///   - content: The content to write to the file
+    /// - Returns: True if successful, false otherwise
+    func writeSwiftDocumentWithFileManager(filePath: String, content: String) -> Bool {
+        do {
+            // Ensure the file path ends with .swift
+            if !filePath.hasSuffix(".swift") {
+                print("File is not a Swift file: \(filePath)")
+                return false
+            }
+            
+            // Write the content to the file
+            try content.write(toFile: filePath, atomically: true, encoding: .utf8)
+            return true
+        } catch {
+            print("Error writing to file: \(error.localizedDescription)")
+            return false
+        }
+    }
+    
+    /// Writes content to a Swift document using Xcode ScriptingBridge
+    /// - Parameters:
+    ///   - filePath: The path to the Swift file to write to
+    ///   - content: The content to write to the file
+    /// - Returns: True if successful, false otherwise
+    func writeSwiftDocumentWithScriptingBridge(filePath: String, content: String) -> Bool {
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
+            print(ErrorMessages.failedToConnectXcode)
+            return false
+        }
+        
+        // Open the document in Xcode if it's not already open
+        guard let document = xcode.open?(filePath as Any) as? XcodeSourceDocument else {
+            print("Failed to open document in Xcode")
+            return false
+        }
+        
+        // Update the document text
+        document.setText?(content)
+        
+        // Save the document (if needed)
+        document.closeSaving?(.yes, savingIn: nil)
+        
+        return true
+    }
+    
+    // MARK: - Document Editing
+    
+    /// Edits a Swift document by replacing text at specified range using FileManager
+    /// - Parameters:
+    ///   - filePath: The path to the Swift file to edit
+    ///   - range: The range of text to replace (line and column based)
+    ///   - replacement: The replacement text
+    /// - Returns: True if successful, false otherwise
+    func editSwiftDocumentWithFileManager(filePath: String, startLine: Int, endLine: Int, replacement: String) -> Bool {
+        guard let content = readSwiftDocumentWithFileManager(filePath: filePath) else {
+            return false
+        }
+        
+        let lines = content.components(separatedBy: .newlines)
+        
+        // Validate line numbers
+        guard startLine > 0, endLine > 0, startLine <= lines.count, endLine <= lines.count, startLine <= endLine else {
+            print("Invalid line numbers. File has \(lines.count) lines.")
+            return false
+        }
+        
+        // Create new content with replacement
+        var newLines = lines
+        
+        // Remove the lines to be replaced
+        newLines.removeSubrange(startLine - 1...endLine - 1)
+        
+        // Insert the replacement text at the start line
+        let replacementLines = replacement.components(separatedBy: .newlines)
+        newLines.insert(contentsOf: replacementLines, at: startLine - 1)
+        
+        // Join the lines back together
+        let newContent = newLines.joined(separator: "\n")
+        
+        // Write the modified content back to the file
+        return writeSwiftDocumentWithFileManager(filePath: filePath, content: newContent)
+    }
+    
+    /// Edits a Swift document by replacing text at specified range using Xcode ScriptingBridge
+    /// - Parameters:
+    ///   - filePath: The path to the Swift file to edit
+    ///   - startLine: The starting line to replace (1-indexed)
+    ///   - endLine: The ending line to replace (1-indexed)
+    ///   - replacement: The replacement text
+    /// - Returns: True if successful, false otherwise
+    func editSwiftDocumentWithScriptingBridge(filePath: String, startLine: Int, endLine: Int, replacement: String) -> Bool {
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
+            print(ErrorMessages.failedToConnectXcode)
+            return false
+        }
+        
+        // Open the document in Xcode if it's not already open
+        guard let document = xcode.open?(filePath as Any) as? XcodeSourceDocument else {
+            print("Failed to open document in Xcode")
+            return false
+        }
+        
+        // Get the content of the document
+        guard let content = document.text else {
+            print("Failed to get document text")
+            return false
+        }
+        
+        let lines = content.components(separatedBy: .newlines)
+        
+        // Validate line numbers
+        guard startLine > 0, endLine > 0, startLine <= lines.count, endLine <= lines.count, startLine <= endLine else {
+            print("Invalid line numbers. File has \(lines.count) lines.")
+            return false
+        }
+        
+        // Find the character range for the specified lines
+        var startIndex = 0
+        var endIndex = 0
+        
+        for i in 1..<startLine {
+            startIndex += lines[i-1].count + 1 // +1 for newline
+        }
+        
+        for i in 1...endLine {
+            endIndex += lines[i-1].count
+            if i < endLine {
+                endIndex += 1 // +1 for newline except after the last line
+            }
+        }
+        
+        // Create a new string with the replacement
+        let prefix = content.prefix(startIndex)
+        let suffix = content.suffix(from: content.index(content.startIndex, offsetBy: endIndex))
+        let newContent = prefix + replacement + suffix
+        
+        // Update the document text
+        document.setText?(String(newContent))
+        
+        return true
+    }
+    
+    // MARK: - Directory Operations
+    
+    /// Creates a directory at the specified path
+    /// - Parameter directoryPath: The path where the directory should be created
+    /// - Returns: True if successful, false otherwise
+    func createDirectory(at directoryPath: String) -> Bool {
+        do {
+            try FileManager.default.createDirectory(atPath: directoryPath, withIntermediateDirectories: true)
+            return true
+        } catch {
+            print("Error creating directory: \(error.localizedDescription)")
+            return false
+        }
+    }
+    
+    /// Lists files and directories at the specified path
+    /// - Parameters:
+    ///   - directoryPath: The path to list contents from
+    ///   - extension: Optional file extension filter (e.g., "swift")
+    /// - Returns: Array of file/directory paths, or empty array if operation failed
+    func listDirectory(at directoryPath: String, extension fileExtension: String? = nil) -> [String] {
+        do {
+            let contents = try FileManager.default.contentsOfDirectory(atPath: directoryPath)
+            
+            if let ext = fileExtension {
+                return contents.filter { $0.hasSuffix(".\(ext)") }
+                    .map { directoryPath + "/" + $0 }
+            } else {
+                return contents.map { directoryPath + "/" + $0 }
+            }
+        } catch {
+            print("Error listing directory: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+    /// Shows a directory selection dialog and returns the selected path
+    /// - Returns: The selected directory path, or nil if cancelled
+    func selectDirectory() -> String? {
+        let dialog = NSOpenPanel()
+        
+        dialog.title = "Select a directory"
+        dialog.showsResizeIndicator = true
+        dialog.showsHiddenFiles = false
+        dialog.canChooseFiles = false
+        dialog.canChooseDirectories = true
+        dialog.allowsMultipleSelection = false
+        
+        if dialog.runModal() == .OK {
+            return dialog.url?.path
+        } else {
+            return nil
+        }
+    }
+    
+    // MARK: - File Deletion
+    
+    /// Deletes a file using FileManager
+    /// - Parameter filePath: The path to the file to delete
+    /// - Returns: True if successful, false otherwise
+    func deleteFileWithFileManager(at filePath: String) -> Bool {
+        do {
+            if FileManager.default.fileExists(atPath: filePath) {
+                try FileManager.default.removeItem(atPath: filePath)
+                return true
+            } else {
+                print("File does not exist at: \(filePath)")
+                return false
+            }
+        } catch {
+            print("Error deleting file: \(error.localizedDescription)")
+            return false
+        }
+    }
+    
+    /// Closes a Swift document in Xcode
+    /// - Parameter filePath: The path to the Swift file to close
+    /// - Returns: True if successful, false otherwise
+    func closeSwiftDocument(filePath: String) -> Bool {
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
+            print(ErrorMessages.failedToConnectXcode)
+            return false
+        }
+        
+        // Find the document in Xcode
+        guard let documents = xcode.documents?(),
+              let document = (documents as? [XcodeDocument])?.first(where: { $0.path == filePath }) else {
+            print("Document not found in Xcode: \(filePath)")
+            return false
+        }
+        
+        // Close the document
+        document.closeSaving?(.no, savingIn: nil)
+        return true
+    }
+
+    /// Deletes a file using ScriptingBridge
+    /// - Parameter filePath: The path to the file to delete
+    /// - Returns: True if successful, false otherwise
+    func deleteFileWithScriptingBridge(at filePath: String) -> Bool {
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
+            print(ErrorMessages.failedToConnectXcode)
+            return false
+        }
+        
+        // First close the document if it's open
+        if let documents = xcode.documents?(),
+           let document = (documents as? [XcodeDocument])?.first(where: { $0.path == filePath }) {
+            document.closeSaving?(.no, savingIn: nil)
+        }
+        
+        // Then delete the file using FileManager
+        do {
+            try FileManager.default.removeItem(atPath: filePath)
+            return true
+        } catch {
+            print("Error deleting file: \(error.localizedDescription)")
+            return false
+        }
     }
 }

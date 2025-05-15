@@ -447,4 +447,54 @@ struct XcfActionHandler {
         
         // If not recognized, it's ignored
     }
+    
+    /// Opens a file in Xcode
+    /// - Parameter filePath: The path to the file to open
+    /// - Throws: Error if the operation fails
+    static func openFile(filePath: String) async throws {
+        let opened = XcfSwiftScript.shared.openSwiftDocument(filePath: filePath)
+        if !opened {
+            throw NSError(domain: "XcfActionHandler", code: 1, userInfo: [
+                NSLocalizedDescriptionKey: "Failed to open file: \(filePath)"
+            ])
+        }
+    }
+    
+    /// Edits a file by replacing text at the specified range
+    /// - Parameters:
+    ///   - filePath: Path to the file to edit
+    ///   - startLine: Starting line number (1-indexed)
+    ///   - endLine: Ending line number (1-indexed)
+    ///   - replacement: Text to replace the specified range with
+    /// - Returns: The edited file contents and language
+    static func editFile(filePath: String, startLine: Int, endLine: Int, replacement: String) -> (String, String) {
+        let useScriptingBridge = filePath.hasSuffix(".swift")
+        
+        if useScriptingBridge {
+            if XcfSwiftScript.shared.editSwiftDocumentWithScriptingBridge(filePath: filePath, startLine: startLine, endLine: endLine, replacement: replacement) {
+                // Return the updated file content
+                if let content = XcfSwiftScript.shared.readSwiftDocumentWithScriptingBridge(filePath: filePath) {
+                    return (content, CaptureSnippet.determineLanguage(from: filePath))
+                }
+            }
+        } else {
+            if XcfSwiftScript.shared.editSwiftDocumentWithFileManager(filePath: filePath, startLine: startLine, endLine: endLine, replacement: replacement) {
+                // Return the updated file content
+                if let content = XcfSwiftScript.shared.readSwiftDocumentWithFileManager(filePath: filePath) {
+                    return (content, CaptureSnippet.determineLanguage(from: filePath))
+                }
+            }
+        }
+        
+        return ("Failed to edit file", "text")
+    }
+    
+    /// Shows a directory selection dialog and returns the selected path
+    /// - Returns: The selected directory path
+    static func selectDirectory() async -> String {
+        if let selectedDir = XcfSwiftScript.shared.selectDirectory() {
+            return selectedDir
+        }
+        return "No directory selected"
+    }
 } 
