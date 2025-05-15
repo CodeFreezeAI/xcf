@@ -482,7 +482,15 @@ struct McpServer {
     /// - Returns: The configured MCP server
     /// - Throws: Errors from server initialization or start
     static func configureMcpServer() async throws -> Server {
-        currentProject = await XcfActionHandler.selectProject()
+        let projectManager = XcfXcodeProjectManager.shared
+        
+        // Initialize the project manager
+        projectManager.initialize()
+        
+        // If no project was set from environment, try to select one
+        if projectManager.currentProject == nil {
+            projectManager.currentProject = await XcfActionHandler.selectProject()
+        }
 
         // Set up the server with enhanced capabilities
         let server = Server(
@@ -1241,7 +1249,18 @@ struct McpServer {
     /// - Throws: Error if directory cannot be read
     private static func handleReadDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
-            return CallTool.Result(content: [.text(McpConfig.missingDirectoryPathParamError)])
+            // If no arguments, try to use currentFolder
+            guard let currentFolder = XcfXcodeProjectManager.shared.currentFolder else {
+                return CallTool.Result(content: [.text("No directory path specified and no current folder is set. Please select a project first or specify a directory path.")])
+            }
+            
+            do {
+                let filePaths = try XcfFileManager.readDirectory(at: currentFolder, fileExtension: nil)
+                let content = filePaths.joined(separator: McpConfig.newLineSeparator)
+                return CallTool.Result(content: [.text(content)])
+            } catch {
+                return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingDirectory, error.localizedDescription))])
+            }
         }
         
         // Try to get directoryPath from arguments in two ways:
@@ -1251,9 +1270,20 @@ struct McpServer {
         if let namedPath = arguments[McpConfig.directoryPathParamName]?.stringValue {
             directoryPath = namedPath
         } else if let firstArg = arguments.first?.value.stringValue {
-            directoryPath = firstArg
+            // If first argument is '.' or empty, use currentFolder
+            if firstArg.isEmpty || firstArg == "." {
+                guard let currentFolder = XcfXcodeProjectManager.shared.currentFolder else {
+                    return CallTool.Result(content: [.text("No current folder is set. Please select a project first.")])
+                }
+                directoryPath = currentFolder
+            } else {
+                directoryPath = firstArg
+            }
+        } else if let cf = XcfXcodeProjectManager.shared.currentFolder {
+            // Use current folder if no path is specified
+            directoryPath = cf
         } else {
-            return CallTool.Result(content: [.text(McpConfig.missingDirectoryPathParamError)])
+            return CallTool.Result(content: [.text("No directory path specified and no current folder is set. Please select a project first or specify a directory path.")])
         }
         
         // Get fileExtension as the second argument or from the named parameter

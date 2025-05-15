@@ -12,8 +12,6 @@ import ScriptingBridge
 class XcfSwiftScript {
     static let shared = XcfSwiftScript()
     private var files: Set<String> = []
-    private var currentFolder: String? = nil
-
     func buildCurrentWorkspace(projectPath: String, run: Bool = false) -> String {
 
         // Get Xcode application instance
@@ -186,7 +184,7 @@ class XcfSwiftScript {
         let projectPath = activeWorkspace.path
         
         // Only return the path if currentFolder exists and path contains currentFolder
-        if let currentFolder = self.currentFolder {
+        if let currentFolder = XcfXcodeProjectManager.shared.currentFolder {
             if let path = projectPath, path.contains(currentFolder) {
                 return path
             }

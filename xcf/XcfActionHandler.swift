@@ -49,27 +49,30 @@ struct XcfActionHandler {
             return listProjects()
         // Open project (formerly select)
         case let cmd where cmd.starts(with: Actions.open):
-            // Check if we have a workspace folder restriction
-            if let currentFolder {
-                // Parse the project number from the command
-                if let projectNumber = parseProjectNumber(from: action) {
-                    // Get the list of projects
-                    let xcArray = getSortedXcodeProjects()
+            // Parse the project number from the command
+            if let projectNumber = parseProjectNumber(from: action) {
+                // Get the list of projects
+                let xcArray = getSortedXcodeProjects()
+                
+                // Check if the project number is valid
+                if (1...xcArray.count).contains(projectNumber) {
+                    let requestedProject = xcArray[projectNumber - 1]
                     
-                    // Only apply security check if user is trying to select a specific project by number
-                    if (1...xcArray.count).contains(projectNumber) {
-                        let requestedProject = xcArray[projectNumber - 1]
-                        
-                        // Check if the requested project is within the workspace folder
-                        if isProjectInWorkspaceFolder(projectPath: requestedProject, workspaceFolder: currentFolder) {
-                            // If it's a valid selection within the workspace, allow it
-                            currentProject = requestedProject
-                            return String(format: SuccessMessages.currentProject, requestedProject)
-                        } else {
-                            // Security prevention - only override if user tried to select outside workspace
-                            let safeProject = await findSafeProjectInWorkspace(workspaceFolder: currentFolder)
-                            return String(format: SuccessMessages.securityPreventManualSelection, currentFolder, safeProject)
-                        }
+                    // Get the home directory for security check
+                    let homeDirectory = FileManager.default.homeDirectoryForCurrentUser.path
+                    
+                    // Check if the project is in the home directory and has a valid Xcode project extension
+                    let validExtensions = [".xcodeproj", ".xcworkspace"]
+                    let isValidProject = requestedProject.hasPrefix(homeDirectory) && 
+                                         validExtensions.contains { requestedProject.hasSuffix($0) }
+                    
+                    if isValidProject {
+                        // If it's a valid selection, allow it
+                        XcfXcodeProjectManager.shared.updateFromProjectSelection(requestedProject)
+                        return String(format: SuccessMessages.currentProject, requestedProject)
+                    } else {
+                        // If not valid, return an error message
+                        return "Security: Project must be within your home directory and be a valid Xcode project (.xcodeproj or .xcworkspace). Current project remains unchanged."
                     }
                 }
             }
@@ -87,7 +90,7 @@ struct XcfActionHandler {
     /// Retrieves the currently selected project
     /// - Returns: The path to the current project, or nil if no project is selected
     public static func getCurrentProject() -> String? {
-        return currentProject
+        return XcfXcodeProjectManager.shared.currentProject
     }
     
     /// Gets a sorted list of open Xcode projects
@@ -110,7 +113,7 @@ struct XcfActionHandler {
         for ext in extensions {
             let possiblePath = folderURL.appendingPathComponent("\(folderName)\(ext)").path
             if FileManager.default.fileExists(atPath: possiblePath) {
-                currentProject = possiblePath
+                XcfXcodeProjectManager.shared.updateFromProjectSelection(possiblePath)
                 return String(format: SuccessMessages.currentProject, possiblePath)
             }
         }
@@ -126,11 +129,11 @@ struct XcfActionHandler {
         let xcArray = getSortedXcodeProjects()
         
         // Check for a match with the current folder
-        if let cf = currentFolder {
+        if let cf = XcfXcodeProjectManager.shared.currentFolder {
             // First check if any open project contains the current folder
             for xc in xcArray {
                 if xc.contains(cf) {
-                    currentProject = xc
+                    XcfXcodeProjectManager.shared.updateFromProjectSelection(xc)
                     return String(format: SuccessMessages.currentProject, xc)
                 }
             }
@@ -164,8 +167,17 @@ struct XcfActionHandler {
         }
         
         // Select the project
-        currentProject = xcArray[projectNumber - 1]
-        return String(format: SuccessMessages.currentProject, currentProject ?? "")
+        let selectedProject = xcArray[projectNumber - 1]
+        
+        // Security check: Allow project change if it's within the user's home directory
+        let homeDirectory = FileManager.default.homeDirectoryForCurrentUser.path
+        if selectedProject.hasPrefix(homeDirectory) {
+            XcfXcodeProjectManager.shared.updateFromProjectSelection(selectedProject)
+            return String(format: SuccessMessages.currentProject, selectedProject)
+        } else {
+            // If not in home directory, prevent the change
+            return "Security: Project must be within your home directory. Current project remains unchanged."
+        }
     }
     
     /// Parses a project number from an action string
@@ -182,7 +194,7 @@ struct XcfActionHandler {
     /// Runs the current project
     /// - Returns: A message indicating the result of the run operation
     private static func runProject() async -> String {
-        guard let currentProject else { return ErrorMessages.noProjectSelected }
+        guard let currentProject = XcfXcodeProjectManager.shared.currentProject else { return ErrorMessages.noProjectSelected }
         let buildCheckForErrors = XcfScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
         
         if buildCheckForErrors.contains(SuccessMessages.success) {
@@ -195,7 +207,7 @@ struct XcfActionHandler {
     /// Builds the current project
     /// - Returns: A message indicating the result of the build operation
     private static func buildProject() async -> String {
-        guard let currentProject else { return ErrorMessages.noProjectSelected }
+        guard let currentProject = XcfXcodeProjectManager.shared.currentProject else { return ErrorMessages.noProjectSelected }
         return XcfScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
     }
     
@@ -252,7 +264,7 @@ struct XcfActionHandler {
     /// Displays the current working folder
     /// - Returns: A formatted string showing the current folder path
     private static func showCurrentFolder() -> String {
-        guard let cf = currentFolder else {
+        guard let cf = XcfXcodeProjectManager.shared.currentFolder else {
             return "Current folder is not set"
         }
         return "Current folder: \(cf)"
@@ -276,40 +288,35 @@ struct XcfActionHandler {
         return String(format: SuccessMessages.environmentVariables, envString)
     }
     
-    /// Checks if a project path is within the specified workspace folder
-    /// - Parameters:
-    ///   - projectPath: The path to the project
-    ///   - workspaceFolder: The workspace folder path
-    /// - Returns: True if the project is within the workspace folder
-    private static func isProjectInWorkspaceFolder(projectPath: String, workspaceFolder: String) -> Bool {
-        // Convert to URL to properly handle path comparisons
-        let projectURL = URL(fileURLWithPath: projectPath)
-        let workspaceFolderURL = URL(fileURLWithPath: workspaceFolder)
-        
-        // Check if the project path contains the workspace folder path
-        return projectURL.path.contains(workspaceFolderURL.path)
-    }
-    
     /// Finds a safe project within the workspace folder
     /// - Parameter workspaceFolder: The workspace folder to search in
     /// - Returns: A safe project path within the workspace, or a message if none found
     private static func findSafeProjectInWorkspace(workspaceFolder: String) async -> String {
+        // Get the home directory for security check
+        let homeDirectory = FileManager.default.homeDirectoryForCurrentUser.path
+        
         // First try to find a match from existing open projects
         let projects = getSortedXcodeProjects()
         for project in projects {
-            if isProjectInWorkspaceFolder(projectPath: project, workspaceFolder: workspaceFolder) {
-                currentProject = project
+            // Check both workspace folder and home directory constraints
+            if (XcfXcodeProjectManager.shared.isProjectInWorkspaceFolder(projectPath: project, workspaceFolder: workspaceFolder) ||
+                project.hasPrefix(homeDirectory)) {
+                XcfXcodeProjectManager.shared.updateFromProjectSelection(project)
                 return String(format: SuccessMessages.currentProject, project)
             }
         }
         
         // If no match found, check for project files in the workspace folder
         if let result = checkAndSelectProjectFile(at: workspaceFolder) {
-            return result
+            // Verify the selected project is in the home directory
+            if let selectedProject = XcfXcodeProjectManager.shared.currentProject,
+               selectedProject.hasPrefix(homeDirectory) {
+                return result
+            }
         }
         
         // No suitable project found
-        return "I couldn't find a project in your workspace. Open an Xcode project in this folder."
+        return "I couldn't find a project in your workspace or home directory. Open an Xcode project in this folder."
     }
     
     // MARK: - Handle Analyze Action

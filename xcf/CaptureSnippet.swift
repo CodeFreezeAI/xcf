@@ -97,7 +97,7 @@ struct CaptureSnippet {
         let filename = (originalPath as NSString).lastPathComponent
         
         // Strategy 2: If it's a relative path and we have currentFolder, try to resolve it
-        if isRelativePath, let cf = currentFolder {
+        if isRelativePath, let cf = XcfXcodeProjectManager.shared.currentFolder {
             // Handle paths that might start with ./ or ../
             var relativePath = originalPath
             if relativePath.hasPrefix("./") {
@@ -130,7 +130,7 @@ struct CaptureSnippet {
         }
         
         // Strategy 6: Try in current project directory if available
-        if let projectPath = currentProject {
+        if let projectPath = XcfXcodeProjectManager.shared.currentProject {
             let projectDir = (projectPath as NSString).deletingLastPathComponent
             let projectFilePath = (projectDir as NSString).appendingPathComponent(filename)
             if fileManager.fileExists(atPath: projectFilePath) {

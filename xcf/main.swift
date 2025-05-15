@@ -14,7 +14,7 @@ if CommandLine.arguments.count > 1 && CommandLine.arguments[1] == "server" {
     print(McpConfig.welcomeMessage)
     
     // Main async task
-    Task {
+    Task.detached {
         do {
             // Configure and start the MCP server
             let server = try await McpServer.configureMcpServer()
