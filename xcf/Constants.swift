@@ -171,7 +171,7 @@ struct McpConfig {
     
     // Server config
     static let serverName = AppConstants.appName
-    static let serverVersion = "1.0.0"
+    static let serverVersion = "1.0.4 alpha 1"
     
     // Resource URIs
     static let xcodeProjResourceURI = "\(AppConstants.appName)://resources/xcodeProjects"
