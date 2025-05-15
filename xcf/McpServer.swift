@@ -423,7 +423,7 @@ struct McpServer {
     
     /// All available tools
     static let allTools = [
-        xcfTool, quickHelpTool, detailedHelpTool, snippetTool, analyzerTool, readDirTool,
+        xcfTool, listToolsTool, quickHelpTool, detailedHelpTool, snippetTool, analyzerTool, readDirTool,
         writeFileTool, readFileTool, cdDirTool,
         editFileTool, deleteFileTool,
         addDirTool, rmDirTool,
@@ -707,7 +707,7 @@ struct McpServer {
         help += "  rm_dir <path>               - Remove a directory\n\n"
         help += "Help Commands:\n"
         help += "  ?                           - Quick help for common commands\n"
-        help += "  help!                       - This detailed help message\n\n"
+        help += "  help                       - This detailed help message\n\n"
         help += "Other Tools:\n"
         help += "  snippet                     - Extract code snippets from files\n"
         help += "  analyzer                    - Analyze Swift code\n"

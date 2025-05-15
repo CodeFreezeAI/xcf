@@ -124,7 +124,7 @@ struct McpConfig {
     static let xcfToolName = AppConstants.appName
     static let snippetToolName = "snippet"
     static let quickHelpToolName = "?"
-    static let detailedHelpToolName = "help!"
+    static let detailedHelpToolName = "help"
     static let analyzerToolName = "analyzer"
     
     // Filesystem tool names
