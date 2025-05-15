@@ -1,94 +1,159 @@
 import Foundation
 import AppKit
 
-/// A struct responsible for handling all file system operations.
+/// A utility struct that provides file system operations with smart path resolution.
 struct XcfFileManager {
-    /// Read contents of a directory with optional file extension filter
-    /// - Parameters:
-    ///   - directoryPath: Path to the directory to read
-    ///   - fileExtension: Optional file extension to filter by
-    /// - Returns: Array of file paths
-    /// - Throws: FileManager errors
-    static func readDirectory(at directoryPath: String, fileExtension: String? = nil) throws -> [String] {
-        let filePaths = try FileManager.default.contentsOfDirectory(atPath: directoryPath)
-        if let ext = fileExtension {
-            return filePaths.filter { $0.hasSuffix(".\(ext)") }
-        }
-        return filePaths
-    }
-    
-    /// Create a directory at the specified path
-    /// - Parameter directoryPath: Path where to create the directory
-    /// - Throws: FileManager errors
-    static func createDirectory(at directoryPath: String) throws {
-        try FileManager.default.createDirectory(atPath: directoryPath, withIntermediateDirectories: true, attributes: nil)
-    }
-    
-    /// Delete a file at the specified path
-    /// - Parameter filePath: Path to the file to delete
-    /// - Throws: FileManager errors
-    static func deleteFile(at filePath: String) throws {
-        try FileManager.default.removeItem(atPath: filePath)
-    }
-    
-    /// Write content to a file
-    /// - Parameters:
-    ///   - content: Content to write
-    ///   - filePath: Path where to write the file
-    /// - Throws: File writing errors
-    static func writeFile(content: String, to filePath: String) throws {
-        try content.write(toFile: filePath, atomically: true, encoding: .utf8)
-    }
-    
-    /// Create a new file with content
-    /// - Parameters:
-    ///   - filePath: Path where to create the file
-    ///   - content: Content to write to the file
-    /// - Throws: File creation errors
-    static func createFile(at filePath: String, content: String) throws {
-        try content.write(toFile: filePath, atomically: true, encoding: .utf8)
-    }
-    
-    /// Read contents of a file
+    /// Reads the contents of a file
     /// - Parameter filePath: Path to the file to read
-    /// - Returns: File contents as string
-    /// - Throws: File reading errors
+    /// - Returns: The contents of the file as a string
+    /// - Throws: Error if file cannot be read
     static func readFile(at filePath: String) throws -> String {
-        // Validate file exists
-        let fileManager = FileManager.default
-        guard fileManager.fileExists(atPath: filePath) else {
-            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "File does not exist: \(filePath)"])
+        let (resolvedPath, warning) = FileFinder.resolveFilePath(filePath)
+        
+        guard FileManager.default.fileExists(atPath: resolvedPath) else {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileNotFound, filePath)])
         }
         
-        // Check file size
-        guard let attributes = try? fileManager.attributesOfItem(atPath: filePath),
-              let fileSize = attributes[FileAttributeKey.size] as? UInt64 else {
-            throw NSError(domain: "XcfFileManager", code: 2, userInfo: [NSLocalizedDescriptionKey: "Could not determine file size: \(filePath)"])
+        do {
+            let content = try String(contentsOfFile: resolvedPath, encoding: .utf8)
+            return warning.isEmpty ? content : warning + Format.newLine + Format.newLine + content
+        } catch {
+            throw error
         }
-        
-        // Set a reasonable size limit (10MB)
-        let sizeLimit: UInt64 = 10 * 1024 * 1024
-        guard fileSize < sizeLimit else {
-            throw NSError(domain: "XcfFileManager", code: 3, userInfo: [NSLocalizedDescriptionKey: "File is too large (> 10MB): \(filePath)"])
-        }
-        
-        return try String(contentsOfFile: filePath, encoding: .utf8)
     }
-
-    /// Lists files and directories at the specified path
+    
+    /// Writes content to a file
     /// - Parameters:
-    ///   - directoryPath: The path to list contents from
-    ///   - extension: Optional file extension filter (e.g., "swift")
-    /// - Returns: Array of file/directory paths, or empty array if operation failed
-    static func listDirectory(at directoryPath: String, extension fileExtension: String? = nil) throws -> [String] {
-        let contents = try FileManager.default.contentsOfDirectory(atPath: directoryPath)
+    ///   - content: The content to write
+    ///   - filePath: Path to the file to write to
+    /// - Throws: Error if file cannot be written
+    static func writeFile(content: String, to filePath: String) throws {
+        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
+        try content.write(toFile: resolvedPath, atomically: true, encoding: .utf8)
+    }
+    
+    /// Creates a new file with content
+    /// - Parameters:
+    ///   - filePath: Path where the file should be created
+    ///   - content: Initial content for the file
+    /// - Throws: Error if file cannot be created
+    static func createFile(at filePath: String, content: String) throws {
+        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
+        
+        guard !FileManager.default.fileExists(atPath: resolvedPath) else {
+            throw NSError(domain: "XcfFileManager", code: 2, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileAlreadyExists, filePath)])
+        }
+        
+        try content.write(toFile: resolvedPath, atomically: true, encoding: .utf8)
+    }
+    
+    /// Edits a specific range of lines in a file
+    /// - Parameters:
+    ///   - filePath: Path to the file to edit
+    ///   - startLine: First line to edit (1-indexed)
+    ///   - endLine: Last line to edit (1-indexed)
+    ///   - replacementContent: New content for the specified line range
+    /// - Throws: Error if file cannot be edited
+    static func editFile(at filePath: String, startLine: Int, endLine: Int, replacementContent: String) throws {
+        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
+        
+        guard FileManager.default.fileExists(atPath: resolvedPath) else {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileNotFound, filePath)])
+        }
+        
+        do {
+            let content = try String(contentsOfFile: resolvedPath, encoding: .utf8)
+            var lines = content.components(separatedBy: .newlines)
+            
+            guard startLine > 0, endLine <= lines.count, startLine <= endLine else {
+                throw NSError(domain: "XcfFileManager", code: 3, userInfo: [NSLocalizedDescriptionKey: ErrorMessages.invalidLineNumbers])
+            }
+            
+            let replacementLines = replacementContent.components(separatedBy: .newlines)
+            lines.replaceSubrange((startLine - 1)...(endLine - 1), with: replacementLines)
+            
+            let newContent = lines.joined(separator: "\n")
+            try newContent.write(toFile: resolvedPath, atomically: true, encoding: .utf8)
+        } catch {
+            throw error
+        }
+    }
+    
+    /// Deletes a file
+    /// - Parameter filePath: Path to the file to delete
+    /// - Throws: Error if file cannot be deleted
+    static func deleteFile(at filePath: String) throws {
+        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
+        
+        guard FileManager.default.fileExists(atPath: resolvedPath) else {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileNotFound, filePath)])
+        }
+        
+        try FileManager.default.removeItem(atPath: resolvedPath)
+    }
+    
+    /// Creates a new directory
+    /// - Parameter directoryPath: Path where the directory should be created
+    /// - Throws: Error if directory cannot be created
+    static func createDirectory(at directoryPath: String) throws {
+        let (resolvedPath, _) = FileFinder.resolveFilePath(directoryPath)
+        
+        guard !FileManager.default.fileExists(atPath: resolvedPath) else {
+            throw NSError(domain: "XcfFileManager", code: 2, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryAlreadyExists, directoryPath)])
+        }
+        
+        try FileManager.default.createDirectory(atPath: resolvedPath, withIntermediateDirectories: true)
+    }
+    
+    /// Removes a directory and its contents
+    /// - Parameter directoryPath: Path to the directory to remove
+    /// - Throws: Error if directory cannot be removed
+    static func removeDirectory(at directoryPath: String) throws {
+        let (resolvedPath, _) = FileFinder.resolveFilePath(directoryPath)
+        
+        guard FileManager.default.fileExists(atPath: resolvedPath) else {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, directoryPath)])
+        }
+        
+        try FileManager.default.removeItem(atPath: resolvedPath)
+    }
+    
+    /// Changes the current working directory
+    /// - Parameter directoryPath: Path to change to
+    /// - Throws: Error if directory cannot be changed
+    static func changeDirectory(to directoryPath: String) throws {
+        let (resolvedPath, _) = FileFinder.resolveFilePath(directoryPath)
+        
+        guard FileManager.default.fileExists(atPath: resolvedPath) else {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, directoryPath)])
+        }
+        
+        guard FileManager.default.changeCurrentDirectoryPath(resolvedPath) else {
+            throw NSError(domain: "XcfFileManager", code: 4, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.errorChangingDirectory, directoryPath)])
+        }
+    }
+    
+    /// Lists contents of a directory with optional file extension filter
+    /// - Parameters:
+    ///   - directoryPath: Path to the directory to list
+    ///   - fileExtension: Optional file extension to filter by
+    /// - Returns: Array of file paths in the directory
+    /// - Throws: Error if directory cannot be read
+    static func readDirectory(at directoryPath: String, fileExtension: String? = nil) throws -> [String] {
+        let (resolvedPath, _) = FileFinder.resolveFilePath(directoryPath)
+        
+        guard FileManager.default.fileExists(atPath: resolvedPath) else {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, directoryPath)])
+        }
+        
+        let contents = try FileManager.default.contentsOfDirectory(atPath: resolvedPath)
         
         if let ext = fileExtension {
-            return contents.filter { $0.hasSuffix(".\(ext)") }
-                .map { directoryPath + "/" + $0 }
-        } else {
-            return contents.map { directoryPath + "/" + $0 }
+            return contents.filter { $0.hasSuffix("." + ext) }
+                         .map { (resolvedPath as NSString).appendingPathComponent($0) }
         }
+        
+        return contents.map { (resolvedPath as NSString).appendingPathComponent($0) }
     }
     
     /// Shows a directory selection dialog and returns the selected path

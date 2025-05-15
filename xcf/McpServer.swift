@@ -22,10 +22,19 @@ struct McpServer {
         ])
     )
 
-    /// Tool for displaying help information
-    static let helpTool = Tool(
-        name: McpConfig.helpToolName,
-        description: McpConfig.helpToolDesc,
+    /// Tool for quick help (formerly help)
+    static let quickHelpTool = Tool(
+        name: McpConfig.quickHelpToolName,
+        description: McpConfig.quickHelpToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.stringType)
+        ])
+    )
+
+    /// Tool for detailed help
+    static let detailedHelpTool = Tool(
+        name: McpConfig.detailedHelpToolName,
+        description: McpConfig.detailedHelpToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.stringType)
         ])
@@ -103,6 +112,260 @@ struct McpServer {
         ])
     )
     
+    /// Tool for writing files
+    static let writeFileTool = Tool(
+        name: McpConfig.writeFileToolName,
+        description: McpConfig.writeFileToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                ]),
+                McpConfig.contentParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.contentParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string(McpConfig.contentParamName)])
+        ])
+    )
+
+    /// Tool for reading files
+    static let readFileTool = Tool(
+        name: McpConfig.readFileToolName,
+        description: McpConfig.readFileToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
+        ])
+    )
+
+    /// Tool for changing directory
+    static let cdDirTool = Tool(
+        name: McpConfig.cdDirToolName,
+        description: McpConfig.cdDirToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.directoryPathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.directoryPathParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.directoryPathParamName)])
+        ])
+    )
+
+    /// Tool for editing files
+    static let editFileTool = Tool(
+        name: McpConfig.editFileToolName,
+        description: McpConfig.editFileToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                ]),
+                McpConfig.startLineParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.integerType),
+                    McpConfig.descriptionKey: .string(McpConfig.startLineParamDesc)
+                ]),
+                McpConfig.endLineParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.integerType),
+                    McpConfig.descriptionKey: .string(McpConfig.endLineParamDesc)
+                ]),
+                McpConfig.replacementParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.replacementParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([
+                .string(McpConfig.filePathParamName),
+                .string(McpConfig.startLineParamName),
+                .string(McpConfig.endLineParamName),
+                .string(McpConfig.replacementParamName)
+            ])
+        ])
+    )
+
+    /// Tool for deleting files
+    static let deleteFileTool = Tool(
+        name: McpConfig.deleteFileToolName,
+        description: McpConfig.deleteFileToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
+        ])
+    )
+
+    /// Tool for adding directories
+    static let addDirTool = Tool(
+        name: McpConfig.addDirToolName,
+        description: McpConfig.addDirToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.directoryPathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.directoryPathParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.directoryPathParamName)])
+        ])
+    )
+
+    /// Tool for removing directories
+    static let rmDirTool = Tool(
+        name: McpConfig.rmDirToolName,
+        description: McpConfig.rmDirToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.directoryPathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.directoryPathParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.directoryPathParamName)])
+        ])
+    )
+
+    /// Tool for opening documents in Xcode
+    static let openDocTool = Tool(
+        name: McpConfig.openDocToolName,
+        description: McpConfig.openDocToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
+        ])
+    )
+
+    /// Tool for creating documents in Xcode
+    static let createDocTool = Tool(
+        name: McpConfig.createDocToolName,
+        description: McpConfig.createDocToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                ]),
+                McpConfig.contentParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.contentParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
+        ])
+    )
+
+    /// Tool for reading documents from Xcode
+    static let readDocTool = Tool(
+        name: McpConfig.readDocToolName,
+        description: McpConfig.readDocToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
+        ])
+    )
+
+    /// Tool for saving documents in Xcode
+    static let saveDocTool = Tool(
+        name: McpConfig.saveDocToolName,
+        description: McpConfig.saveDocToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
+        ])
+    )
+
+    /// Tool for editing documents in Xcode
+    static let editDocTool = Tool(
+        name: McpConfig.editDocToolName,
+        description: McpConfig.editDocToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                ]),
+                McpConfig.startLineParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.integerType),
+                    McpConfig.descriptionKey: .string(McpConfig.startLineParamDesc)
+                ]),
+                McpConfig.endLineParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.integerType),
+                    McpConfig.descriptionKey: .string(McpConfig.endLineParamDesc)
+                ]),
+                McpConfig.replacementParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.replacementParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([
+                .string(McpConfig.filePathParamName),
+                .string(McpConfig.startLineParamName),
+                .string(McpConfig.endLineParamName),
+                .string(McpConfig.replacementParamName)
+            ])
+        ])
+    )
+    
+    /// Tool for reading directories
+    static let readDirTool = Tool(
+        name: McpConfig.readDirToolName,
+        description: McpConfig.readDirToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.directoryPathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.directoryPathParamDesc)
+                ]),
+                McpConfig.fileExtensionParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.fileExtensionParamDesc)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.directoryPathParamName)])
+        ])
+    )
+    
     // MARK: - Resource Definitions
     
     /// Resource for accessing Xcode projects
@@ -159,7 +422,13 @@ struct McpServer {
     // MARK: - Collections
     
     /// All available tools
-    static let allTools = [xcfTool, listToolsTool, snippetTool, helpTool, analyzerTool]
+    static let allTools = [
+        xcfTool, quickHelpTool, detailedHelpTool, snippetTool, analyzerTool, readDirTool,
+        writeFileTool, readFileTool, cdDirTool,
+        editFileTool, deleteFileTool,
+        addDirTool, rmDirTool,
+        openDocTool, createDocTool, readDocTool, saveDocTool, editDocTool,
+    ]
     
     /// All available resources
     static let allResources = [xcodeProjResource, fileContentsResource, buildResultsResource]
@@ -312,11 +581,53 @@ struct McpServer {
         case McpConfig.snippetToolName:
             return try handleSnippetToolCall(params)
             
-        case McpConfig.helpToolName:
-            return handleHelpToolCall(params)
-            
         case McpConfig.analyzerToolName:
             return try handleAnalyzerToolCall(params)
+            
+        case McpConfig.quickHelpToolName:
+            return handleQuickHelpToolCall(params)
+            
+        case McpConfig.detailedHelpToolName:
+            return handleDetailedHelpToolCall(params)
+            
+        case McpConfig.writeFileToolName:
+            return try handleWriteFileToolCall(params)
+            
+        case McpConfig.readFileToolName:
+            return try handleReadFileToolCall(params)
+            
+        case McpConfig.cdDirToolName:
+            return try handleCdDirToolCall(params)
+            
+        case McpConfig.editFileToolName:
+            return try handleEditFileToolCall(params)
+            
+        case McpConfig.deleteFileToolName:
+            return try handleDeleteFileToolCall(params)
+            
+        case McpConfig.addDirToolName:
+            return try handleAddDirToolCall(params)
+            
+        case McpConfig.rmDirToolName:
+            return try handleRmDirToolCall(params)
+            
+        case McpConfig.openDocToolName:
+            return try handleOpenDocToolCall(params)
+            
+        case McpConfig.createDocToolName:
+            return try handleCreateDocToolCall(params)
+            
+        case McpConfig.readDocToolName:
+            return try handleReadDocToolCall(params)
+            
+        case McpConfig.saveDocToolName:
+            return try handleSaveDocToolCall(params)
+            
+        case McpConfig.editDocToolName:
+            return try handleEditDocToolCall(params)
+            
+        case McpConfig.readDirToolName:
+            return try handleReadDirToolCall(params)
             
         default:
             throw MCPError.invalidParams(String(format: ErrorMessages.unknownTool, params.name))
@@ -344,8 +655,19 @@ struct McpServer {
     /// - Returns: The result of the snippet tool call
     /// - Throws: Error if filePath is missing
     private static func handleSnippetToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments,
-              let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
+        }
+        
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+        } else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
         }
         
@@ -361,34 +683,251 @@ struct McpServer {
         )
     }
     
-    /// Handles a call to the help tool
-    /// - Parameter params: The parameters for the tool call
-    /// - Returns: The result of the help tool call
-    private static func handleHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
-        // Return the help text directly
+    /// Handles a call to the quick help tool
+    private static func handleQuickHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
         return CallTool.Result(content: [.text(McpConfig.helpText)])
     }
+
+    /// Handles a call to the detailed help tool
+    private static func handleDetailedHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
+        return CallTool.Result(content: [.text(getDetailedHelpText())])
+    }
+
+    /// Returns detailed help text for all tools
+    private static func getDetailedHelpText() -> String {
+        var help = "XCF Tool Commands:\n\n"
+        help += "File Operations:\n"
+        help += "  write_file <path> <content>  - Write content to a file\n"
+        help += "  read_file <path>            - Read content from a file\n"
+        help += "  edit_file <path> <start> <end> <content> - Edit specific lines in a file\n"
+        help += "  delete_file <path>          - Delete a file\n\n"
+        help += "Directory Operations:\n"
+        help += "  cd_dir <path>               - Change current directory\n"
+        help += "  add_dir <path>              - Create a new directory\n"
+        help += "  rm_dir <path>               - Remove a directory\n\n"
+        help += "Help Commands:\n"
+        help += "  ?                           - Quick help for common commands\n"
+        help += "  help!                       - This detailed help message\n\n"
+        help += "Other Tools:\n"
+        help += "  snippet                     - Extract code snippets from files\n"
+        help += "  analyzer                    - Analyze Swift code\n"
+        return help
+    }
     
-    /// Handles a call to the analyzer tool
+    /// Handles a call to the write file tool
     /// - Parameter params: The parameters for the tool call
-    /// - Returns: The result of the analyzer tool call
-    /// - Throws: Error if filePath is missing
-    private static func handleAnalyzerToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments,
-              let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
+    /// - Returns: The result of the write file tool call
+    /// - Throws: Error if filePath or content is missing
+    private static func handleWriteFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
         
-        let entireFile = arguments[McpConfig.entireFileParamName]?.boolValue ?? false
-        let startLine = arguments[McpConfig.startLineParamName]?.intValue
-        let endLine = arguments[McpConfig.endLineParamName]?.intValue
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+        } else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
         
-        return handleAnalyzerCodeSnippet(
-            filePath: filePath,
-            entireFile: entireFile,
-            startLine: startLine,
-            endLine: endLine
-        )
+        // Get content as the second argument or from the named parameter
+        let content: String
+        if let namedContent = arguments[McpConfig.contentParamName]?.stringValue {
+            content = namedContent
+        } else {
+            let keys = arguments.keys.sorted()
+            if keys.count >= 2, let secondArg = arguments[keys[1]]?.stringValue {
+                content = secondArg
+            } else {
+                return CallTool.Result(content: [.text("Missing content parameter")])
+            }
+        }
+        
+        do {
+            try XcfFileManager.writeFile(content: content, to: filePath)
+            return CallTool.Result(content: [.text(McpConfig.fileWrittenSuccessfully)])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorWritingFile, error.localizedDescription))])
+        }
+    }
+
+    /// Handles a call to the read file tool
+    private static func handleReadFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+        } else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        do {
+            let fileContents = try XcfFileManager.readFile(at: filePath)
+            return CallTool.Result(content: [.text(fileContents)])
+        } catch let error as NSError {
+            return CallTool.Result(content: [.text(error.localizedDescription)])
+        }
+    }
+
+    /// Handles a call to the change directory tool
+    private static func handleCdDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let directoryPath = arguments[McpConfig.directoryPathParamName]?.stringValue else {
+            return CallTool.Result(content: [.text(McpConfig.missingDirectoryPathParamError)])
+        }
+        
+        do {
+            try XcfFileManager.changeDirectory(to: directoryPath)
+            return CallTool.Result(content: [.text(McpConfig.directoryChangedSuccessfully)])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorChangingDirectory, error.localizedDescription))])
+        }
+    }
+
+    /// Handles a call to the edit file tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the edit file tool call
+    /// - Throws: Error if filePath, start line, end line, or replacement content is missing
+    private static func handleEditFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text(McpConfig.missingLineParamsError)])
+        }
+        
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+        } else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Get startLine as the second argument or from the named parameter
+        let startLine: Int
+        if let namedStartLine = arguments[McpConfig.startLineParamName]?.intValue {
+            startLine = namedStartLine
+        } else {
+            let keys = arguments.keys.sorted()
+            if keys.count >= 2, let secondArg = arguments[keys[1]]?.stringValue, let line = Int(secondArg) {
+                startLine = line
+            } else {
+                return CallTool.Result(content: [.text("Missing startLine parameter")])
+            }
+        }
+        
+        // Get endLine as the third argument or from the named parameter
+        let endLine: Int
+        if let namedEndLine = arguments[McpConfig.endLineParamName]?.intValue {
+            endLine = namedEndLine
+        } else {
+            let keys = arguments.keys.sorted()
+            if keys.count >= 3, let thirdArg = arguments[keys[2]]?.stringValue, let line = Int(thirdArg) {
+                endLine = line
+            } else {
+                return CallTool.Result(content: [.text("Missing endLine parameter")])
+            }
+        }
+        
+        // Get replacement content as the fourth argument or from the named parameter
+        let replacementContent: String
+        if let namedReplacement = arguments[McpConfig.replacementParamName]?.stringValue {
+            replacementContent = namedReplacement
+        } else {
+            let keys = arguments.keys.sorted()
+            if keys.count >= 4, let fourthArg = arguments[keys[3]]?.stringValue {
+                replacementContent = fourthArg
+            } else {
+                return CallTool.Result(content: [.text("Missing replacement content parameter")])
+            }
+        }
+        
+        do {
+            try XcfFileManager.editFile(at: filePath, startLine: startLine, endLine: endLine, replacementContent: replacementContent)
+            return CallTool.Result(content: [.text(McpConfig.fileEditedSuccessfully)])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorEditingFile, error.localizedDescription))])
+        }
+    }
+
+    /// Handles a call to the delete file tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the delete file tool call
+    /// - Throws: Error if filePath is missing
+    private static func handleDeleteFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+        } else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        do {
+            try XcfFileManager.deleteFile(at: filePath)
+            return CallTool.Result(content: [.text(McpConfig.fileDeletedSuccessfully)])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorDeletingFile, error.localizedDescription))])
+        }
+    }
+
+    /// Handles a call to the add directory tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the add directory tool call
+    /// - Throws: Error if directory path is missing
+    private static func handleAddDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let directoryPath = arguments[McpConfig.directoryPathParamName]?.stringValue else {
+            return CallTool.Result(content: [.text(McpConfig.missingDirectoryPathParamError)])
+        }
+        
+        do {
+            try XcfFileManager.createDirectory(at: directoryPath)
+            return CallTool.Result(content: [.text(McpConfig.directoryCreatedSuccessfully)])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorCreatingDirectory, error.localizedDescription))])
+        }
+    }
+
+    /// Handles a call to the remove directory tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the remove directory tool call
+    /// - Throws: Error if directory path is missing
+    private static func handleRmDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let directoryPath = arguments[McpConfig.directoryPathParamName]?.stringValue else {
+            return CallTool.Result(content: [.text(McpConfig.missingDirectoryPathParamError)])
+        }
+        
+        do {
+            try XcfFileManager.removeDirectory(at: directoryPath)
+            return CallTool.Result(content: [.text(McpConfig.directoryRemovedSuccessfully)])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorRemovingDirectory, error.localizedDescription))])
+        }
     }
     
     // MARK: - Resource Request Handling
@@ -624,6 +1163,39 @@ struct McpServer {
         }
     }
     
+    /// Handles a call to the analyzer tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the analyzer tool call
+    /// - Throws: Error if filePath is missing
+    private static func handleAnalyzerToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
+        }
+        
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+        } else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
+        }
+        
+        let entireFile = arguments[McpConfig.entireFileParamName]?.boolValue ?? false
+        let startLine = arguments[McpConfig.startLineParamName]?.intValue
+        let endLine = arguments[McpConfig.endLineParamName]?.intValue
+        
+        return handleAnalyzerCodeSnippet(
+            filePath: filePath,
+            entireFile: entireFile,
+            startLine: startLine,
+            endLine: endLine
+        )
+    }
+    
     // MARK: - Utility Methods
     
     /// Extracts a file path from a URI query string
@@ -666,20 +1238,43 @@ struct McpServer {
     /// Handles a call to the read directory tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the read directory tool call
-    /// - Throws: MCPError for invalid parameters or FileManager errors
+    /// - Throws: Error if directory cannot be read
     private static func handleReadDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments,
-              let directoryPath = arguments[McpConfig.directoryPathParamName]?.stringValue,
-              let fileExtension = arguments[McpConfig.fileExtensionParamName]?.stringValue else {
-            throw MCPError.invalidParams(McpConfig.missingDirectoryPathParamError)
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text(McpConfig.missingDirectoryPathParamError)])
+        }
+        
+        // Try to get directoryPath from arguments in two ways:
+        // 1. As a named parameter (directoryPath=...)
+        // 2. As a direct argument (first argument after command)
+        let directoryPath: String
+        if let namedPath = arguments[McpConfig.directoryPathParamName]?.stringValue {
+            directoryPath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            directoryPath = firstArg
+        } else {
+            return CallTool.Result(content: [.text(McpConfig.missingDirectoryPathParamError)])
+        }
+        
+        // Get fileExtension as the second argument or from the named parameter
+        let fileExtension: String?
+        if let namedExt = arguments[McpConfig.fileExtensionParamName]?.stringValue {
+            fileExtension = namedExt
+        } else {
+            let keys = arguments.keys.sorted()
+            if keys.count >= 2, let secondArg = arguments[keys[1]]?.stringValue {
+                fileExtension = secondArg
+            } else {
+                fileExtension = nil
+            }
         }
         
         do {
             let filePaths = try XcfFileManager.readDirectory(at: directoryPath, fileExtension: fileExtension)
-            let contents: [Tool.Content] = filePaths.map { .text($0) }
-            return CallTool.Result(content: contents)
+            let content = filePaths.joined(separator: McpConfig.newLineSeparator)
+            return CallTool.Result(content: [.text(content)])
         } catch {
-            throw MCPError.invalidParams(String(format: ErrorMessages.errorReadingDirectory, error.localizedDescription))
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingDirectory, error.localizedDescription))])
         }
     }
 
@@ -701,43 +1296,6 @@ struct McpServer {
         }
     }
 
-    /// Handles a call to the delete file tool
-    /// - Parameter params: The parameters for the tool call
-    /// - Returns: The result of the delete file tool call
-    /// - Throws: Error if filePath is missing
-    private static func handleDeleteFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments,
-              let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
-        }
-        
-        do {
-            try XcfFileManager.deleteFile(at: filePath)
-            return CallTool.Result(content: [.text(McpConfig.fileDeletedSuccessfully)])
-        } catch {
-            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorDeletingFile, error.localizedDescription))])
-        }
-    }
-
-    /// Handles a call to the write file tool
-    /// - Parameter params: The parameters for the tool call
-    /// - Returns: The result of the write file tool call
-    /// - Throws: Error if filePath or content is missing
-    private static func handleWriteFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments,
-              let filePath = arguments[McpConfig.filePathParamName]?.stringValue,
-              let content = arguments[McpConfig.contentParamName]?.stringValue else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
-        }
-        
-        do {
-            try XcfFileManager.writeFile(content: content, to: filePath)
-            return CallTool.Result(content: [.text(McpConfig.fileWrittenSuccessfully)])
-        } catch {
-            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorWritingFile, error.localizedDescription))])
-        }
-    }
-
     /// Handles a call to the create file tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the create file tool call
@@ -754,6 +1312,92 @@ struct McpServer {
             return CallTool.Result(content: [.text(McpConfig.fileCreatedSuccessfully)])
         } catch {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorCreatingFile, error.localizedDescription))])
+        }
+    }
+
+    /// Handles opening a document in Xcode
+    private static func handleOpenDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+        } else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        if XcfScript.openSwiftDocument(filePath: filePath) {
+            return CallTool.Result(content: [.text(McpConfig.documentOpenedSuccessfully)])
+        } else {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorOpeningFile, filePath))])
+        }
+    }
+
+    /// Handles creating a document in Xcode
+    private static func handleCreateDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        let content = arguments[McpConfig.contentParamName]?.stringValue ?? ""
+        
+        if XcfScript.createSwiftDocumentWithScriptingBridge(filePath: filePath, content: content) {
+            return CallTool.Result(content: [.text(McpConfig.documentCreatedSuccessfully)])
+        } else {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorCreatingFile, filePath))])
+        }
+    }
+
+    /// Handles reading a document from Xcode
+    private static func handleReadDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        if let content = XcfScript.readSwiftDocumentWithScriptingBridge(filePath: filePath) {
+            return CallTool.Result(content: [.text(content)])
+        } else {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, filePath))])
+        }
+    }
+
+    /// Handles saving a document in Xcode
+    private static func handleSaveDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        if XcfScript.writeSwiftDocumentWithScriptingBridge(filePath: filePath, content: "") {
+            return CallTool.Result(content: [.text(McpConfig.documentSavedSuccessfully)])
+        } else {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorWritingFile, filePath))])
+        }
+    }
+
+    /// Handles editing a document in Xcode
+    private static func handleEditDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let filePath = arguments[McpConfig.filePathParamName]?.stringValue,
+              let startLine = arguments[McpConfig.startLineParamName]?.intValue,
+              let endLine = arguments[McpConfig.endLineParamName]?.intValue,
+              let replacement = arguments[McpConfig.replacementParamName]?.stringValue else {
+            return CallTool.Result(content: [.text(McpConfig.missingLineParamsError)])
+        }
+        
+        if XcfScript.editSwiftDocumentWithScriptingBridge(filePath: filePath, startLine: startLine, endLine: endLine, replacement: replacement) {
+            return CallTool.Result(content: [.text(McpConfig.documentEditedSuccessfully)])
+        } else {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorEditingFile, filePath))])
         }
     }
 } 

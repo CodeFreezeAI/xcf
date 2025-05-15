@@ -93,6 +93,10 @@ struct ErrorMessages {
     static let missingDirectoryPathParamError = "Missing required directoryPath parameter"
     static let unknownResourceUriError = "Unknown resource URI: %@"
     static let unknownPromptNameError = "Unknown prompt name: %@"
+    
+    // Directory operation errors
+    static let errorChangingDirectory = "Error changing directory: %@"
+    static let errorRemovingDirectory = "Error removing directory: %@"
 }
 
 // Define success messages
@@ -119,43 +123,51 @@ struct McpConfig {
     static let listToolsName = "list"
     static let xcfToolName = AppConstants.appName
     static let snippetToolName = "snippet"
-    static let helpToolName = "help"
+    static let quickHelpToolName = "?"
+    static let detailedHelpToolName = "help!"
     static let analyzerToolName = "analyzer"
     
     // Filesystem tool names
-    static let readFileToolName = "read_file"
     static let writeFileToolName = "write_file"
-    static let createFileToolName = "create_file"
+    static let readFileToolName = "read_file"
+    static let readDirToolName = "read_dir"
+    static let cdDirToolName = "cd_dir"
     static let editFileToolName = "edit_file"
     static let deleteFileToolName = "delete_file"
-    static let openFileToolName = "open_file"
-    static let closeFileToolName = "close_file"
-    static let newFileToolName = "new_file"
-    static let removeFileToolName = "remove_file"
-    static let readDirToolName = "read_dir"
-    static let createDirToolName = "create_dir"
-    static let selectDirToolName = "select_dir"
+    static let addDirToolName = "add_dir"
+    static let rmDirToolName = "rm_dir"
+    
+    // ScriptingBridge tool names
+    static let openDocToolName = "open_doc"
+    static let createDocToolName = "create_doc"
+    static let readDocToolName = "read_doc"
+    static let saveDocToolName = "save_doc"
+    static let editDocToolName = "edit_doc"
     
     // Tool descriptions
     static let listToolsDesc = "Lists all available tools on this server"
     static let xcfToolDesc = "Execute an \(AppConstants.appName) action or command"
-    static let snippetToolDesc = "Extract code snippets from files in the current project (use entireFile=true to get full file content)"
-    static let helpToolDesc = "Displays help information about \(AppConstants.appName) actions and usage"
-    static let analyzerToolDesc = "Analyze Swift code for potential issues (use entireFile=true to analyze the full file)"
+    static let snippetToolDesc = "Extract code snippets from files in the current project"
+    static let quickHelpToolDesc = "Quick help for xcf commands"
+    static let detailedHelpToolDesc = "Detailed help for all available tools and commands"
+    static let analyzerToolDesc = "Analyze Swift code for potential issues"
     
     // Filesystem tool descriptions
-    static let readFileToolDesc = "Read the contents of a file using FileManager"
-    static let writeFileToolDesc = "Write content to a file using FileManager"
-    static let createFileToolDesc = "Create a new file with optional content using FileManager"
-    static let editFileToolDesc = "Edit specific lines in a file"
-    static let deleteFileToolDesc = "Delete a file using FileManager"
-    static let openFileToolDesc = "Open a file in Xcode using ScriptingBridge"
-    static let closeFileToolDesc = "Close a file in Xcode using ScriptingBridge"
-    static let newFileToolDesc = "Create a new file in Xcode using ScriptingBridge"
-    static let removeFileToolDesc = "Remove a file from Xcode using ScriptingBridge"
-    static let readDirToolDesc = "List contents of a directory using FileManager"
-    static let createDirToolDesc = "Create a new directory using FileManager"
-    static let selectDirToolDesc = "Show a dialog to select a directory using FileManager"
+    static let writeFileToolDesc = "Write content to a file"
+    static let readFileToolDesc = "Read content from a file"
+    static let readDirToolDesc = "List contents of a directory"
+    static let cdDirToolDesc = "Change current directory"
+    static let editFileToolDesc = "Edit content in a file"
+    static let deleteFileToolDesc = "Delete a file"
+    static let addDirToolDesc = "Create a new directory"
+    static let rmDirToolDesc = "Remove a directory"
+    
+    // ScriptingBridge tool descriptions
+    static let openDocToolDesc = "Open a document in Xcode"
+    static let createDocToolDesc = "Create a new document in Xcode"
+    static let readDocToolDesc = "Read document content from Xcode"
+    static let saveDocToolDesc = "Save document in Xcode"
+    static let editDocToolDesc = "Edit document content in Xcode"
     
     // Server config
     static let serverName = AppConstants.appName
@@ -246,18 +258,6 @@ struct McpConfig {
     static let unknownResourceUriError = "Unknown resource URI: %@"
     static let unknownPromptNameError = "Unknown prompt name: %@"
     
-    // File operation success messages
-    static let fileReadSuccessfully = "File read successfully"
-    static let fileWrittenSuccessfully = "File written successfully"
-    static let fileCreatedSuccessfully = "File created successfully"
-    static let fileEditedSuccessfully = "File edited successfully"
-    static let fileDeletedSuccessfully = "File deleted successfully"
-    static let fileOpenedSuccessfully = "File opened successfully"
-    static let fileClosedSuccessfully = "File closed successfully"
-    static let directoryCreatedSuccessfully = "Directory created successfully"
-    static let directoryReadSuccessfully = "Directory read successfully"
-    static let directorySelectedSuccessfully = "Directory selected successfully"
-    
     // Prompt templates
     static let buildProjectTemplate = "Please build the project at path: %@"
     static let runProjectTemplate = "Please run the project at path: %@"
@@ -302,6 +302,29 @@ struct McpConfig {
     
     // Query parameters
     static let filePathQueryParam = "filePath"
+    
+    // Operation success messages
+    static let fileReadSuccessfully = "File read successfully"
+    static let fileWrittenSuccessfully = "File written successfully"
+    static let fileCreatedSuccessfully = "File created successfully"
+    static let fileEditedSuccessfully = "File edited successfully"
+    static let fileDeletedSuccessfully = "File deleted successfully"
+    static let fileOpenedSuccessfully = "File opened successfully"
+    static let fileClosedSuccessfully = "File closed successfully"
+    static let directoryCreatedSuccessfully = "Directory created successfully"
+    static let directoryReadSuccessfully = "Directory read successfully"
+    static let directorySelectedSuccessfully = "Directory selected successfully"
+    static let directoryChangedSuccessfully = "Directory changed successfully"
+    static let directoryRemovedSuccessfully = "Directory removed successfully"
+    static let documentOpenedSuccessfully = "Document opened successfully"
+    static let documentCreatedSuccessfully = "Document created successfully"
+    static let documentReadSuccessfully = "Document read successfully"
+    static let documentSavedSuccessfully = "Document saved successfully"
+    static let documentEditedSuccessfully = "Document edited successfully"
+    
+    // Error messages
+    static let errorChangingDirectory = "Error changing directory: %@"
+    static let errorRemovingDirectory = "Error removing directory: %@"
 }
 
 // Define file extensions and formats
@@ -347,7 +370,7 @@ struct XcodeConstants {
 }
 
 // Help text for tools
- let toolsHelpText = """
+let toolsHelpText = """
 Available Tools:
 
 File Operations:

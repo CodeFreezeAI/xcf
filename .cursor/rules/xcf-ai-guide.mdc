@@ -79,14 +79,29 @@ For non-Cursor clients or users requiring project-level control, add these envir
 
 #### For AI Function Calls
 
-To get an entire file:
+Both direct paths and named parameters are supported:
+
 ```
-mcp_xcf_snippet(filePath="/full/path/to/file.swift", entireFile=true)
+// Direct path format
+mcp_xcf_snippet "/full/path/to/file.swift"
+mcp_xcf_analyzer "/full/path/to/file.swift"
+mcp_xcf_xcf action="lz /full/path/to/file.swift"
+
+// Named parameter format (traditional)
+mcp_xcf_snippet filePath="/full/path/to/file.swift" entireFile=true
+mcp_xcf_analyzer filePath="/full/path/to/file.swift" entireFile=true
+mcp_xcf_xcf action="lz filePath=/full/path/to/file.swift"
 ```
 
 For specific line ranges:
 ```
-mcp_xcf_snippet(filePath="/full/path/to/file.swift", startLine=10, endLine=20)
+// Direct path format
+mcp_xcf_snippet "/full/path/to/file.swift" 10 20
+mcp_xcf_analyzer "/full/path/to/file.swift" 10 20
+
+// Named parameter format
+mcp_xcf_snippet filePath="/full/path/to/file.swift" startLine=10 endLine=20
+mcp_xcf_analyzer filePath="/full/path/to/file.swift" startLine=10 endLine=20
 ```
 
 #### For Human Commands
@@ -94,17 +109,17 @@ mcp_xcf_snippet(filePath="/full/path/to/file.swift", startLine=10, endLine=20)
 When using the `xcf` tool in command line mode, use the MCP function directly:
 
 ```
-mcp_xcf_snippet filePath="file.swift" entireFile=true
+mcp_xcf_snippet filePath="/Users/toddbruss/Documents/GitHub/xcf/xcf/main.swift" entireFile=true
 ```
 
 For specific line ranges:
 ```
-mcp_xcf_snippet filePath="file.swift" startLine=10 endLine=20
+mcp_xcf_snippet filePath="/Users/toddbruss/Documents/GitHub/xcf/xcf/main.swift" startLine=10 endLine=20
 ```
 
 #### Smart Path Resolution
 
-When using the snippet tool, xcf intelligently tries to locate your file if the exact path isn't found:
+When using any file operation in xcf (snippets, analysis, file operations, etc.), the tool intelligently tries to locate your file if the exact path isn't found:
 
 1. First tries the exact path provided
 2. Resolves relative paths using the current working directory
@@ -113,10 +128,20 @@ When using the snippet tool, xcf intelligently tries to locate your file if the 
 5. Searches recursively in workspace folders with limited depth
 6. As a last resort, performs a fuzzy search for similar filenames
 
+This smart path resolution is used consistently across ALL operations:
+- File reading/writing (`readFile`, `writeFile`, etc.)
+- Code snippets (`snippet`)
+- Code analysis (`analyze`, `lz`)
+- Directory operations (`cd`, `mkdir`, etc.)
+- File editing and deletion
+- Document operations in Xcode
+
 This makes it easier to work with files without specifying full paths. When possible, you can use just the filename:
 
 ```
-mcp_xcf_snippet(filePath="Constants.swift", entireFile=true)
+mcp_xcf_snippet filePath="Constants.swift" entireFile=true
+mcp_xcf_analyzer filePath="Constants.swift" entireFile=true
+mcp_xcf_xcf action="edit Constants.swift"
 ```
 
 ### Swift Code Analyzer
@@ -138,17 +163,17 @@ mcp_xcf_analyzer(filePath="/full/path/to/file.swift", startLine=10, endLine=50)
 When using the command line mode, use:
 
 ```
-mcp_xcf_analyzer filePath="file.swift" entireFile=true
+mcp_xcf_analyzer filePath="/Users/toddbruss/Documents/GitHub/xcf/xcf/main.swift" entireFile=true
 ```
 
 For the shorthand version:
 ```
-mcp_xcf_xcf action="lz file.swift"
+mcp_xcf_xcf action="lz /Users/toddbruss/Documents/GitHub/xcf/xcf/main.swift"
 ```
 
 To analyze a specific line range:
 ```
-mcp_xcf_analyzer filePath="file.swift" startLine=10 endLine=50
+mcp_xcf_analyzer filePath="/Users/toddbruss/Documents/GitHub/xcf/xcf/main.swift" startLine=10 endLine=50
 ```
 
 #### Analysis Features
@@ -187,8 +212,8 @@ The analyzer output is formatted in Markdown by default, making it easy to read 
 ### Code Exploration & Analysis
 1. `mcp_xcf_xcf action="use xcf"` - Activate the tool
 2. `mcp_xcf_xcf action="current"` - Check current project
-3. `mcp_xcf_snippet filePath="filename.swift" entireFile=true` - Examine code
-4. `mcp_xcf_analyzer filePath="filename.swift" entireFile=true` - Analyze code for issues
+3. `mcp_xcf_snippet filePath="/Users/toddbruss/Documents/GitHub/xcf/xcf/main.swift" entireFile=true` - Examine code
+4. `mcp_xcf_analyzer filePath="/Users/toddbruss/Documents/GitHub/xcf/xcf/main.swift" entireFile=true` - Analyze code for issues
 5. `mcp_xcf_xcf action="build"` - Test changes
 
 ## Troubleshooting

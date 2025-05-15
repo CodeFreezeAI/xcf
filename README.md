@@ -117,6 +117,25 @@ For specific line ranges:
 xcf snippet filename.swift 10 20
 ```
 
+You can use either format for file operations:
+
+```
+xcf snippet /path/to/file.swift                 // Direct path
+xcf snippet filePath=/path/to/file.swift        // Named parameter
+
+xcf analyze /path/to/file.swift                 // Direct path
+xcf analyze filePath=/path/to/file.swift        // Named parameter
+
+xcf lz /path/to/file.swift                      // Direct path (shorthand)
+xcf lz filePath=/path/to/file.swift             // Named parameter (shorthand)
+```
+
+For specific line ranges:
+```
+xcf snippet /path/to/file.swift 10 20           // Direct path with line range
+xcf snippet filePath=/path/to/file.swift startLine=10 endLine=20  // Named parameters
+```
+
 ### For AI Assistants
 
 When using xcf through MCP tools, use this syntax:
@@ -141,16 +160,27 @@ When a file isn't found at the exact path, xcf will intelligently search for it 
 5. Searches recursively in workspace folders with limited depth
 6. As a last resort, performs a fuzzy search for similar filenames
 
-This means you can usually just use the filename without any path:
+This smart path resolution is used consistently across ALL file operations in xcf, including:
+- File reading and writing
+- Code snippets and analysis
+- Directory operations
+- File editing and deletion
+- Document operations in Xcode
+
+This means you can usually just use the filename without any path for any operation:
 
 ```
 xcf snippet Constants.swift    // For humans
+xcf analyze Constants.swift    // For humans
+xcf edit Constants.swift       // For humans
 ```
 
 Or for AI assistants:
 
 ```
 mcp_xcf_snippet filePath="Constants.swift" entireFile=true
+mcp_xcf_analyzer filePath="Constants.swift" entireFile=true
+mcp_xcf_xcf action="edit Constants.swift"
 ```
 
 ## 🔍 Swift Code Analysis

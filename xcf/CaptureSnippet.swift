@@ -310,33 +310,6 @@ struct CaptureSnippet {
     /// - Parameter filePath: The path to the file
     /// - Returns: A string identifier for the detected programming language
     public static func determineLanguage(from filePath: String) -> String {
-        let fileExtension = (filePath as NSString).pathExtension.lowercased()
-        
-        switch fileExtension {
-        case "swift":
-            return "swift"
-        case "m", "h":
-            return "objc"
-        case "c", "cpp", "cc":
-            return "c"
-        case "js":
-            return "javascript"
-        case "py":
-            return "python"
-        case "rb":
-            return "ruby"
-        case "java":
-            return "java"
-        case "html", "htm":
-            return "html"
-        case "css":
-            return "css"
-        case "json":
-            return "json"
-        case "xml":
-            return "xml"
-        default:
-            return "text"
-        }
+        return FileFinder.determineLanguage(from: filePath)
     }
 }
