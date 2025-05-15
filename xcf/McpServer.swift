@@ -650,26 +650,8 @@ struct McpServer {
             throw MCPError.invalidParams(McpConfig.missingFilePathParamError)
         }
         
-        // Validate file exists before attempting to read
-        let fileManager = FileManager.default
-        guard fileManager.fileExists(atPath: filePath) else {
-            throw MCPError.invalidParams("File does not exist: \(filePath)")
-        }
-        
-        // Check file size to avoid loading extremely large files
-        guard let attributes = try? fileManager.attributesOfItem(atPath: filePath),
-              let fileSize = attributes[.size] as? UInt64 else {
-            throw MCPError.invalidParams("Could not determine file size: \(filePath)")
-        }
-        
-        // Set a reasonable size limit (10MB)
-        let sizeLimit: UInt64 = 10 * 1024 * 1024
-        guard fileSize < sizeLimit else {
-            throw MCPError.invalidParams("File is too large (> 10MB): \(filePath)")
-        }
-        
         do {
-            let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
+            let fileContents = try XcfFileManager.readFile(at: filePath)
             let content = Resource.Content.text(
                 fileContents,
                 uri: "\(McpConfig.fileContentsResourceURI)/\(filePath)",
@@ -677,21 +659,101 @@ struct McpServer {
             )
             return ReadResource.Result(contents: [content])
         } catch let error as NSError {
-            // More specific error handling based on the error code
-            if error.domain == NSCocoaErrorDomain {
-                switch error.code {
-                case NSFileReadNoSuchFileError:
-                    throw MCPError.invalidParams("File not found: \(filePath)")
-                case NSFileReadNoPermissionError:
-                    throw MCPError.invalidParams("Permission denied to read file: \(filePath)")
-                case NSFileReadCorruptFileError:
-                    throw MCPError.invalidParams("File is corrupt: \(filePath)")
-                default:
-                    throw MCPError.invalidParams(String(format: ErrorMessages.errorReadingFile, error.localizedDescription))
-                }
-            } else {
-                throw MCPError.invalidParams(String(format: ErrorMessages.errorReadingFile, error.localizedDescription))
-            }
+            throw MCPError.invalidParams(error.localizedDescription)
+        }
+    }
+
+    /// Handles a call to the read directory tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the read directory tool call
+    /// - Throws: MCPError for invalid parameters or FileManager errors
+    private static func handleReadDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let directoryPath = arguments[McpConfig.directoryPathParamName]?.stringValue,
+              let fileExtension = arguments[McpConfig.fileExtensionParamName]?.stringValue else {
+            throw MCPError.invalidParams(McpConfig.missingDirectoryPathParamError)
+        }
+        
+        do {
+            let filePaths = try XcfFileManager.readDirectory(at: directoryPath, fileExtension: fileExtension)
+            let contents: [Tool.Content] = filePaths.map { .text($0) }
+            return CallTool.Result(content: contents)
+        } catch {
+            throw MCPError.invalidParams(String(format: ErrorMessages.errorReadingDirectory, error.localizedDescription))
+        }
+    }
+
+    /// Handles a call to the create directory tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the create directory tool call
+    /// - Throws: MCPError for invalid parameters or FileManager errors
+    private static func handleCreateDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let directoryPath = arguments[McpConfig.directoryPathParamName]?.stringValue else {
+            throw MCPError.invalidParams(McpConfig.missingDirectoryPathParamError)
+        }
+        
+        do {
+            try XcfFileManager.createDirectory(at: directoryPath)
+            return CallTool.Result(content: [.text(McpConfig.directoryCreatedSuccessfully)])
+        } catch {
+            throw MCPError.invalidParams(String(format: ErrorMessages.errorCreatingDirectory, error.localizedDescription))
+        }
+    }
+
+    /// Handles a call to the delete file tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the delete file tool call
+    /// - Throws: Error if filePath is missing
+    private static func handleDeleteFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        do {
+            try XcfFileManager.deleteFile(at: filePath)
+            return CallTool.Result(content: [.text(McpConfig.fileDeletedSuccessfully)])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorDeletingFile, error.localizedDescription))])
+        }
+    }
+
+    /// Handles a call to the write file tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the write file tool call
+    /// - Throws: Error if filePath or content is missing
+    private static func handleWriteFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let filePath = arguments[McpConfig.filePathParamName]?.stringValue,
+              let content = arguments[McpConfig.contentParamName]?.stringValue else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        do {
+            try XcfFileManager.writeFile(content: content, to: filePath)
+            return CallTool.Result(content: [.text(McpConfig.fileWrittenSuccessfully)])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorWritingFile, error.localizedDescription))])
+        }
+    }
+
+    /// Handles a call to the create file tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the create file tool call
+    /// - Throws: Error if filePath or content is missing
+    private static func handleCreateFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let filePath = arguments[McpConfig.filePathParamName]?.stringValue,
+              let content = arguments[McpConfig.contentParamName]?.stringValue else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        do {
+            try XcfFileManager.createFile(at: filePath, content: content)
+            return CallTool.Result(content: [.text(McpConfig.fileCreatedSuccessfully)])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorCreatingFile, error.localizedDescription))])
         }
     }
 } 

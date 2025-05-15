@@ -228,21 +228,7 @@ class XcfSwiftScript {
     /// - Returns: True if successful, false otherwise
     func createSwiftDocumentWithFileManager(filePath: String, content: String = "") -> Bool {
         do {
-            // Ensure the file path ends with .swift
-            let path = filePath.hasSuffix(".swift") ? filePath : filePath + ".swift"
-            
-            // Check if file already exists
-            if FileManager.default.fileExists(atPath: path) {
-                print("File already exists at: \(path)")
-                return false
-            }
-            
-            // Create the directory structure if it doesn't exist
-            let directory = (path as NSString).deletingLastPathComponent
-            try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
-            
-            // Write the content to the new file
-            try content.write(toFile: path, atomically: true, encoding: .utf8)
+            try XcfFileManager.createSwiftDocument(filePath: filePath, content: content)
             return true
         } catch {
             print("Error creating file: \(error.localizedDescription)")
@@ -285,14 +271,7 @@ class XcfSwiftScript {
     /// - Returns: The file contents as a string, or nil if the operation failed
     func readSwiftDocumentWithFileManager(filePath: String) -> String? {
         do {
-            // Ensure the file exists and is a Swift file
-            if !filePath.hasSuffix(".swift") || !FileManager.default.fileExists(atPath: filePath) {
-                print("File does not exist or is not a Swift file: \(filePath)")
-                return nil
-            }
-            
-            // Read the file contents
-            return try String(contentsOfFile: filePath, encoding: .utf8)
+            return try XcfFileManager.readFile(at: filePath)
         } catch {
             print("Error reading file: \(error.localizedDescription)")
             return nil
@@ -327,14 +306,7 @@ class XcfSwiftScript {
     /// - Returns: True if successful, false otherwise
     func writeSwiftDocumentWithFileManager(filePath: String, content: String) -> Bool {
         do {
-            // Ensure the file path ends with .swift
-            if !filePath.hasSuffix(".swift") {
-                print("File is not a Swift file: \(filePath)")
-                return false
-            }
-            
-            // Write the content to the file
-            try content.write(toFile: filePath, atomically: true, encoding: .utf8)
+            try XcfFileManager.writeFile(content: content, to: filePath)
             return true
         } catch {
             print("Error writing to file: \(error.localizedDescription)")
@@ -377,33 +349,13 @@ class XcfSwiftScript {
     ///   - replacement: The replacement text
     /// - Returns: True if successful, false otherwise
     func editSwiftDocumentWithFileManager(filePath: String, startLine: Int, endLine: Int, replacement: String) -> Bool {
-        guard let content = readSwiftDocumentWithFileManager(filePath: filePath) else {
+        do {
+            _ = try XcfFileManager.editSwiftDocument(filePath: filePath, startLine: startLine, endLine: endLine, replacement: replacement)
+            return true
+        } catch {
+            print("Error editing file: \(error.localizedDescription)")
             return false
         }
-        
-        let lines = content.components(separatedBy: .newlines)
-        
-        // Validate line numbers
-        guard startLine > 0, endLine > 0, startLine <= lines.count, endLine <= lines.count, startLine <= endLine else {
-            print("Invalid line numbers. File has \(lines.count) lines.")
-            return false
-        }
-        
-        // Create new content with replacement
-        var newLines = lines
-        
-        // Remove the lines to be replaced
-        newLines.removeSubrange(startLine - 1...endLine - 1)
-        
-        // Insert the replacement text at the start line
-        let replacementLines = replacement.components(separatedBy: .newlines)
-        newLines.insert(contentsOf: replacementLines, at: startLine - 1)
-        
-        // Join the lines back together
-        let newContent = newLines.joined(separator: "\n")
-        
-        // Write the modified content back to the file
-        return writeSwiftDocumentWithFileManager(filePath: filePath, content: newContent)
     }
     
     /// Edits a Swift document by replacing text at specified range using Xcode ScriptingBridge
@@ -504,20 +456,7 @@ class XcfSwiftScript {
     /// Shows a directory selection dialog and returns the selected path
     /// - Returns: The selected directory path, or nil if cancelled
     func selectDirectory() -> String? {
-        let dialog = NSOpenPanel()
-        
-        dialog.title = "Select a directory"
-        dialog.showsResizeIndicator = true
-        dialog.showsHiddenFiles = false
-        dialog.canChooseFiles = false
-        dialog.canChooseDirectories = true
-        dialog.allowsMultipleSelection = false
-        
-        if dialog.runModal() == .OK {
-            return dialog.url?.path
-        } else {
-            return nil
-        }
+        return XcfFileManager.selectDirectory()
     }
     
     // MARK: - File Deletion
@@ -527,13 +466,8 @@ class XcfSwiftScript {
     /// - Returns: True if successful, false otherwise
     func deleteFileWithFileManager(at filePath: String) -> Bool {
         do {
-            if FileManager.default.fileExists(atPath: filePath) {
-                try FileManager.default.removeItem(atPath: filePath)
-                return true
-            } else {
-                print("File does not exist at: \(filePath)")
-                return false
-            }
+            try XcfFileManager.deleteFile(at: filePath)
+            return true
         } catch {
             print("Error deleting file: \(error.localizedDescription)")
             return false
@@ -577,12 +511,6 @@ class XcfSwiftScript {
         }
         
         // Then delete the file using FileManager
-        do {
-            try FileManager.default.removeItem(atPath: filePath)
-            return true
-        } catch {
-            print("Error deleting file: \(error.localizedDescription)")
-            return false
-        }
+        return deleteFileWithFileManager(at: filePath)
     }
 }
