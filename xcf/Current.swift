@@ -41,9 +41,14 @@ class XcfXcodeProjectManager {
         
         currentProject = projectPath
         
-        // Get the directory containing the project file
-        let projectURL = URL(fileURLWithPath: projectPath)
-        let projectDir = projectURL.deletingLastPathComponent().path
+        // Get the project folder by removing .xcodeproj or .xcworkspace suffix
+        // This preserves the project name folder at the end
+        let projectDir: String
+        if projectPath.hasSuffix(".xcodeproj") {
+            projectDir = String(projectPath.dropLast(".xcodeproj".count))
+        } else {
+            projectDir = String(projectPath.dropLast(".xcworkspace".count))
+        }
         
         // Set currentFolder to the project dir
         currentFolder = projectDir
@@ -76,9 +81,13 @@ class XcfXcodeProjectManager {
                                ProcessInfo.processInfo.environment["XCODE_PROJECT_PATH"] {
                 currentFolder = folderPath
             } else if let projectPath = currentProject {
-                // Get the directory containing the project file
-                let projectURL = URL(fileURLWithPath: projectPath)
-                currentFolder = projectURL.deletingLastPathComponent().path
+                // Get the project folder by removing .xcodeproj or .xcworkspace suffix
+                // This preserves the project name folder at the end
+                if projectPath.hasSuffix(".xcodeproj") {
+                    currentFolder = String(projectPath.dropLast(".xcodeproj".count))
+                } else if projectPath.hasSuffix(".xcworkspace") {
+                    currentFolder = String(projectPath.dropLast(".xcworkspace".count))
+                }
             }
         }
         
