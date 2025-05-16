@@ -30,6 +30,14 @@ struct Actions {
     static let lz = "lz" // Short alias for analyze
 }
 
+// Environment variable constants
+struct EnvVarKeys {
+    static let xcodeProject = "XCODE_PROJECT"
+    static let workspaceFolderPaths = "WORKSPACE_FOLDER_PATHS"
+    static let xcodeProjectFolder = "XCODE_PROJECT_FOLDER"
+    static let xcodeProjectPath = "XCODE_PROJECT_PATH"
+}
+
 // Define error messages
 struct ErrorMessages {
     // MARK: - Project Selection Errors
@@ -38,6 +46,7 @@ struct ErrorMessages {
     static let invalidProjectSelection = "That's not a valid selection. Try 'open 1' to select the first project."
     static let projectOutOfRange = "Project %@ doesn't exist. I only found %@ projects."
     static let noProjectInWorkspace = "I couldn't find a project in your workspace."
+    static let invalidProjectPath = "Warning: %@ is not a valid Xcode project or workspace path"
     
     // MARK: - Action Errors
     static let unrecognizedAction = "I don't understand '%@'. Try 'help' to see what I can do."
@@ -123,7 +132,7 @@ struct McpConfig {
     static let xcfToolName = AppConstants.appName
     static let snippetToolName = "snippet"
     static let quickHelpToolName = "?"
-    static let detailedHelpToolName = "help"
+    static let helpToolName = "help"
     static let analyzerToolName = "analyzer"
     static let useXcfToolName = "use_xcf"
     
@@ -147,9 +156,9 @@ struct McpConfig {
     // Tool descriptions
     static let listToolsDesc = "Lists all available tools on this server"
     static let xcfToolDesc = "Execute an \(AppConstants.appName) action or command"
-    static let snippetToolDesc = "Extract code snippets from files in the current project"
-    static let quickHelpToolDesc = "Quick help for xcf commands"
-    static let detailedHelpToolDesc = "Detailed help for all available tools and commands"
+    static let snippetToolDesc = "Extract code snippets from files"
+    static let quickHelpToolDesc = "Quick help for xcf actions only"
+    static let helpToolDesc = "Regular help with common examples"
     static let analyzerToolDesc = "Analyze Swift code for potential issues"
     static let useXcfToolDesc = "Activate XCF mode"
     
@@ -279,30 +288,7 @@ struct McpConfig {
     static let errorStartingServer = "Error starting MCP server: %@"
     
     // Help text
-    static let helpText = """
-xcf <action>:
-grant - Grant Xcode automation permissions
-show - List open projects
-open # - Select project by number
-current - Show selected project
-build - Build current project
-run - Run current project
-env - Show environment variables
-pwd - Show current folder (aliases: dir, path)
-analyze <file> - Analyze Swift code
-lz <file> - Short for analyze
-? - Show this help
-help - Show detailed tool help
-
-Examples:
-xcf show
-xcf open 1
-xcf current
-xcf build
-xcf run
-xcf analyze main.swift
-xcf lz main.swift
-"""
+    static let helpText = HelpText.basic
     
     // MIME types
     static let plainTextMimeType = "text/plain"
@@ -381,97 +367,148 @@ struct XcodeConstants {
     static let issueFormat = "%@:%d:%d [%@] %@"
 }
 
-// Help text for tools
-let toolsHelpText = """
-Available Tools:
+// Define help text
+struct HelpText {
+    // Quick help for xcf actions only
+    static let basic = """
+XCF Actions:
+? - Show this quick help
+help - Show regular help with examples
 
-File Operations:
-- read_file: Read contents of a file
-  Parameters:
-    - filePath: Path to the file to read
-    Example: {"name": "read_file", "arguments": {"filePath": "path/to/file"}}
+Core Actions:
+grant - Grant Xcode automation permissions
+show - List open projects
+open # - Select project by number
+current - Show selected project
+build - Build current project
+run - Run current project
+env - Show environment variables
+pwd - Show current folder (aliases: dir, path)
+analyze <file> - Analyze Swift code
+lz <file> - Short for analyze
 
-- write_file: Write content to a file
-  Parameters:
-    - filePath: Path to the file to write
-    - content: Content to write to the file
-    Example: {"name": "write_file", "arguments": {"filePath": "path/to/file", "content": "file content"}}
-
-- create_file: Create a new file with FileManager
-  Parameters:
-    - filePath: Path where to create the file
-    - content: Initial content (optional)
-    Example: {"name": "create_file", "arguments": {"filePath": "path/to/file", "content": "initial content"}}
-
-- new_file: Create a new file in Xcode
-  Parameters:
-    - filePath: Path where to create the file
-    - content: Initial content (optional)
-    Example: {"name": "new_file", "arguments": {"filePath": "path/to/file", "content": "initial content"}}
-
-- delete_file: Delete a file with FileManager
-  Parameters:
-    - filePath: Path to the file to delete
-    Example: {"name": "delete_file", "arguments": {"filePath": "path/to/file"}}
-
-- remove_file: Remove a file from Xcode
-  Parameters:
-    - filePath: Path to the file to remove
-    Example: {"name": "remove_file", "arguments": {"filePath": "path/to/file"}}
-
-- open_file: Open a file in Xcode
-  Parameters:
-    - filePath: Path to the file to open
-    Example: {"name": "open_file", "arguments": {"filePath": "path/to/file"}}
-
-- close_file: Close a file in Xcode
-  Parameters:
-    - filePath: Path to the file to close
-    Example: {"name": "close_file", "arguments": {"filePath": "path/to/file"}}
-
-Directory Operations:
-- read_dir: List contents of a directory
-  Parameters:
-    - directoryPath: Path to the directory to read
-    - fileExtension: Filter by file extension
-    Example: {"name": "read_dir", "arguments": {"directoryPath": "path/to/dir", "fileExtension": "swift"}}
-
-- create_dir: Create a new directory
-  Parameters:
-    - directoryPath: Path where to create the directory
-    Example: {"name": "create_dir", "arguments": {"directoryPath": "path/to/dir"}}
-
-- select_dir: Show a dialog to select a directory
-  Parameters: none
-  Example: {"name": "select_dir", "arguments": {}}
-
-Code Analysis:
-- snippet: Extract code snippets from files
-  Parameters:
-    - filePath: Path to the file
-    - entireFile: true to get entire file, false for line range
-    - startLine: Starting line number (when entireFile is false)
-    - endLine: Ending line number (when entireFile is false)
-    Example: {"name": "snippet", "arguments": {"filePath": "path/to/file", "entireFile": true}}
-    Example: {"name": "snippet", "arguments": {"filePath": "path/to/file", "startLine": 10, "endLine": 20}}
-
-- analyzer: Analyze Swift code for potential issues
-  Parameters:
-    - filePath: Path to the file to analyze
-    - entireFile: true to analyze entire file, false for line range
-    - startLine: Starting line number (when entireFile is false)
-    - endLine: Ending line number (when entireFile is false)
-    Example: {"name": "analyzer", "arguments": {"filePath": "path/to/file", "entireFile": true}}
-    Example: {"name": "analyzer", "arguments": {"filePath": "path/to/file", "startLine": 10, "endLine": 20}}
-
-Other Tools:
-- list: List all available tools
-  Parameters: none
-  Example: {"name": "list", "arguments": {}}
-
-- help: Show this help information
-  Parameters: none
-  Example: {"name": "help", "arguments": {}}
-
-Note: All file paths can be absolute or relative to the current working directory.
+Examples:
+xcf show
+xcf open 1
+xcf current
+xcf build
+xcf run
+xcf analyze main.swift
+xcf lz main.swift
 """
+
+    // Regular help with common examples
+    static let detailed = """
+Tool Commands:
+
+File Tools:
+read_file <file>
+Read content from a file
+Example: read_file main.swift
+Example: read_file src/utils.swift
+Example: read_file ../shared/config.swift
+Example: read_file ../../other/project/file.swift
+Example: read_file /Users/username/Projects/app/main.swift
+
+write_file <file> <content>
+Write content to a file
+Example: write_file test.txt "Hello World"
+Example: write_file src/config.json '{"key": "value"}'
+Example: write_file ../shared/types.swift 'import Foundation'
+
+edit_file <file> <start> <end> <content>
+Edit specific lines in a file
+Example: edit_file main.swift 10 20 "new content"
+Example: edit_file src/test.swift 5 5 "import UIKit"
+Example: edit_file ../shared/types.swift 1 10 "new code"
+
+delete_file <file>
+Delete a file
+Example: delete_file test.txt
+Example: delete_file src/old/backup.swift
+Example: delete_file ../backup/old.swift
+
+Directory Tools:
+cd_dir <path>
+Change directory
+Example: cd_dir .
+Example: cd_dir src
+Example: cd_dir ..
+Example: cd_dir ../shared
+
+read_dir [path] [extension]
+List directory contents
+Example: read_dir .
+Example: read_dir src
+Example: read_dir ../shared
+Example: read_dir src swift
+
+add_dir <path>
+Create directory
+Example: add_dir utils
+Example: add_dir src/models
+Example: add_dir ../shared/types
+
+rm_dir <path>
+Remove directory
+Example: rm_dir temp
+Example: rm_dir src/cache
+Example: rm_dir ../old
+
+Xcode Tools:
+open_doc <file>
+Open document in Xcode
+Example: open_doc main.swift
+Example: open_doc src/views/main.swift
+Example: open_doc ../shared/helpers.swift
+
+create_doc <file> [content]
+Create new Xcode document
+Example: create_doc test.swift
+Example: create_doc src/models/user.swift
+Example: create_doc ../shared/types.swift
+
+read_doc <file>
+Read Xcode document
+Example: read_doc main.swift
+Example: read_doc src/views/main.swift
+Example: read_doc ../shared/helpers.swift
+
+save_doc <file>
+Save Xcode document
+Example: save_doc main.swift
+Example: save_doc src/views/main.swift
+Example: save_doc ../shared/helpers.swift
+
+edit_doc <file> <start> <end> <content>
+Edit Xcode document
+Example: edit_doc main.swift 10 20 "new code"
+Example: edit_doc src/views/main.swift 5 10 "new code"
+Example: edit_doc ../shared/helpers.swift 1 5 "new code"
+
+Analysis Tools:
+snippet <file> [start] [end]
+Extract code snippets
+Example: snippet main.swift
+Example: snippet src/utils.swift
+Example: snippet ../shared/types.swift
+Example: snippet main.swift 10 20
+
+analyzer <file> [start] [end]
+Analyze Swift code
+Example: analyzer main.swift
+Example: analyzer src/models/user.swift
+Example: analyzer ../shared/types.swift
+Example: analyzer main.swift 10 20
+
+Notes:
+- All paths can be:
+  - In current directory: file.swift
+  - In child directories: src/file.swift
+  - In parent directory: ../file.swift
+  - Multiple directories up: ../../file.swift
+  - Full system paths: /Users/username/project/file.swift
+- Content with spaces should be quoted
+- Use either ' or " for quoting content
+"""
+}

@@ -22,19 +22,37 @@ struct McpServer {
         ])
     )
 
-    /// Tool for quick help (formerly help)
+    /// Tool for quick help (xcf actions only)
     static let quickHelpTool = Tool(
-        name: McpConfig.quickHelpToolName,
-        description: McpConfig.quickHelpToolDesc,
+        name: "?",
+        description: "Quick help for xcf actions only",
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.stringType)
         ])
     )
 
-    /// Tool for detailed help
-    static let detailedHelpTool = Tool(
-        name: McpConfig.detailedHelpToolName,
-        description: McpConfig.detailedHelpToolDesc,
+    /// Tool for regular help
+    static let helpTool = Tool(
+        name: "help",
+        description: "Regular help with common examples",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.stringType)
+        ])
+    )
+
+    /// Tool for super detailed help
+    static let superDetailedHelpTool = Tool(
+        name: "help!",
+        description: "Super detailed help with all tools and examples",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.stringType)
+        ])
+    )
+
+    /// Tool for tools reference
+    static let toolsReferenceTool = Tool(
+        name: "tools",
+        description: "Show detailed reference for all tools including AI function calls",
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.stringType)
         ])
@@ -432,12 +450,13 @@ struct McpServer {
     
     /// All available tools
     static let allTools = [
-        xcfTool, listToolsTool, quickHelpTool, detailedHelpTool, snippetTool, analyzerTool, readDirTool,
+        xcfTool, listToolsTool, quickHelpTool, helpTool, snippetTool, analyzerTool, readDirTool,
         writeFileTool, readFileTool, cdDirTool,
         editFileTool, deleteFileTool,
         addDirTool, rmDirTool,
         openDocTool, createDocTool, readDocTool, saveDocTool, editDocTool,
         useXcfTool,
+        toolsReferenceTool,
     ]
     
     /// All available resources
@@ -605,8 +624,11 @@ struct McpServer {
         case McpConfig.quickHelpToolName:
             return handleQuickHelpToolCall(params)
             
-        case McpConfig.detailedHelpToolName:
-            return handleDetailedHelpToolCall(params)
+        case McpConfig.helpToolName:
+            return handleHelpToolCall(params)
+            
+        case McpConfig.superDetailedHelpToolName:
+            return handleSuperDetailedHelpToolCall(params)
             
         case McpConfig.useXcfToolName:
             return CallTool.Result(content: [.text(SuccessMessages.xcfActive)])
@@ -649,6 +671,9 @@ struct McpServer {
             
         case McpConfig.readDirToolName:
             return try handleReadDirToolCall(params)
+            
+        case "tools":
+            return handleToolsReferenceToolCall(params)
             
         default:
             throw MCPError.invalidParams(String(format: ErrorMessages.unknownTool, params.name))
@@ -704,113 +729,26 @@ struct McpServer {
         )
     }
     
-    /// Handles a call to the quick help tool
+    /// Handles a call to the quick help tool (xcf actions only)
     private static func handleQuickHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
-        return CallTool.Result(content: [.text(McpConfig.helpText)])
+        return CallTool.Result(content: [.text(HelpText.basic)])
     }
 
-    /// Handles a call to the detailed help tool
-    private static func handleDetailedHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
-        return CallTool.Result(content: [.text(getDetailedHelpText())])
+    /// Handles a call to the regular help tool
+    private static func handleHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
+        return CallTool.Result(content: [.text(HelpText.detailed)])
     }
 
-    /// Returns detailed help text for all tools
-    private static func getDetailedHelpText() -> String {
-        return """
-Tool Commands:
-
-File Tools:
-read_file <file>
-Read content from a file
-Example: read_file main.swift
-Example: read_file src/utils.swift
-Example: read_file . test.swift (fuzzy search)
-
-write_file <file> <content>
-Write content to a file
-Example: write_file test.txt "Hello World"
-Example: write_file config.json '{"key": "value"}'
-Example: write_file main.swift 'import Foundation'
-
-edit_file <file> <start> <end> <content>
-Edit specific lines in a file
-Example: edit_file main.swift 10 20 "new content"
-Example: edit_file test.swift 5 5 "import UIKit"
-
-delete_file <file>
-Delete a file
-Example: delete_file test.txt
-Example: delete_file old/backup.swift
-
-Directory Tools:
-cd_dir <path>
-Change directory
-Example: cd_dir src
-Example: cd_dir ..
-Example: cd_dir .
-
-read_dir [path] [extension]
-List directory contents
-Example: read_dir
-Example: read_dir src
-Example: read_dir . swift
-
-add_dir <path>
-Create directory
-Example: add_dir utils
-Example: add_dir src/models
-
-rm_dir <path>
-Remove directory
-Example: rm_dir temp
-Example: rm_dir build/cache
-
-Xcode Tools:
-open_doc <file>
-Open document in Xcode
-Example: open_doc main.swift
-Example: open_doc . utils.swift
-
-create_doc <file> [content]
-Create new Xcode document
-Example: create_doc test.swift
-Example: create_doc utils.swift "import Foundation"
-
-read_doc <file>
-Read Xcode document
-Example: read_doc main.swift
-Example: read_doc . test.swift
-
-save_doc <file>
-Save Xcode document
-Example: save_doc main.swift
-
-edit_doc <file> <start> <end> <content>
-Edit Xcode document
-Example: edit_doc main.swift 10 20 "new code"
-
-Analysis Tools:
-snippet <file> [start] [end]
-Extract code snippets
-Example: snippet main.swift
-Example: snippet utils.swift 10 20
-Example: snippet . test.swift (fuzzy search)
-
-analyzer <file> [start] [end]
-Analyze Swift code
-Example: analyzer main.swift
-Example: analyzer utils.swift 10 20
-Example: analyzer . test.swift
-
-Notes:
-- All file operations support fuzzy matching
-- Use . for current directory, .. for parent
-- Paths can be relative or absolute
-- Content with spaces should be quoted
-- Use either ' or " for quoting content
-"""
+    /// Handles a call to the super detailed help tool
+    private static func handleSuperDetailedHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
+        return CallTool.Result(content: [.text(HelpText.toolsReference)])
     }
-    
+
+    /// Handles a call to the tools reference tool
+    private static func handleToolsReferenceToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
+        return CallTool.Result(content: [.text(HelpText.toolsReference)])
+    }
+
     /// Handles a call to the write file tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the write file tool call
@@ -1290,7 +1228,7 @@ Notes:
     /// - Throws: File access errors
     private static func createCodeSnippetMessage(filePath: String) throws -> Prompt.Message {
         let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
-        let language = CaptureSnippet.determineLanguage(from: filePath)
+        let language = FileFinder.determineLanguage(from: filePath)
         let resourceUri = "\(McpConfig.fileContentsResourceURI)/\(filePath)"
         
         return Prompt.Message(
@@ -1313,7 +1251,7 @@ Notes:
     /// - Returns: The extracted code snippet
     private static func handleCodeSnippet(filePath: String, entireFile: Bool, startLine: Int? = nil, endLine: Int? = nil) -> CallTool.Result {
         // Resolve the file path using multiple strategies
-        let (resolvedPath, warning) = CaptureSnippet.resolveFilePath(filePath)
+        let (resolvedPath, warning) = FuzzyLogicService.findFile(filePath)
         
         // Validate file path - use the resolved path
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
@@ -1341,7 +1279,7 @@ Notes:
     private static func handleEntireFileSnippet(filePath: String, warning: String = "") -> CallTool.Result {
         do {
             let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
-            let language = CaptureSnippet.determineLanguage(from: filePath)
+            let language = FileFinder.determineLanguage(from: filePath)
             return CallTool.Result(content: [.text(warning + String(format: McpConfig.codeBlockFormat, language, fileContents))])
         } catch {
             return CallTool.Result(content: [.text(warning + String(format: ErrorMessages.errorReadingFile, error.localizedDescription))])
