@@ -943,32 +943,26 @@ Notes:
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
         
-        // Get the raw command string and clean up spaces
-        let rawCommand = arguments.values.compactMap { $0.stringValue }.joined(separator: " ")
-        
-        // Remove "read_file" from the start and trim spaces
-        let commandPrefix = McpConfig.readFileToolName
-        guard rawCommand.lowercased().hasPrefix(commandPrefix.lowercased()) else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
-        }
-        
-        // Get everything after "read_file" and trim spaces
-        let afterCommand = String(rawCommand.dropFirst(commandPrefix.count)).trimmingCharacters(in: .whitespaces)
-        
         // Try to get filePath from arguments in two ways:
         // 1. As a named parameter (filePath=...)
-        // 2. As a direct argument after command
+        // 2. As a direct argument (first argument after command)
         let filePath: String
         if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
-            filePath = namedPath.trimmingCharacters(in: .whitespaces)
-        } else if !afterCommand.isEmpty {
-            filePath = afterCommand
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
         } else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
         
+        // Use FileFinder to resolve the actual file path
+        let (resolvedPath, warning) = FileFinder.resolveFilePath(filePath)
+        
         do {
-            let fileContents = try XcfFileManager.readFile(at: filePath)
+            let fileContents = try XcfFileManager.readFile(at: resolvedPath)
+            if !warning.isEmpty {
+                return CallTool.Result(content: [.text(warning + "\n\n" + fileContents)])
+            }
             return CallTool.Result(content: [.text(fileContents)])
         } catch let error as NSError {
             return CallTool.Result(content: [.text(error.localizedDescription)])

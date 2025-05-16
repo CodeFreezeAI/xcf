@@ -172,7 +172,7 @@ struct McpConfig {
     
     // Server config
     static let serverName = AppConstants.appName
-    static let serverVersion = "1.0.4 alpha 1"
+    static let serverVersion = "1.0.4"
     
     // Resource URIs
     static let xcodeProjResourceURI = "\(AppConstants.appName)://resources/xcodeProjects"
@@ -275,7 +275,7 @@ struct McpConfig {
     static let filePathPlaceholder = "{{filePath}}"
     
     // Main app messages
-    static let welcomeMessage = "**********************\n \(AppConstants.appName) Xcode MCP Server \n**** 1.0.2 xfc.ai ****\n*** Copyright 2025 ***\nXCodeFreeze Automation\n***** V IX MMXXV *****\n"
+    static let welcomeMessage = "**********************\n \(AppConstants.appName) Xcode MCP Server \n**** \(McpConfig.serverVersion) xfc.ai ****\n*** Copyright 2025 ***\nXCodeFreeze Automation\n***** V IX MMXXV *****\n"
     static let errorStartingServer = "Error starting MCP server: %@"
     
     // Help text
@@ -340,7 +340,8 @@ xcf lz main.swift
 
 // Define file extensions and formats
 struct Format {
-    static let xcodeFileExtension = ".xc"
+    static let xcodeProjExtension = ".xcodeproj"
+    static let xcodeWorkExtension = ".xcworkspace"
     static let projectListFormat = "%d. %@\n"
     static let newLine = "\n"
     static let spaceSeparator = " "

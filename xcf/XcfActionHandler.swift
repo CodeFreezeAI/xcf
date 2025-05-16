@@ -92,10 +92,14 @@ struct XcfActionHandler {
     }
     
     /// Gets a sorted list of open Xcode projects
-    /// - Parameter ext: The file extension to look for (defaults to .xc)
-    /// - Returns: An array of paths to open Xcode projects, sorted alphabetically
-    public static func getSortedXcodeProjects(ext: String = Format.xcodeFileExtension) -> [String] {
-        return XcfScript.getXcodeDocumentPaths(ext: ext)
+    /// - Returns: An array of paths to open Xcode projects and workspaces, sorted alphabetically
+    public static func getSortedXcodeProjects() -> [String] {
+        // Get both .xcodeproj and .xcworkspace files
+        let projFiles = XcfScript.getXcodeDocumentPaths(ext: Format.xcodeProjExtension)
+        let workFiles = XcfScript.getXcodeDocumentPaths(ext: Format.xcodeWorkExtension)
+        
+        // Combine and sort all files
+        return (projFiles + workFiles).sorted()
     }
     
     // MARK: - Project Selection
