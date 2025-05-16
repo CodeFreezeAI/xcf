@@ -23,8 +23,6 @@ struct XcfActionHandler {
         let lowercasedAction = action.lowercased()
        
         switch lowercasedAction {
-        case Actions.useXcf:
-            return SuccessMessages.xcfActive
         case Actions.help, Actions.xcf, Actions.xcf + Format.spaceSeparator + Actions.help:
             return getHelpText()
         case Actions.grant:

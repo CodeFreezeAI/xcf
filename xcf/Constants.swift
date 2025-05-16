@@ -21,7 +21,6 @@ struct Actions {
     static let run = "run"
     static let build = "build"
     static let grant = "grant"
-    static let useXcf = "use \(AppConstants.appName)"
     static let current = "current"
     static let env = "env"
     static let pwd = "pwd"
@@ -126,6 +125,7 @@ struct McpConfig {
     static let quickHelpToolName = "?"
     static let detailedHelpToolName = "help"
     static let analyzerToolName = "analyzer"
+    static let useXcfToolName = "use_xcf"
     
     // Filesystem tool names
     static let writeFileToolName = "write_file"
@@ -151,6 +151,7 @@ struct McpConfig {
     static let quickHelpToolDesc = "Quick help for xcf commands"
     static let detailedHelpToolDesc = "Detailed help for all available tools and commands"
     static let analyzerToolDesc = "Analyze Swift code for potential issues"
+    static let useXcfToolDesc = "Activate XCF mode"
     
     // Filesystem tool descriptions
     static let writeFileToolDesc = "Write content to a file"
@@ -279,19 +280,29 @@ struct McpConfig {
     
     // Help text
     static let helpText = """
-    \(AppConstants.appName) actions:
-    - use \(AppConstants.appName): Activate \(AppConstants.appName) mode
-    - grant: permission to use xcode automation
-    - show: [show a list of open xc projects and workspaces]
-    - open #: [open xc project or workspace]
-    - run: Execute the current \(AppConstants.appName) project
-    - build: Build the current \(AppConstants.appName) project
-    - current: Display the currently selected project
-    - env: Show all environment variables
-    - pwd: Show current working folder (aliases: dir, path)
-    - analyze [filePath] [--entireFile | --startLine # --endLine #]: Analyze Swift code for potential issues
-    - lz [filePath] [--entireFile | --startLine # --endLine #]: Short alias for analyze command
-    """
+xcf <action>:
+grant - Grant Xcode automation permissions
+show - List open projects
+open # - Select project by number
+current - Show selected project
+build - Build current project
+run - Run current project
+env - Show environment variables
+pwd - Show current folder (aliases: dir, path)
+analyze <file> - Analyze Swift code
+lz <file> - Short for analyze
+? - Show this help
+help - Show detailed tool help
+
+Examples:
+xcf show
+xcf open 1
+xcf current
+xcf build
+xcf run
+xcf analyze main.swift
+xcf lz main.swift
+"""
     
     // MIME types
     static let plainTextMimeType = "text/plain"

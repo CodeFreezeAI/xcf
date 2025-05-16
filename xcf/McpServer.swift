@@ -56,6 +56,15 @@ struct McpServer {
         ])
     )
     
+    /// Tool for activating XCF mode
+    static let useXcfTool = Tool(
+        name: McpConfig.useXcfToolName,
+        description: McpConfig.useXcfToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.stringType)
+        ])
+    )
+    
     /// Tool for extracting code snippets from files
     static let snippetTool = Tool(
         name: McpConfig.snippetToolName,
@@ -428,6 +437,7 @@ struct McpServer {
         editFileTool, deleteFileTool,
         addDirTool, rmDirTool,
         openDocTool, createDocTool, readDocTool, saveDocTool, editDocTool,
+        useXcfTool,
     ]
     
     /// All available resources
@@ -598,6 +608,9 @@ struct McpServer {
         case McpConfig.detailedHelpToolName:
             return handleDetailedHelpToolCall(params)
             
+        case McpConfig.useXcfToolName:
+            return CallTool.Result(content: [.text(SuccessMessages.xcfActive)])
+            
         case McpConfig.writeFileToolName:
             return try handleWriteFileToolCall(params)
             
@@ -703,23 +716,99 @@ struct McpServer {
 
     /// Returns detailed help text for all tools
     private static func getDetailedHelpText() -> String {
-        var help = "XCF Tool Commands:\n\n"
-        help += "File Operations:\n"
-        help += "  write_file <path> <content>  - Write content to a file\n"
-        help += "  read_file <path>            - Read content from a file\n"
-        help += "  edit_file <path> <start> <end> <content> - Edit specific lines in a file\n"
-        help += "  delete_file <path>          - Delete a file\n\n"
-        help += "Directory Operations:\n"
-        help += "  cd_dir <path>               - Change current directory\n"
-        help += "  add_dir <path>              - Create a new directory\n"
-        help += "  rm_dir <path>               - Remove a directory\n\n"
-        help += "Help Commands:\n"
-        help += "  ?                           - Quick help for common commands\n"
-        help += "  help                       - This detailed help message\n\n"
-        help += "Other Tools:\n"
-        help += "  snippet                     - Extract code snippets from files\n"
-        help += "  analyzer                    - Analyze Swift code\n"
-        return help
+        return """
+Tool Commands:
+
+File Tools:
+read_file <file>
+Read content from a file
+Example: read_file main.swift
+Example: read_file src/utils.swift
+Example: read_file . test.swift (fuzzy search)
+
+write_file <file> <content>
+Write content to a file
+Example: write_file test.txt "Hello World"
+Example: write_file config.json '{"key": "value"}'
+Example: write_file main.swift 'import Foundation'
+
+edit_file <file> <start> <end> <content>
+Edit specific lines in a file
+Example: edit_file main.swift 10 20 "new content"
+Example: edit_file test.swift 5 5 "import UIKit"
+
+delete_file <file>
+Delete a file
+Example: delete_file test.txt
+Example: delete_file old/backup.swift
+
+Directory Tools:
+cd_dir <path>
+Change directory
+Example: cd_dir src
+Example: cd_dir ..
+Example: cd_dir .
+
+read_dir [path] [extension]
+List directory contents
+Example: read_dir
+Example: read_dir src
+Example: read_dir . swift
+
+add_dir <path>
+Create directory
+Example: add_dir utils
+Example: add_dir src/models
+
+rm_dir <path>
+Remove directory
+Example: rm_dir temp
+Example: rm_dir build/cache
+
+Xcode Tools:
+open_doc <file>
+Open document in Xcode
+Example: open_doc main.swift
+Example: open_doc . utils.swift
+
+create_doc <file> [content]
+Create new Xcode document
+Example: create_doc test.swift
+Example: create_doc utils.swift "import Foundation"
+
+read_doc <file>
+Read Xcode document
+Example: read_doc main.swift
+Example: read_doc . test.swift
+
+save_doc <file>
+Save Xcode document
+Example: save_doc main.swift
+
+edit_doc <file> <start> <end> <content>
+Edit Xcode document
+Example: edit_doc main.swift 10 20 "new code"
+
+Analysis Tools:
+snippet <file> [start] [end]
+Extract code snippets
+Example: snippet main.swift
+Example: snippet utils.swift 10 20
+Example: snippet . test.swift (fuzzy search)
+
+analyzer <file> [start] [end]
+Analyze Swift code
+Example: analyzer main.swift
+Example: analyzer utils.swift 10 20
+Example: analyzer . test.swift
+
+Notes:
+- All file operations support fuzzy matching
+- Use . for current directory, .. for parent
+- Paths can be relative or absolute
+- Content with spaces should be quoted
+- Use either ' or " for quoting content
+"""
     }
     
     /// Handles a call to the write file tool
