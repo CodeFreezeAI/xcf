@@ -205,14 +205,22 @@ class XcfSwiftScript {
             return false
         }
         
+        // Use FileFinder to resolve the path
+        let (resolvedPath, warning) = FileFinder.resolveFilePath(filePath)
+        
+        // If there was a warning, print it
+        if !warning.isEmpty {
+            print(warning)
+        }
+        
         // Verify the file exists and is a Swift file
-        if !filePath.hasSuffix(".swift") || !FileManager.default.fileExists(atPath: filePath) {
-            print("File does not exist or is not a Swift file: \(filePath)")
+        if !resolvedPath.hasSuffix(".swift") || !FileManager.default.fileExists(atPath: resolvedPath) {
+            print("File does not exist or is not a Swift file: \(resolvedPath)")
             return false
         }
         
         // Try to open the document
-        if let _ = xcode.open?(filePath as Any) {
+        if let _ = xcode.open?(resolvedPath as Any) {
             return true
         }
         
