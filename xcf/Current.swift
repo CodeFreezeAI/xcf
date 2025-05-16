@@ -45,17 +45,6 @@ class XcfXcodeProjectManager {
         let projectURL = URL(fileURLWithPath: projectPath)
         let projectDir = projectURL.deletingLastPathComponent().path
         
-        // Get project filename without extension to use as project folder
-        let lastPathComponent = projectURL.lastPathComponent
-        let projectName: String
-        
-        if lastPathComponent.hasSuffix(".xcodeproj") {
-            projectName = String(lastPathComponent.dropLast(".xcodeproj".count))
-        } else {
-            // Must be .xcworkspace
-            projectName = String(lastPathComponent.dropLast(".xcworkspace".count))
-        }
-        
         // Set currentFolder to the project dir
         currentFolder = projectDir
         

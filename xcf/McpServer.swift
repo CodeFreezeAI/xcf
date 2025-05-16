@@ -730,35 +730,119 @@ struct McpServer {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
+
+        // Get the raw command string
+        let rawCommand = arguments.values.compactMap { $0.stringValue }.joined(separator: " ")
         
-        // Try to get filePath from arguments in two ways:
-        // 1. As a named parameter (filePath=...)
-        // 2. As a direct argument (first argument after command)
-        let filePath: String
-        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
-            filePath = namedPath
-        } else if let firstArg = arguments.first?.value.stringValue {
-            filePath = firstArg
-        } else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
-        }
+        // Common file extensions to look for
+        let commonExtensions = [".txt", ".swift", ".c", ".h", ".cpp", ".m", ".json", ".yaml", ".yml", ".md", ".py", ".rb", ".js", ".html", ".css"]
         
-        // Get content as the second argument or from the named parameter
-        let content: String
-        if let namedContent = arguments[McpConfig.contentParamName]?.stringValue {
-            content = namedContent
-        } else {
-            let keys = arguments.keys.sorted()
-            if keys.count >= 2, let secondArg = arguments[keys[1]]?.stringValue {
-                content = secondArg
-            } else {
-                return CallTool.Result(content: [.text("Missing content parameter")])
+        // First, try to find the filename by looking for common extensions
+        var filePath = ""
+        var contentStartIndex: String.Index = rawCommand.endIndex
+        var foundExtension = false
+        
+        // Look for quoted content first
+        let quoteMarkers = ["\"", "'", "```", "```swift"]
+        var content = ""
+        
+        for marker in quoteMarkers {
+            if let range = rawCommand.range(of: marker) {
+                // Found a quote marker, look for the closing quote
+                let endMarker = marker == "```swift" ? "```" : marker
+                if let endRange = rawCommand[range.upperBound...].range(of: endMarker) {
+                    // Extract everything between the quotes
+                    content = String(rawCommand[range.upperBound..<endRange.lowerBound])
+                    
+                    // The filename must be before the first quote
+                    let beforeQuote = String(rawCommand[..<range.lowerBound]).trimmingCharacters(in: .whitespaces)
+                    
+                    // Try to find a valid filename in the part before the quote
+                    for ext in commonExtensions {
+                        if let fileRange = beforeQuote.range(of: ext) {
+                            // Look for the start of the filename by finding the last space before the extension
+                            let beforeExt = beforeQuote[..<fileRange.upperBound]
+                            if let lastSpace = beforeExt.lastIndex(of: " ") {
+                                filePath = String(beforeExt[lastSpace...]).trimmingCharacters(in: .whitespaces)
+                            } else {
+                                filePath = String(beforeExt)
+                            }
+                            foundExtension = true
+                            break
+                        }
+                    }
+                    
+                    if foundExtension {
+                        break
+                    }
+                }
             }
         }
         
+        // If no quoted content found, try to find filename by extension
+        if !foundExtension {
+            for ext in commonExtensions {
+                if let range = rawCommand.range(of: ext) {
+                    // Look for the start of the filename by finding the last space before the extension
+                    let beforeExt = rawCommand[..<range.upperBound]
+                    if let lastSpace = beforeExt.lastIndex(of: " ") {
+                        filePath = String(beforeExt[lastSpace...]).trimmingCharacters(in: .whitespaces)
+                        contentStartIndex = range.upperBound
+                        foundExtension = true
+                        break
+                    } else {
+                        filePath = String(beforeExt)
+                        contentStartIndex = range.upperBound
+                        foundExtension = true
+                        break
+                    }
+                }
+            }
+            
+            // If we found a filename but no quoted content, use everything after the filename as content
+            if foundExtension && content.isEmpty {
+                content = String(rawCommand[contentStartIndex...]).trimmingCharacters(in: .whitespaces)
+            }
+        }
+        
+        // If still no filename found, try using named parameters
+        if !foundExtension {
+            if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+                filePath = namedPath
+                if let namedContent = arguments[McpConfig.contentParamName]?.stringValue {
+                    content = namedContent
+                    foundExtension = true
+                }
+            }
+        }
+        
+        // If still no filename found, use the first argument and everything else as content
+        if !foundExtension {
+            if let firstArg = arguments.first?.value.stringValue {
+                filePath = firstArg
+                let keys = arguments.keys.sorted()
+                if keys.count >= 2 {
+                    let contentArgs = keys.dropFirst().compactMap { arguments[$0]?.stringValue }
+                    content = contentArgs.joined(separator: " ")
+                }
+            }
+        }
+        
+        // Validate we have both a filename and content
+        if filePath.isEmpty {
+            return CallTool.Result(content: [.text("Could not determine filename. Please provide a filename with a valid extension.")])
+        }
+        
+        if content.isEmpty {
+            return CallTool.Result(content: [.text("No content provided to write to the file.")])
+        }
+        
+        // Use FileFinder to resolve the actual file path
+        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
+        
         do {
-            try XcfFileManager.writeFile(content: content, to: filePath)
-            return CallTool.Result(content: [.text(McpConfig.fileWrittenSuccessfully)])
+            try XcfFileManager.writeFile(content: content, to: resolvedPath)
+            return CallTool.Result(content: [.text("Successfully wrote content to file: \(resolvedPath)")])
         } catch {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorWritingFile, error.localizedDescription))])
         }
@@ -792,14 +876,50 @@ struct McpServer {
 
     /// Handles a call to the change directory tool
     private static func handleCdDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments,
-              let directoryPath = arguments[McpConfig.directoryPathParamName]?.stringValue else {
-            return CallTool.Result(content: [.text(McpConfig.missingDirectoryPathParamError)])
+        // Get the current folder first as we'll need it
+        guard let currentFolder = XcfXcodeProjectManager.shared.currentFolder else {
+            return CallTool.Result(content: [.text("No current folder is set. Please select a project first.")])
+        }
+
+        // If no arguments provided, show current directory
+        if params.arguments == nil || params.arguments?.isEmpty == true {
+            return CallTool.Result(content: [.text("Current directory: \(currentFolder)")])
+        }
+
+        let arguments = params.arguments!
+        
+        // Determine the directory to change to
+        let directoryPath: String
+        if let namedPath = arguments[McpConfig.directoryPathParamName]?.stringValue {
+            // Case 1: Named parameter
+            if namedPath == "." {
+                directoryPath = currentFolder
+            } else if namedPath == ".." {
+                directoryPath = (currentFolder as NSString).deletingLastPathComponent
+            } else {
+                let (resolvedPath, _) = FileFinder.resolveFilePath(namedPath)
+                directoryPath = resolvedPath
+            }
+        } else if let firstArg = arguments.first?.value.stringValue {
+            // Case 2: First argument
+            if firstArg == "." {
+                directoryPath = currentFolder
+            } else if firstArg == ".." {
+                directoryPath = (currentFolder as NSString).deletingLastPathComponent
+            } else {
+                let (resolvedPath, _) = FileFinder.resolveFilePath(firstArg)
+                directoryPath = resolvedPath
+            }
+        } else {
+            // Default to showing current directory
+            return CallTool.Result(content: [.text("Current directory: \(currentFolder)")])
         }
         
         do {
+            // Update both FileManager's current directory and XcfXcodeProjectManager's currentFolder
             try XcfFileManager.changeDirectory(to: directoryPath)
-            return CallTool.Result(content: [.text(McpConfig.directoryChangedSuccessfully)])
+            XcfXcodeProjectManager.shared.currentFolder = directoryPath
+            return CallTool.Result(content: [.text("Changed directory to: \(directoryPath)")])
         } catch {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorChangingDirectory, error.localizedDescription))])
         }
@@ -1248,52 +1368,56 @@ struct McpServer {
     /// - Returns: The result of the read directory tool call
     /// - Throws: Error if directory cannot be read
     private static func handleReadDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments else {
-            // If no arguments, try to use currentFolder
-            guard let currentFolder = XcfXcodeProjectManager.shared.currentFolder else {
-                return CallTool.Result(content: [.text("No directory path specified and no current folder is set. Please select a project first or specify a directory path.")])
-            }
-            
-            do {
-                let filePaths = try XcfFileManager.readDirectory(at: currentFolder, fileExtension: nil)
-                let content = filePaths.joined(separator: McpConfig.newLineSeparator)
-                return CallTool.Result(content: [.text(content)])
-            } catch {
-                return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingDirectory, error.localizedDescription))])
-            }
+        // Get the current folder first as we'll need it
+        guard let currentFolder = XcfXcodeProjectManager.shared.currentFolder else {
+            return CallTool.Result(content: [.text("No current folder is set. Please select a project first.")])
         }
+
+        let arguments = params.arguments!
         
-        // Try to get directoryPath from arguments in two ways:
-        // 1. As a named parameter (directoryPath=...)
-        // 2. As a direct argument (first argument after command)
+        // Determine the directory to read
         let directoryPath: String
         if let namedPath = arguments[McpConfig.directoryPathParamName]?.stringValue {
-            directoryPath = namedPath
-        } else if let firstArg = arguments.first?.value.stringValue {
-            // If first argument is '.' or empty, use currentFolder
-            if firstArg.isEmpty || firstArg == "." {
-                guard let currentFolder = XcfXcodeProjectManager.shared.currentFolder else {
-                    return CallTool.Result(content: [.text("No current folder is set. Please select a project first.")])
-                }
+            // Case 1: Named parameter
+            if namedPath == "." || params.arguments == nil || params.arguments?.isEmpty == true {
                 directoryPath = currentFolder
+            } else if namedPath == ".." {
+                directoryPath = (currentFolder as NSString).deletingLastPathComponent
+            } else if namedPath == "cd" {
+                do {
+                    let filePaths = try XcfFileManager.readDirectory(at: currentFolder, fileExtension: nil)
+                    let content = filePaths.joined(separator: McpConfig.newLineSeparator)
+                    return CallTool.Result(content: [.text(content)])
+                } catch {
+                    return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingDirectory, error.localizedDescription))])
+                }
             } else {
-                directoryPath = firstArg
+                let (resolvedPath, _) = FileFinder.resolveFilePath(namedPath)
+                directoryPath = resolvedPath
             }
-        } else if let cf = XcfXcodeProjectManager.shared.currentFolder {
-            // Use current folder if no path is specified
-            directoryPath = cf
+        } else if let firstArg = arguments.first?.value.stringValue {
+            // Case 2: First argument
+            if firstArg == "." {
+                directoryPath = currentFolder
+            } else if firstArg == ".." {
+                directoryPath = (currentFolder as NSString).deletingLastPathComponent
+            } else {
+                let (resolvedPath, _) = FileFinder.resolveFilePath(firstArg)
+                directoryPath = resolvedPath
+            }
         } else {
-            return CallTool.Result(content: [.text("No directory path specified and no current folder is set. Please select a project first or specify a directory path.")])
+            // Default to current folder
+            directoryPath = currentFolder
         }
         
-        // Get fileExtension as the second argument or from the named parameter
+        // Get optional file extension filter
         let fileExtension: String?
         if let namedExt = arguments[McpConfig.fileExtensionParamName]?.stringValue {
-            fileExtension = namedExt
+            fileExtension = namedExt.isEmpty ? nil : namedExt
         } else {
             let keys = arguments.keys.sorted()
-            if keys.count >= 2, let secondArg = arguments[keys[1]]?.stringValue {
-                fileExtension = secondArg
+            if keys.count >= 2 {
+                fileExtension = arguments[keys[1]]?.stringValue
             } else {
                 fileExtension = nil
             }
