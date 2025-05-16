@@ -854,14 +854,26 @@ struct McpServer {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
         
+        // Get the raw command string and clean up spaces
+        let rawCommand = arguments.values.compactMap { $0.stringValue }.joined(separator: " ")
+        
+        // Remove "read_file" from the start and trim spaces
+        let commandPrefix = McpConfig.readFileToolName
+        guard rawCommand.lowercased().hasPrefix(commandPrefix.lowercased()) else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Get everything after "read_file" and trim spaces
+        let afterCommand = String(rawCommand.dropFirst(commandPrefix.count)).trimmingCharacters(in: .whitespaces)
+        
         // Try to get filePath from arguments in two ways:
         // 1. As a named parameter (filePath=...)
-        // 2. As a direct argument (first argument after command)
+        // 2. As a direct argument after command
         let filePath: String
         if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
-            filePath = namedPath
-        } else if let firstArg = arguments.first?.value.stringValue {
-            filePath = firstArg
+            filePath = namedPath.trimmingCharacters(in: .whitespaces)
+        } else if !afterCommand.isEmpty {
+            filePath = afterCommand
         } else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
@@ -897,8 +909,7 @@ struct McpServer {
             } else if namedPath == ".." {
                 directoryPath = (currentFolder as NSString).deletingLastPathComponent
             } else {
-                let (resolvedPath, _) = FileFinder.resolveFilePath(namedPath)
-                directoryPath = resolvedPath
+                directoryPath = namedPath
             }
         } else if let firstArg = arguments.first?.value.stringValue {
             // Case 2: First argument
@@ -907,19 +918,24 @@ struct McpServer {
             } else if firstArg == ".." {
                 directoryPath = (currentFolder as NSString).deletingLastPathComponent
             } else {
-                let (resolvedPath, _) = FileFinder.resolveFilePath(firstArg)
-                directoryPath = resolvedPath
+                directoryPath = firstArg
             }
         } else {
             // Default to showing current directory
             return CallTool.Result(content: [.text("Current directory: \(currentFolder)")])
         }
         
+        // Security check
+        let (allowed, resolvedPath, error) = SecurityManager.shared.isDirectoryOperationAllowed(directoryPath, operation: "change to")
+        if !allowed {
+            return CallTool.Result(content: [.text(error ?? "Access denied")])
+        }
+        
         do {
             // Update both FileManager's current directory and XcfXcodeProjectManager's currentFolder
-            try XcfFileManager.changeDirectory(to: directoryPath)
-            XcfXcodeProjectManager.shared.currentFolder = directoryPath
-            return CallTool.Result(content: [.text("Changed directory to: \(directoryPath)")])
+            try XcfFileManager.changeDirectory(to: resolvedPath)
+            XcfXcodeProjectManager.shared.currentFolder = resolvedPath
+            return CallTool.Result(content: [.text("Changed directory to: \(resolvedPath)")])
         } catch {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorChangingDirectory, error.localizedDescription))])
         }
@@ -1392,8 +1408,7 @@ struct McpServer {
                     return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingDirectory, error.localizedDescription))])
                 }
             } else {
-                let (resolvedPath, _) = FileFinder.resolveFilePath(namedPath)
-                directoryPath = resolvedPath
+                directoryPath = namedPath
             }
         } else if let firstArg = arguments.first?.value.stringValue {
             // Case 2: First argument
@@ -1402,12 +1417,17 @@ struct McpServer {
             } else if firstArg == ".." {
                 directoryPath = (currentFolder as NSString).deletingLastPathComponent
             } else {
-                let (resolvedPath, _) = FileFinder.resolveFilePath(firstArg)
-                directoryPath = resolvedPath
+                directoryPath = firstArg
             }
         } else {
             // Default to current folder
             directoryPath = currentFolder
+        }
+        
+        // Security check
+        let (allowed, resolvedPath, error) = SecurityManager.shared.isDirectoryOperationAllowed(directoryPath, operation: "read")
+        if !allowed {
+            return CallTool.Result(content: [.text(error ?? "Access denied")])
         }
         
         // Get optional file extension filter
@@ -1424,7 +1444,7 @@ struct McpServer {
         }
         
         do {
-            let filePaths = try XcfFileManager.readDirectory(at: directoryPath, fileExtension: fileExtension)
+            let filePaths = try XcfFileManager.readDirectory(at: resolvedPath, fileExtension: fileExtension)
             let content = filePaths.joined(separator: McpConfig.newLineSeparator)
             return CallTool.Result(content: [.text(content)])
         } catch {

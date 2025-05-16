@@ -8,15 +8,18 @@ struct XcfFileManager {
     /// - Returns: The contents of the file as a string
     /// - Throws: Error if file cannot be read
     static func readFile(at filePath: String) throws -> String {
-        let (resolvedPath, warning) = FileFinder.resolveFilePath(filePath)
+        // Security check with path resolution
+        let (allowed, resolvedPath, error) = SecurityManager.shared.isFileOperationAllowed(filePath, operation: "read")
+        if !allowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        }
         
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileNotFound, filePath)])
         }
         
         do {
-            let content = try String(contentsOfFile: resolvedPath, encoding: .utf8)
-            return warning.isEmpty ? content : warning + Format.newLine + Format.newLine + content
+            return try String(contentsOfFile: resolvedPath, encoding: .utf8)
         } catch {
             throw error
         }
@@ -28,7 +31,12 @@ struct XcfFileManager {
     ///   - filePath: Path to the file to write to
     /// - Throws: Error if file cannot be written
     static func writeFile(content: String, to filePath: String) throws {
-        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
+        // Security check with path resolution
+        let (allowed, resolvedPath, error) = SecurityManager.shared.isFileOperationAllowed(filePath, operation: "write")
+        if !allowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        }
+        
         try content.write(toFile: resolvedPath, atomically: true, encoding: .utf8)
     }
     
@@ -38,7 +46,11 @@ struct XcfFileManager {
     ///   - content: Initial content for the file
     /// - Throws: Error if file cannot be created
     static func createFile(at filePath: String, content: String) throws {
-        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
+        // Security check with path resolution
+        let (allowed, resolvedPath, error) = SecurityManager.shared.isFileOperationAllowed(filePath, operation: "create")
+        if !allowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        }
         
         guard !FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 2, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileAlreadyExists, filePath)])
@@ -55,7 +67,11 @@ struct XcfFileManager {
     ///   - replacementContent: New content for the specified line range
     /// - Throws: Error if file cannot be edited
     static func editFile(at filePath: String, startLine: Int, endLine: Int, replacementContent: String) throws {
-        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
+        // Security check with path resolution
+        let (allowed, resolvedPath, error) = SecurityManager.shared.isFileOperationAllowed(filePath, operation: "edit")
+        if !allowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        }
         
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileNotFound, filePath)])
@@ -83,7 +99,11 @@ struct XcfFileManager {
     /// - Parameter filePath: Path to the file to delete
     /// - Throws: Error if file cannot be deleted
     static func deleteFile(at filePath: String) throws {
-        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
+        // Security check with path resolution
+        let (allowed, resolvedPath, error) = SecurityManager.shared.isFileOperationAllowed(filePath, operation: "delete")
+        if !allowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        }
         
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileNotFound, filePath)])
@@ -96,7 +116,11 @@ struct XcfFileManager {
     /// - Parameter directoryPath: Path where the directory should be created
     /// - Throws: Error if directory cannot be created
     static func createDirectory(at directoryPath: String) throws {
-        let (resolvedPath, _) = FileFinder.resolveFilePath(directoryPath)
+        // Security check with path resolution
+        let (allowed, resolvedPath, error) = SecurityManager.shared.isDirectoryOperationAllowed(directoryPath, operation: "create")
+        if !allowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        }
         
         guard !FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 2, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryAlreadyExists, directoryPath)])
@@ -109,7 +133,11 @@ struct XcfFileManager {
     /// - Parameter directoryPath: Path to the directory to remove
     /// - Throws: Error if directory cannot be removed
     static func removeDirectory(at directoryPath: String) throws {
-        let (resolvedPath, _) = FileFinder.resolveFilePath(directoryPath)
+        // Security check with path resolution
+        let (allowed, resolvedPath, error) = SecurityManager.shared.isDirectoryOperationAllowed(directoryPath, operation: "remove")
+        if !allowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        }
         
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, directoryPath)])
@@ -122,7 +150,11 @@ struct XcfFileManager {
     /// - Parameter directoryPath: Path to change to
     /// - Throws: Error if directory cannot be changed
     static func changeDirectory(to directoryPath: String) throws {
-        let (resolvedPath, _) = FileFinder.resolveFilePath(directoryPath)
+        // Security check with path resolution
+        let (allowed, resolvedPath, error) = SecurityManager.shared.isDirectoryOperationAllowed(directoryPath, operation: "change to")
+        if !allowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        }
         
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, directoryPath)])
@@ -140,7 +172,11 @@ struct XcfFileManager {
     /// - Returns: Array of file paths in the directory
     /// - Throws: Error if directory cannot be read
     static func readDirectory(at directoryPath: String, fileExtension: String? = nil) throws -> [String] {
-        let (resolvedPath, _) = FileFinder.resolveFilePath(directoryPath)
+        // Security check with path resolution
+        let (allowed, resolvedPath, error) = SecurityManager.shared.isDirectoryOperationAllowed(directoryPath, operation: "read")
+        if !allowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        }
         
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, directoryPath)])
