@@ -454,12 +454,12 @@ struct McpServer {
         writeFileTool, readFileTool, cdDirTool,
         editFileTool, deleteFileTool,
         addDirTool, rmDirTool,
-        openDocTool, createDocTool, readDocTool, saveDocTool, editDocTool,
+       /* openDocTool, createDocTool, readDocTool, saveDocTool, editDocTool, */
         useXcfTool,
         toolsReferenceTool,
     ]
     
-    /// All available resources
+    /// All availa e resources
     static let allResources = [xcodeProjResource, fileContentsResource, buildResultsResource]
     
     /// All available prompts
