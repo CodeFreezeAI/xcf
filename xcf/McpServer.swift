@@ -18,16 +18,16 @@ struct McpServer {
         name: McpConfig.listToolsName,
         description: McpConfig.listToolsDesc,
         inputSchema: .object([
-            McpConfig.typeKey: .string(McpConfig.stringType)
+            McpConfig.typeKey: .string(McpConfig.objectType)
         ])
     )
 
     /// Tool for quick help (xcf actions only)
     static let quickHelpTool = Tool(
-        name: "?",
-        description: "Quick help for xcf actions only",
+        name: "xcf_help",
+        description: "Help for xcf actions only",
         inputSchema: .object([
-            McpConfig.typeKey: .string(McpConfig.stringType)
+            McpConfig.typeKey: .string(McpConfig.objectType)
         ])
     )
 
@@ -36,16 +36,16 @@ struct McpServer {
         name: "help",
         description: "Regular help with common examples",
         inputSchema: .object([
-            McpConfig.typeKey: .string(McpConfig.stringType)
+            McpConfig.typeKey: .string(McpConfig.objectType)
         ])
     )
 
     /// Tool for super detailed help
     static let superDetailedHelpTool = Tool(
-        name: "help!",
+        name: "super_help",
         description: "Super detailed help with all tools and examples",
         inputSchema: .object([
-            McpConfig.typeKey: .string(McpConfig.stringType)
+            McpConfig.typeKey: .string(McpConfig.objectType)
         ])
     )
 
@@ -54,7 +54,7 @@ struct McpServer {
         name: "tools",
         description: "Show detailed reference for all tools including AI function calls",
         inputSchema: .object([
-            McpConfig.typeKey: .string(McpConfig.stringType)
+            McpConfig.typeKey: .string(McpConfig.objectType)
         ])
     )
 
@@ -79,7 +79,7 @@ struct McpServer {
         name: McpConfig.useXcfToolName,
         description: McpConfig.useXcfToolDesc,
         inputSchema: .object([
-            McpConfig.typeKey: .string(McpConfig.stringType)
+            McpConfig.typeKey: .string(McpConfig.objectType)
         ])
     )
     
@@ -627,8 +627,8 @@ struct McpServer {
         case McpConfig.helpToolName:
             return handleHelpToolCall(params)
             
-        case McpConfig.superDetailedHelpToolName:
-            return handleSuperDetailedHelpToolCall(params)
+//        case McpConfig.superDetailedHelpToolName:
+//            return handleSuperDetailedHelpToolCall(params)
             
         case McpConfig.useXcfToolName:
             return CallTool.Result(content: [.text(SuccessMessages.xcfActive)])
