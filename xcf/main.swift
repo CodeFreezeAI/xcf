@@ -30,6 +30,7 @@ func handleArguments() {
         
         // Initialize the application
         NSApplication.shared.setActivationPolicy(.prohibited)
+        RunLoop.current.run()
 
     } else {
         // Call the modal display function from a separate file
@@ -37,7 +38,8 @@ func handleArguments() {
         // Initialize the application
         NSApplication.shared.setActivationPolicy(.accessory)
         ModalDisplay.showServerRequiredAlert()
-        exit(1)
+        NSApplication.shared.setActivationPolicy(.prohibited)
+        exit(0)
     }
 }
 
@@ -66,4 +68,3 @@ signal(SIGTERM) { _ in
 }
 
 handleArguments()
-RunLoop.current.run()
