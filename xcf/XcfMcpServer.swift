@@ -9,26 +9,11 @@ import Foundation
 import MCP
 
 /// McpServer handles all MCP protocol interactions for the xcf tool.
-/// It uses a composition-based architecture to organize tools, resources, and prompts.
+/// It defines tools, resources, and prompts, and configures the MCP server with appropriate handlers.
 class XcfMcpServer {
     static var XcfScript = XcfSwiftScript.shared
+
     
-    // Component managers
-    private let toolManager: XcfMcpToolManager
-    private let resourceManager: XcfMcpResourceManager
-    private let promptManager: XcfMcpPromptManager
-    private let handlerRegistrar: XcfMcpHandlerRegistrar
-    
-    /// Initialize with dependencies (defaults to singleton instances)
-    init(toolManager: XcfMcpToolManager = .shared,
-         resourceManager: XcfMcpResourceManager = .shared,
-         promptManager: XcfMcpPromptManager = .shared,
-         handlerRegistrar: XcfMcpHandlerRegistrar = .shared) {
-        self.toolManager = toolManager
-        self.resourceManager = resourceManager
-        self.promptManager = promptManager
-        self.handlerRegistrar = handlerRegistrar
-    }
     
     /// Configures and starts the MCP server
     /// - Returns: The configured MCP server
@@ -62,8 +47,8 @@ class XcfMcpServer {
             // Start the server with the configured transport
             try await server.start(transport: transport)
             
-            // Register all handlers using the handler registrar
-            await XcfMcpHandlerRegistrar.shared.registerHandlers(server: server)
+            // Register all handlers
+            await registerHandlers(server: server)
             
             return server
         } catch {
