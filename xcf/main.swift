@@ -19,7 +19,7 @@ func handleArguments() {
         Task.detached {
             do {
                 // Configure and start the MCP server
-                let server = try await McpServer.configureMcpServer()
+                let server = try await XcfMcpServer.configureMcpServer()
                 
                 // Wait until the server completes
                 await server.waitUntilCompleted()
