@@ -1,5 +1,5 @@
 //
-//  CodeSnippets.swift
+//  XcfCaptureSnippets.swift
 //  xcf
 //
 //  Created by Todd Bruss on 5/6/25.

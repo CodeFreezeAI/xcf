@@ -1,5 +1,5 @@
 //
-//  FileFinder.swift
+//  XcfFileFinder.swift
 //  xcf
 //
 //  Created by Todd Bruss on 5/9/25.

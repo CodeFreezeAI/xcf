@@ -1,5 +1,5 @@
 //
-//  FuzzyLogicService.swift
+//  XcfFuzzyLogicService.swift
 //  xcf
 //
 //  Created by Todd Bruss on 5/4/25.
