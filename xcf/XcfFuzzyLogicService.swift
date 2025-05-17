@@ -15,62 +15,45 @@ struct FuzzyLogicService {
     /// - Parameter path: The path to resolve
     /// - Returns: A tuple containing the resolved path and any warning messages
     static func resolvePath(_ path: String, isDirectory: Bool = false) -> (path: String, warning: String) {
-        let fileManager = FileManager.default
-        var isDir: ObjCBool = ObjCBool(isDirectory)
+        // Get and verify the project directory
+        guard let projectDir = XcfXcodeProjectManager.shared.currentFolder else {
+            return (path, "No current project directory set")
+        }
         
-        // Strategy 1: Try absolute path
+        // For "." or empty path, use project directory directly
+        if path.isEmpty || path == "." {
+            return (projectDir, "")
+        }
+        
+        // For absolute paths
         if path.hasPrefix("/") || path.hasPrefix("~") {
             let expandedPath = (path as NSString).expandingTildeInPath
-            if fileManager.fileExists(atPath: expandedPath, isDirectory: &isDir) {
+            var isDir: ObjCBool = ObjCBool(isDirectory)
+            if FileManager.default.fileExists(atPath: expandedPath, isDirectory: &isDir) {
                 if isDirectory == isDir.boolValue {
                     return (expandedPath, "")
                 }
             }
+            // Even if file doesn't exist, return the expanded path for creation
+            return (expandedPath, "")
         }
         
-        // Strategy 2: Try relative to current folder from XcfXcodeProjectManager
-        if let currentFolder = XcfXcodeProjectManager.shared.currentFolder {
-            var relativePath = path
-            if relativePath.hasPrefix("./") {
-                relativePath = String(relativePath.dropFirst(2))
-            }
-            
-            let fullPath = (currentFolder as NSString).appendingPathComponent(relativePath)
-            if fileManager.fileExists(atPath: fullPath, isDirectory: &isDir) {
-                if isDirectory == isDir.boolValue {
-                    return (fullPath, "")
-                }
-            }
-            
-            // If file doesn't exist but we're trying to create it, return the resolved path
-            if !fileManager.fileExists(atPath: fullPath) {
+        // For ".." path
+        if path == ".." {
+            return ((projectDir as NSString).deletingLastPathComponent, "")
+        }
+        
+        // For relative paths
+        let fullPath = (projectDir as NSString).appendingPathComponent(path)
+        var isDir: ObjCBool = ObjCBool(isDirectory)
+        if FileManager.default.fileExists(atPath: fullPath, isDirectory: &isDir) {
+            if isDirectory == isDir.boolValue {
                 return (fullPath, "")
             }
         }
         
-        // Strategy 3: Try in current working directory from ProcessInfo
-        if let pwd = ProcessInfo.processInfo.environment["PWD"] {
-            let pwdPath = (pwd as NSString).appendingPathComponent(path)
-            if fileManager.fileExists(atPath: pwdPath, isDirectory: &isDir) {
-                if isDirectory == isDir.boolValue {
-                    return (pwdPath, "")
-                }
-            }
-            
-            // If file doesn't exist but we're trying to create it, return the resolved path
-            if !fileManager.fileExists(atPath: pwdPath) {
-                return (pwdPath, "")
-            }
-        }
-        
-        // If we're creating a new file/directory, use the current folder as base
-        if let currentFolder = XcfXcodeProjectManager.shared.currentFolder {
-            let fullPath = (currentFolder as NSString).appendingPathComponent(path)
-            return (fullPath, "")
-        }
-        
-        // If all strategies fail, return original with warning
-        return (path, "Warning: Could not resolve path '\(path)'")
+        // If file/directory doesn't exist, return the full path for creation
+        return (fullPath, "")
     }
     
     /// Resolves a file path using consistent rules

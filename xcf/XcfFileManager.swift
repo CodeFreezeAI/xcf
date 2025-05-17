@@ -30,15 +30,24 @@ struct XcfFileManager {
     ///   - path: The path of the file to write to
     /// - Throws: Error if file cannot be written
     static func writeFile(content: String, to path: String) throws {
-        // Get the current working directory
-        let currentDir = XcfXcodeProjectManager.shared.currentFolder ?? FileManager.default.currentDirectoryPath
+        // Get the project directory first
+        let projectDir = XcfXcodeProjectManager.shared.currentFolder ?? FileManager.default.currentDirectoryPath
         
-        // If path is not absolute, make it relative to current directory
+        // Verify the project directory exists and is valid
+        var isProjectDirDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: projectDir, isDirectory: &isProjectDirDirectory),
+              isProjectDirDirectory.boolValue else {
+            throw NSError(domain: "XcfFileManager",
+                         code: 2,
+                         userInfo: [NSLocalizedDescriptionKey: "Invalid project directory: \(projectDir)"])
+        }
+        
+        // Determine the full path
         let fullPath: String
-        if path.hasPrefix("/") {
-            fullPath = path
+        if path.hasPrefix("/") || path.hasPrefix("~") {
+            fullPath = (path as NSString).expandingTildeInPath
         } else {
-            fullPath = (currentDir as NSString).appendingPathComponent(path)
+            fullPath = (projectDir as NSString).appendingPathComponent(path)
         }
         
         // Create intermediate directories if needed
@@ -165,10 +174,22 @@ struct XcfFileManager {
     /// - Parameter path: The path to change to
     /// - Throws: Error if directory cannot be changed
     static func changeDirectory(to path: String) throws {
-        // Use FuzzyLogicService to resolve the path
+        // Get the project directory first
+        let projectDir = XcfXcodeProjectManager.shared.currentFolder ?? FileManager.default.currentDirectoryPath
+        
+        // Verify the project directory exists and is valid
+        var isProjectDirDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: projectDir, isDirectory: &isProjectDirDirectory),
+              isProjectDirDirectory.boolValue else {
+            throw NSError(domain: "XcfFileManager",
+                         code: 2,
+                         userInfo: [NSLocalizedDescriptionKey: "Invalid project directory: \(projectDir)"])
+        }
+        
+        // Now resolve the target path
         let (resolvedPath, warning) = FuzzyLogicService.resolveDirectoryPath(path)
         
-        // Verify the directory exists
+        // Verify the target directory exists
         var isDirectory: ObjCBool = false
         guard FileManager.default.fileExists(atPath: resolvedPath, isDirectory: &isDirectory),
               isDirectory.boolValue else {
@@ -191,24 +212,44 @@ struct XcfFileManager {
     /// - Returns: Array of file paths in the directory
     /// - Throws: Error if directory cannot be read
     static func readDirectory(at directoryPath: String, fileExtension: String? = nil) throws -> [String] {
-        // Security check with path resolution
-        let (allowed, resolvedPath, error) = SecurityManager.shared.isDirectoryOperationAllowed(directoryPath, operation: "read")
-        if !allowed {
-            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        // Get and verify the project directory
+        guard let projectDir = XcfXcodeProjectManager.shared.currentFolder else {
+            throw NSError(domain: "XcfFileManager",
+                         code: 2,
+                         userInfo: [NSLocalizedDescriptionKey: "No current project directory set"])
         }
         
-        guard FileManager.default.fileExists(atPath: resolvedPath) else {
-            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, directoryPath)])
+        // For "." or empty path, use project directory directly
+        let targetPath: String
+        if directoryPath.isEmpty || directoryPath == "." {
+            targetPath = projectDir
+        } else if directoryPath.hasPrefix("/") {
+            targetPath = directoryPath
+        } else if directoryPath == ".." {
+            targetPath = (projectDir as NSString).deletingLastPathComponent
+        } else {
+            targetPath = (projectDir as NSString).appendingPathComponent(directoryPath)
         }
         
-        let contents = try FileManager.default.contentsOfDirectory(atPath: resolvedPath)
+        // Verify directory exists
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: targetPath, isDirectory: &isDirectory),
+              isDirectory.boolValue else {
+            throw NSError(domain: "XcfFileManager",
+                         code: 1,
+                         userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, targetPath)])
+        }
         
+        // Get directory contents
+        let contents = try FileManager.default.contentsOfDirectory(atPath: targetPath)
+        
+        // Apply extension filter if specified
         if let ext = fileExtension {
             return contents.filter { $0.hasSuffix("." + ext) }
-                         .map { (resolvedPath as NSString).appendingPathComponent($0) }
+                         .map { (targetPath as NSString).appendingPathComponent($0) }
         }
         
-        return contents.map { (resolvedPath as NSString).appendingPathComponent($0) }
+        return contents.map { (targetPath as NSString).appendingPathComponent($0) }
     }
     
     /// Shows a directory selection dialog and returns the selected path
