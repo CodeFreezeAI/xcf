@@ -393,6 +393,26 @@ struct McpServer {
         ])
     )
     
+    /// Tool for moving files
+    static let moveFileTool = Tool(
+        name: McpConfig.moveFileToolName,
+        description: McpConfig.moveFileToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                "sourcePath": .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Path of the file to move")
+                ]),
+                "destinationPath": .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Path where the file should be moved to")
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string("sourcePath"), .string("destinationPath")])
+        ])
+    )
+    
     // MARK: - Resource Definitions
     
     /// Resource for accessing Xcode projects
@@ -453,10 +473,9 @@ struct McpServer {
         xcfTool, listToolsTool, quickHelpTool, helpTool, snippetTool, analyzerTool, readDirTool,
         writeFileTool, readFileTool, cdDirTool,
         editFileTool, deleteFileTool,
-        addDirTool, rmDirTool,
-       /* openDocTool, createDocTool, readDocTool, saveDocTool, editDocTool, */
+        addDirTool, rmDirTool, moveFileTool,
         useXcfTool,
-        toolsReferenceTool,
+        toolsReferenceTool
     ]
     
     /// All availa e resources
@@ -671,6 +690,9 @@ struct McpServer {
             
         case McpConfig.readDirToolName:
             return try handleReadDirToolCall(params)
+            
+        case McpConfig.moveFileToolName:
+            return try handleMoveFileToolCall(params)
             
         case "tools":
             return handleToolsReferenceToolCall(params)
@@ -1511,6 +1533,25 @@ struct McpServer {
             return CallTool.Result(content: [.text(McpConfig.documentEditedSuccessfully)])
         } else {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorEditingFile, filePath))])
+        }
+    }
+
+    /// Handles a call to the move file tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the move file tool call
+    /// - Throws: Error if sourcePath or destinationPath is missing
+    private static func handleMoveFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let sourcePath = arguments["sourcePath"]?.stringValue,
+              let destinationPath = arguments["destinationPath"]?.stringValue else {
+            return CallTool.Result(content: [.text("Missing sourcePath or destinationPath parameters")])
+        }
+        
+        do {
+            try XcfFileManager.moveFile(from: sourcePath, to: destinationPath)
+            return CallTool.Result(content: [.text("Successfully moved file from \(sourcePath) to \(destinationPath)")])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: "Error moving file: %@", error.localizedDescription))])
         }
     }
 } 

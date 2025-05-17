@@ -145,6 +145,7 @@ struct McpConfig {
     static let deleteFileToolName = "delete_file"
     static let addDirToolName = "add_dir"
     static let rmDirToolName = "rm_dir"
+    static let moveFileToolName = "move_file"
     
     // ScriptingBridge tool names
     static let openDocToolName = "open_doc"
@@ -171,6 +172,7 @@ struct McpConfig {
     static let deleteFileToolDesc = "Delete a file"
     static let addDirToolDesc = "Create a new directory"
     static let rmDirToolDesc = "Remove a directory"
+    static let moveFileToolDesc = "Move a file from one location to another"
     
     // ScriptingBridge tool descriptions
     static let openDocToolDesc = "Open a document in Xcode"
