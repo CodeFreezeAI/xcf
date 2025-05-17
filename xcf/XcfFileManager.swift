@@ -7,18 +7,16 @@ struct XcfFileManager {
     /// - Parameter filePath: Path to the file to read
     /// - Returns: The contents of the file as a string
     /// - Throws: Error if file cannot be read
-    static func readFile(at filePath: String) throws -> String {
+    static func readFile(at filePath: String) throws -> (String, String) {
         let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
-        if !warning.isEmpty {
-            print(warning)
-        }
         
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileNotFound, filePath)])
         }
         
         do {
-            return try String(contentsOfFile: resolvedPath, encoding: .utf8)
+            let content = try String(contentsOfFile: resolvedPath, encoding: .utf8)
+            return (content, warning)
         } catch {
             throw error
         }
@@ -188,6 +186,9 @@ struct XcfFileManager {
         
         // Now resolve the target path
         let (resolvedPath, warning) = FuzzyLogicService.resolveDirectoryPath(path)
+        if !warning.isEmpty {
+            print(warning)
+        }
         
         // Verify the target directory exists
         var isDirectory: ObjCBool = false
@@ -299,10 +300,10 @@ struct XcfFileManager {
     ///   - startLine: The starting line to replace (1-indexed)
     ///   - endLine: The ending line to replace (1-indexed)
     ///   - replacement: The replacement text
-    /// - Returns: The edited content
+    /// - Returns: The edited content and any warnings
     /// - Throws: File operation errors
-    static func editSwiftDocument(filePath: String, startLine: Int, endLine: Int, replacement: String) throws -> String {
-        let content = try readFile(at: filePath)
+    static func editSwiftDocument(filePath: String, startLine: Int, endLine: Int, replacement: String) throws -> (String, String) {
+        let (content, warning) = try readFile(at: filePath)
         let lines = content.components(separatedBy: .newlines)
         
         // Validate line numbers
@@ -326,6 +327,39 @@ struct XcfFileManager {
         // Write the modified content back to the file
         try writeFile(content: newContent, to: filePath)
         
-        return newContent
+        return (newContent, warning)
+    }
+
+    /// Moves a file from one location to another
+    /// - Parameters:
+    ///   - sourcePath: Path of the file to move
+    ///   - destinationPath: Path where the file should be moved to
+    /// - Throws: Error if file cannot be moved
+    static func moveFile(from sourcePath: String, to destinationPath: String) throws {
+        // Security check with path resolution for source file
+        let (sourceAllowed, resolvedSourcePath, sourceError) = SecurityManager.shared.isFileOperationAllowed(sourcePath, operation: "move")
+        if !sourceAllowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: sourceError ?? "Access denied for source file"])
+        }
+        
+        // Security check with path resolution for destination
+        let (destAllowed, resolvedDestPath, destError) = SecurityManager.shared.isFileOperationAllowed(destinationPath, operation: "move")
+        if !destAllowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: destError ?? "Access denied for destination path"])
+        }
+        
+        // Check if source file exists
+        guard FileManager.default.fileExists(atPath: resolvedSourcePath) else {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileNotFound, sourcePath)])
+        }
+        
+        // Create destination directory if it doesn't exist
+        let destinationDir = (resolvedDestPath as NSString).deletingLastPathComponent
+        if !FileManager.default.fileExists(atPath: destinationDir) {
+            try FileManager.default.createDirectory(atPath: destinationDir, withIntermediateDirectories: true)
+        }
+        
+        // Move the file
+        try FileManager.default.moveItem(atPath: resolvedSourcePath, toPath: resolvedDestPath)
     }
 } 

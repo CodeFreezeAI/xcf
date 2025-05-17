@@ -757,119 +757,30 @@ struct McpServer {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
-
-        // Get the raw command string
-        let rawCommand = arguments.values.compactMap { $0.stringValue }.joined(separator: " ")
         
-        // Common file extensions to look for
-        let commonExtensions = [".txt", ".swift", ".c", ".h", ".cpp", ".m", ".json", ".yaml", ".yml", ".md", ".py", ".rb", ".js", ".html", ".css"]
+        // Try to get filePath and content from arguments
+        let filePath: String
+        let content: String
         
-        // First, try to find the filename by looking for common extensions
-        var filePath = ""
-        var contentStartIndex: String.Index = rawCommand.endIndex
-        var foundExtension = false
-        
-        // Look for quoted content first
-        let quoteMarkers = ["\"", "'", "```", "```swift"]
-        var content = ""
-        
-        for marker in quoteMarkers {
-            if let range = rawCommand.range(of: marker) {
-                // Found a quote marker, look for the closing quote
-                let endMarker = marker == "```swift" ? "```" : marker
-                if let endRange = rawCommand[range.upperBound...].range(of: endMarker) {
-                    // Extract everything between the quotes
-                    content = String(rawCommand[range.upperBound..<endRange.lowerBound])
-                    
-                    // The filename must be before the first quote
-                    let beforeQuote = String(rawCommand[..<range.lowerBound]).trimmingCharacters(in: .whitespaces)
-                    
-                    // Try to find a valid filename in the part before the quote
-                    for ext in commonExtensions {
-                        if let fileRange = beforeQuote.range(of: ext) {
-                            // Look for the start of the filename by finding the last space before the extension
-                            let beforeExt = beforeQuote[..<fileRange.upperBound]
-                            if let lastSpace = beforeExt.lastIndex(of: " ") {
-                                filePath = String(beforeExt[lastSpace...]).trimmingCharacters(in: .whitespaces)
-                            } else {
-                                filePath = String(beforeExt)
-                            }
-                            foundExtension = true
-                            break
-                        }
-                    }
-                    
-                    if foundExtension {
-                        break
-                    }
-                }
-            }
+        // First try named parameters
+        if let namedPath = arguments["filePath"]?.stringValue,
+           let namedContent = arguments["content"]?.stringValue {
+            filePath = namedPath
+            content = namedContent
         }
-        
-        // If no quoted content found, try to find filename by extension
-        if !foundExtension {
-            for ext in commonExtensions {
-                if let range = rawCommand.range(of: ext) {
-                    // Look for the start of the filename by finding the last space before the extension
-                    let beforeExt = rawCommand[..<range.upperBound]
-                    if let lastSpace = beforeExt.lastIndex(of: " ") {
-                        filePath = String(beforeExt[lastSpace...]).trimmingCharacters(in: .whitespaces)
-                        contentStartIndex = range.upperBound
-                        foundExtension = true
-                        break
-                    } else {
-                        filePath = String(beforeExt)
-                        contentStartIndex = range.upperBound
-                        foundExtension = true
-                        break
-                    }
-                }
-            }
-            
-            // If we found a filename but no quoted content, use everything after the filename as content
-            if foundExtension && content.isEmpty {
-                content = String(rawCommand[contentStartIndex...]).trimmingCharacters(in: .whitespaces)
-            }
+        // Then try positional parameters
+        else if let firstArg = arguments.first?.value.stringValue,
+                let secondArg = arguments.values.dropFirst().first?.stringValue {
+            filePath = firstArg
+            content = secondArg
         }
-        
-        // If still no filename found, try using named parameters
-        if !foundExtension {
-            if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
-                filePath = namedPath
-                if let namedContent = arguments[McpConfig.contentParamName]?.stringValue {
-                    content = namedContent
-                    foundExtension = true
-                }
-            }
+        else {
+            return CallTool.Result(content: [.text("Missing filePath or content parameters")])
         }
-        
-        // If still no filename found, use the first argument and everything else as content
-        if !foundExtension {
-            if let firstArg = arguments.first?.value.stringValue {
-                filePath = firstArg
-                let keys = arguments.keys.sorted()
-                if keys.count >= 2 {
-                    let contentArgs = keys.dropFirst().compactMap { arguments[$0]?.stringValue }
-                    content = contentArgs.joined(separator: " ")
-                }
-            }
-        }
-        
-        // Validate we have both a filename and content
-        if filePath.isEmpty {
-            return CallTool.Result(content: [.text("Could not determine filename. Please provide a filename with a valid extension.")])
-        }
-        
-        if content.isEmpty {
-            return CallTool.Result(content: [.text("No content provided to write to the file.")])
-        }
-        
-        // Use FileFinder to resolve the actual file path
-        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
         
         do {
-            try XcfFileManager.writeFile(content: content, to: resolvedPath)
-            return CallTool.Result(content: [.text("Successfully wrote content to file: \(resolvedPath)")])
+            try XcfFileManager.writeFile(content: content, to: filePath)
+            return CallTool.Result(content: [.text("Successfully wrote content to file: \(filePath)")])
         } catch {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorWritingFile, error.localizedDescription))])
         }
@@ -893,17 +804,24 @@ struct McpServer {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
         
-        // Use FileFinder to resolve the actual file path
-        let (resolvedPath, warning) = FileFinder.resolveFilePath(filePath)
+        // Get and verify the project directory
+        guard let projectDir = XcfXcodeProjectManager.shared.currentFolder else {
+            return CallTool.Result(content: [.text("No current project directory set")])
+        }
+        
+        // Determine the full path
+        let fullPath: String
+        if filePath.hasPrefix("/") || filePath.hasPrefix("~") {
+            fullPath = (filePath as NSString).expandingTildeInPath
+        } else {
+            fullPath = (projectDir as NSString).appendingPathComponent(filePath)
+        }
         
         do {
-            let fileContents = try XcfFileManager.readFile(at: resolvedPath)
-            if !warning.isEmpty {
-                return CallTool.Result(content: [.text(warning + "\n\n" + fileContents)])
-            }
+            let fileContents = try String(contentsOfFile: fullPath, encoding: .utf8)
             return CallTool.Result(content: [.text(fileContents)])
-        } catch let error as NSError {
-            return CallTool.Result(content: [.text(error.localizedDescription)])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, error.localizedDescription))])
         }
     }
 
@@ -1388,9 +1306,9 @@ struct McpServer {
         }
         
         do {
-            let fileContents = try XcfFileManager.readFile(at: filePath)
+            let (fileContents, warning) = try XcfFileManager.readFile(at: filePath)
             let content = Resource.Content.text(
-                fileContents,
+                warning.isEmpty ? fileContents : warning + "\n\n" + fileContents,
                 uri: "\(McpConfig.fileContentsResourceURI)/\(filePath)",
                 mimeType: McpConfig.plainTextMimeType
             )

@@ -277,7 +277,8 @@ class XcfSwiftScript {
     /// - Returns: The file contents as a string, or nil if the operation failed
     func readSwiftDocumentWithFileManager(filePath: String) -> String? {
         do {
-            return try XcfFileManager.readFile(at: filePath)
+            let (content, _) = try XcfFileManager.readFile(at: filePath)
+            return content
         } catch {
             print("Error reading file: \(error.localizedDescription)")
             return nil
