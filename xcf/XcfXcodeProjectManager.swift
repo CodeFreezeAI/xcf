@@ -35,14 +35,45 @@ private enum FileExtensions {
 }
 
 // Global variables with clear prefix for backward compatibility
-private var XcfXcodeProject: String? = ProcessInfo.processInfo.environment[EnvKeys.xcodeProject] ?? XcfSwiftScript.shared.activeWorkspacePath()
-private var XcfXcodeFolder: String? = {
-    if let paths = ProcessInfo.processInfo.environment[EnvKeys.workspaceFolderPaths] {
-        // Split by comma and take the first path
-        let components = paths.components(separatedBy: Format.commaSeparator)
-        return components.first?.trimmingCharacters(in: .whitespaces)
+private var XcfXcodeProject: String? = {
+    if let workspaceProjectPath = ProcessInfo.processInfo.environment[EnvKeys.workspaceFolderPaths],
+       !workspaceProjectPath.contains(",") {
+        let projectName = URL(fileURLWithPath: workspaceProjectPath).lastPathComponent
+        let constructedProjectPath = workspaceProjectPath + "/" + projectName + ".xcodeproj"
+        
+        // Validate the constructed path exists before returning
+        if FileManager.default.fileExists(atPath: constructedProjectPath) {
+            return constructedProjectPath
+        }
+        
+        // Fallback if constructed path doesn't exist
+        return ProcessInfo.processInfo.environment[EnvKeys.xcodeProject] ??
+               XcfSwiftScript.shared.activeWorkspacePath()
     }
-    return ProcessInfo.processInfo.environment[EnvKeys.xcodeProjectFolder] ?? 
+    
+    // Original fallback
+    return ProcessInfo.processInfo.environment[EnvKeys.xcodeProject] ??
+           XcfSwiftScript.shared.activeWorkspacePath()
+}()
+
+private var XcfXcodeFolder: String? = {
+    if let workspaceFolderPath = ProcessInfo.processInfo.environment[EnvKeys.workspaceFolderPaths],
+       !workspaceFolderPath.contains(",") {
+        let projectName = URL(fileURLWithPath: workspaceFolderPath).lastPathComponent
+        let constructedFolderPath = workspaceFolderPath + "/" + projectName
+        
+        // Validate the constructed path exists before returning
+        if FileManager.default.fileExists(atPath: constructedFolderPath) {
+            return constructedFolderPath
+        }
+        
+        // Fallback if constructed path doesn't exist
+        return ProcessInfo.processInfo.environment[EnvKeys.xcodeProjectFolder] ??
+               ProcessInfo.processInfo.environment[EnvKeys.xcodeProjectPath]
+    }
+    
+    // Original fallback
+    return ProcessInfo.processInfo.environment[EnvKeys.xcodeProjectFolder] ??
            ProcessInfo.processInfo.environment[EnvKeys.xcodeProjectPath]
 }()
 
