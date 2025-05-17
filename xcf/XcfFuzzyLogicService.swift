@@ -11,91 +11,80 @@ import Foundation
 struct FuzzyLogicService {
     // MARK: - Public Interface
     
-    /// Attempts to find a file using multiple search strategies
-    /// - Parameter originalPath: The original file path or name to search for
+    /// Resolves any path (file or directory) using consistent rules
+    /// - Parameter path: The path to resolve
     /// - Returns: A tuple containing the resolved path and any warning messages
-    static func findFile(_ originalPath: String) -> (path: String, warning: String) {
+    static func resolvePath(_ path: String, isDirectory: Bool = false) -> (path: String, warning: String) {
         let fileManager = FileManager.default
-        var duplicates: [String] = []
+        var isDir: ObjCBool = ObjCBool(isDirectory)
         
-        // Strategy 1: Try the original path
-        if fileManager.fileExists(atPath: originalPath) {
-            return (originalPath, "")
+        // Strategy 1: Try absolute path
+        if path.hasPrefix("/") || path.hasPrefix("~") {
+            let expandedPath = (path as NSString).expandingTildeInPath
+            if fileManager.fileExists(atPath: expandedPath, isDirectory: &isDir) {
+                if isDirectory == isDir.boolValue {
+                    return (expandedPath, "")
+                }
+            }
         }
         
-        // Get the filename component and check if it's a relative path
-        let isRelativePath = !(originalPath.hasPrefix("/") || originalPath.hasPrefix("~"))
-        let filename = (originalPath as NSString).lastPathComponent
-        
-        // Strategy 2: If it's a relative path and we have currentFolder, try to resolve it
-        if isRelativePath, let cf = XcfXcodeProjectManager.shared.currentFolder {
-            // Handle paths that might start with ./ or ../
-            var relativePath = originalPath
+        // Strategy 2: Try relative to current folder from XcfXcodeProjectManager
+        if let currentFolder = XcfXcodeProjectManager.shared.currentFolder {
+            var relativePath = path
             if relativePath.hasPrefix("./") {
                 relativePath = String(relativePath.dropFirst(2))
             }
             
-            let fullPath = (cf as NSString).appendingPathComponent(relativePath)
-            if fileManager.fileExists(atPath: fullPath) {
+            let fullPath = (currentFolder as NSString).appendingPathComponent(relativePath)
+            if fileManager.fileExists(atPath: fullPath, isDirectory: &isDir) {
+                if isDirectory == isDir.boolValue {
+                    return (fullPath, "")
+                }
+            }
+            
+            // If file doesn't exist but we're trying to create it, return the resolved path
+            if !fileManager.fileExists(atPath: fullPath) {
                 return (fullPath, "")
             }
         }
         
-        // Strategy 3: Try in current working directory
-        if let currentDirectory = ProcessInfo.processInfo.environment["PWD"] {
-            let currentDirPath = (currentDirectory as NSString).appendingPathComponent(filename)
-            if fileManager.fileExists(atPath: currentDirPath) {
-                duplicates.append(currentDirPath)
+        // Strategy 3: Try in current working directory from ProcessInfo
+        if let pwd = ProcessInfo.processInfo.environment["PWD"] {
+            let pwdPath = (pwd as NSString).appendingPathComponent(path)
+            if fileManager.fileExists(atPath: pwdPath, isDirectory: &isDir) {
+                if isDirectory == isDir.boolValue {
+                    return (pwdPath, "")
+                }
+            }
+            
+            // If file doesn't exist but we're trying to create it, return the resolved path
+            if !fileManager.fileExists(atPath: pwdPath) {
+                return (pwdPath, "")
             }
         }
         
-        // Strategy 4: Try in project manager's current folder
+        // If we're creating a new file/directory, use the current folder as base
         if let currentFolder = XcfXcodeProjectManager.shared.currentFolder {
-            let currentFolderPath = (currentFolder as NSString).appendingPathComponent(filename)
-            if fileManager.fileExists(atPath: currentFolderPath) {
-                duplicates.append(currentFolderPath)
-            }
-            
-            // Strategy 5: Search recursively in current folder (limited depth)
-            searchRecursively(in: currentFolder, forFile: filename, maxDepth: 3, duplicates: &duplicates)
+            let fullPath = (currentFolder as NSString).appendingPathComponent(path)
+            return (fullPath, "")
         }
         
-        // Strategy 6: Try in current project directory if available
-        if let projectPath = XcfXcodeProjectManager.shared.currentProject {
-            let projectDir = (projectPath as NSString).deletingLastPathComponent
-            let projectFilePath = (projectDir as NSString).appendingPathComponent(filename)
-            if fileManager.fileExists(atPath: projectFilePath) {
-                duplicates.append(projectFilePath)
-            }
-            
-            // Also try one level up from project directory (common for source folders)
-            let projectParentDir = (projectDir as NSString).deletingLastPathComponent
-            let parentFilePath = (projectParentDir as NSString).appendingPathComponent(filename)
-            if fileManager.fileExists(atPath: parentFilePath) {
-                duplicates.append(parentFilePath)
-            }
-        }
-        
-        // If we found exactly one file, return it
-        if duplicates.count == 1 {
-            return (duplicates[0], "")
-        }
-        
-        // If we found multiple files, return the first one with a warning
-        if duplicates.count > 1 {
-            let warning = "Warning: Found multiple files matching '\(filename)':\n" + 
-                          duplicates.enumerated().map { "[\($0.0 + 1)] \($0.1)" }.joined(separator: "\n") +
-                          "\nUsing the first match."
-            return (duplicates[0], warning)
-        }
-        
-        // Strategy 7: Last resort - try a fuzzy search in all available directories
-        if let bestMatch = findBestFuzzyMatch(for: filename) {
-            return (bestMatch.path, "Warning: Couldn't find exact file '\(filename)'. Using similar file: '\((bestMatch.path as NSString).lastPathComponent)' (similarity: \(Int(bestMatch.score * 100))%)")
-        }
-        
-        // If all strategies fail, return the original path
-        return (originalPath, "")
+        // If all strategies fail, return original with warning
+        return (path, "Warning: Could not resolve path '\(path)'")
+    }
+    
+    /// Resolves a file path using consistent rules
+    /// - Parameter filePath: The file path to resolve
+    /// - Returns: A tuple containing the resolved path and any warning messages
+    static func resolveFilePath(_ filePath: String) -> (path: String, warning: String) {
+        return resolvePath(filePath, isDirectory: false)
+    }
+    
+    /// Resolves a directory path using consistent rules
+    /// - Parameter dirPath: The directory path to resolve
+    /// - Returns: A tuple containing the resolved path and any warning messages
+    static func resolveDirectoryPath(_ dirPath: String) -> (path: String, warning: String) {
+        return resolvePath(dirPath, isDirectory: true)
     }
     
     // MARK: - Private Methods

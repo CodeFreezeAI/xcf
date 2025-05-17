@@ -28,7 +28,7 @@ struct CaptureSnippet {
         let language = FileFinder.determineLanguage(from: filePath)
         
         // Try to find the file using FuzzyLogicService
-        let (resolvedPath, warning) = FuzzyLogicService.findFile(filePath)
+        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
         
         // If we got a warning about duplicate files, prepend it to the snippet
         var warningMessage = ""

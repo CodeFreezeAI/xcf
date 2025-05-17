@@ -13,7 +13,7 @@ struct FileFinder {
     /// - Parameter originalPath: The original path provided
     /// - Returns: A tuple containing (resolvedPath, warningMessage) where resolvedPath is the resolved path or original if no strategies succeed, and warningMessage contains any warnings about duplicate files
     static func resolveFilePath(_ originalPath: String) -> (String, String) {
-        return FuzzyLogicService.findFile(originalPath)
+        return FuzzyLogicService.resolveFilePath(originalPath)
     }
     
     /// Determines the language of a file based on its extension

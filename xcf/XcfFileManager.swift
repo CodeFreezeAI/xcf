@@ -8,10 +8,9 @@ struct XcfFileManager {
     /// - Returns: The contents of the file as a string
     /// - Throws: Error if file cannot be read
     static func readFile(at filePath: String) throws -> String {
-        // Security check with path resolution
-        let (allowed, resolvedPath, error) = SecurityManager.shared.isFileOperationAllowed(filePath, operation: "read")
-        if !allowed {
-            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
+        if !warning.isEmpty {
+            print(warning)
         }
         
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
@@ -28,16 +27,30 @@ struct XcfFileManager {
     /// Writes content to a file
     /// - Parameters:
     ///   - content: The content to write
-    ///   - filePath: Path to the file to write to
+    ///   - path: The path of the file to write to
     /// - Throws: Error if file cannot be written
-    static func writeFile(content: String, to filePath: String) throws {
-        // Security check with path resolution
-        let (allowed, resolvedPath, error) = SecurityManager.shared.isFileOperationAllowed(filePath, operation: "write")
-        if !allowed {
-            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+    static func writeFile(content: String, to path: String) throws {
+        // Get the current working directory
+        let currentDir = XcfXcodeProjectManager.shared.currentFolder ?? FileManager.default.currentDirectoryPath
+        
+        // If path is not absolute, make it relative to current directory
+        let fullPath: String
+        if path.hasPrefix("/") {
+            fullPath = path
+        } else {
+            fullPath = (currentDir as NSString).appendingPathComponent(path)
         }
         
-        try content.write(toFile: resolvedPath, atomically: true, encoding: .utf8)
+        // Create intermediate directories if needed
+        let directory = (fullPath as NSString).deletingLastPathComponent
+        if !FileManager.default.fileExists(atPath: directory) {
+            try FileManager.default.createDirectory(atPath: directory,
+                                                 withIntermediateDirectories: true,
+                                                 attributes: nil)
+        }
+        
+        // Write the file
+        try content.write(toFile: fullPath, atomically: true, encoding: .utf8)
     }
     
     /// Creates a new file with content
@@ -46,15 +59,18 @@ struct XcfFileManager {
     ///   - content: Initial content for the file
     /// - Throws: Error if file cannot be created
     static func createFile(at filePath: String, content: String) throws {
-        // Security check with path resolution
-        let (allowed, resolvedPath, error) = SecurityManager.shared.isFileOperationAllowed(filePath, operation: "create")
-        if !allowed {
-            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
+        if !warning.isEmpty {
+            print(warning)
         }
         
         guard !FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 2, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileAlreadyExists, filePath)])
         }
+        
+        // Create directory structure if needed
+        let directory = (resolvedPath as NSString).deletingLastPathComponent
+        try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true, attributes: nil)
         
         try content.write(toFile: resolvedPath, atomically: true, encoding: .utf8)
     }
@@ -116,10 +132,9 @@ struct XcfFileManager {
     /// - Parameter directoryPath: Path where the directory should be created
     /// - Throws: Error if directory cannot be created
     static func createDirectory(at directoryPath: String) throws {
-        // Security check with path resolution
-        let (allowed, resolvedPath, error) = SecurityManager.shared.isDirectoryOperationAllowed(directoryPath, operation: "create")
-        if !allowed {
-            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+        let (resolvedPath, warning) = FuzzyLogicService.resolveDirectoryPath(directoryPath)
+        if !warning.isEmpty {
+            print(warning)
         }
         
         guard !FileManager.default.fileExists(atPath: resolvedPath) else {
@@ -147,22 +162,26 @@ struct XcfFileManager {
     }
     
     /// Changes the current working directory
-    /// - Parameter directoryPath: Path to change to
+    /// - Parameter path: The path to change to
     /// - Throws: Error if directory cannot be changed
-    static func changeDirectory(to directoryPath: String) throws {
-        // Security check with path resolution
-        let (allowed, resolvedPath, error) = SecurityManager.shared.isDirectoryOperationAllowed(directoryPath, operation: "change to")
-        if !allowed {
-            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+    static func changeDirectory(to path: String) throws {
+        // Use FuzzyLogicService to resolve the path
+        let (resolvedPath, warning) = FuzzyLogicService.resolveDirectoryPath(path)
+        
+        // Verify the directory exists
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: resolvedPath, isDirectory: &isDirectory),
+              isDirectory.boolValue else {
+            throw NSError(domain: "XcfFileManager",
+                         code: 2,
+                         userInfo: [NSLocalizedDescriptionKey: "Directory not found: \(resolvedPath)"])
         }
         
-        guard FileManager.default.fileExists(atPath: resolvedPath) else {
-            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, directoryPath)])
-        }
+        // Change the directory
+        FileManager.default.changeCurrentDirectoryPath(resolvedPath)
         
-        guard FileManager.default.changeCurrentDirectoryPath(resolvedPath) else {
-            throw NSError(domain: "XcfFileManager", code: 4, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.errorChangingDirectory, directoryPath)])
-        }
+        // Update the current folder in XcfXcodeProjectManager
+        XcfXcodeProjectManager.shared.currentFolder = resolvedPath
     }
     
     /// Lists contents of a directory with optional file extension filter

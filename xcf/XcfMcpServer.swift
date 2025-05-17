@@ -1251,7 +1251,7 @@ struct McpServer {
     /// - Returns: The extracted code snippet
     private static func handleCodeSnippet(filePath: String, entireFile: Bool, startLine: Int? = nil, endLine: Int? = nil) -> CallTool.Result {
         // Resolve the file path using multiple strategies
-        let (resolvedPath, warning) = FuzzyLogicService.findFile(filePath)
+        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
         
         // Validate file path - use the resolved path
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
