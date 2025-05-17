@@ -37,7 +37,7 @@ private enum FileExtensions {
 // Global variables with clear prefix for backward compatibility
 private var XcfXcodeProject: String? = {
     if let workspaceProjectPath = ProcessInfo.processInfo.environment[EnvKeys.workspaceFolderPaths],
-       !workspaceProjectPath.contains(",") {
+       !workspaceProjectPath.contains(Format.commaSeparator) {
         let projectName = URL(fileURLWithPath: workspaceProjectPath).lastPathComponent
         let constructedProjectPath = workspaceProjectPath + "/" + projectName + ".xcodeproj"
         

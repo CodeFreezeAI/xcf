@@ -362,4 +362,38 @@ struct XcfFileManager {
         // Move the file
         try FileManager.default.moveItem(atPath: resolvedSourcePath, toPath: resolvedDestPath)
     }
+    
+    /// Moves a directory from one location to another
+    /// - Parameters:
+    ///   - sourcePath: Path of the directory to move
+    ///   - destinationPath: Path where the directory should be moved to
+    /// - Throws: Error if directory cannot be moved
+    static func moveDirectory(from sourcePath: String, to destinationPath: String) throws {
+        // Security check with path resolution for source directory
+        let (sourceAllowed, resolvedSourcePath, sourceError) = SecurityManager.shared.isDirectoryOperationAllowed(sourcePath, operation: "move")
+        if !sourceAllowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: sourceError ?? "Access denied for source directory"])
+        }
+        
+        // Security check with path resolution for destination
+        let (destAllowed, resolvedDestPath, destError) = SecurityManager.shared.isDirectoryOperationAllowed(destinationPath, operation: "move")
+        if !destAllowed {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: destError ?? "Access denied for destination path"])
+        }
+        
+        // Check if source directory exists
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: resolvedSourcePath, isDirectory: &isDirectory), isDirectory.boolValue else {
+            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, sourcePath)])
+        }
+        
+        // Create parent of destination directory if it doesn't exist
+        let destinationParent = (resolvedDestPath as NSString).deletingLastPathComponent
+        if !FileManager.default.fileExists(atPath: destinationParent) {
+            try FileManager.default.createDirectory(atPath: destinationParent, withIntermediateDirectories: true)
+        }
+        
+        // Move the directory
+        try FileManager.default.moveItem(atPath: resolvedSourcePath, toPath: resolvedDestPath)
+    }
 } 

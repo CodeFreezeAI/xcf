@@ -413,6 +413,26 @@ struct McpServer {
         ])
     )
     
+    /// Tool for moving directories
+    static let moveDirTool = Tool(
+        name: McpConfig.moveDirToolName,
+        description: "Move a directory from one location to another",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                "sourcePath": .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Path of the directory to move")
+                ]),
+                "destinationPath": .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Path where the directory should be moved to")
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string("sourcePath"), .string("destinationPath")])
+        ])
+    )
+    
     // MARK: - Resource Definitions
     
     /// Resource for accessing Xcode projects
@@ -473,7 +493,7 @@ struct McpServer {
         xcfTool, listToolsTool, quickHelpTool, helpTool, snippetTool, analyzerTool, readDirTool,
         writeFileTool, readFileTool, cdDirTool,
         editFileTool, deleteFileTool,
-        addDirTool, rmDirTool, moveFileTool,
+        addDirTool, rmDirTool, moveFileTool, moveDirTool,
         useXcfTool,
         toolsReferenceTool
     ]
@@ -693,6 +713,9 @@ struct McpServer {
             
         case McpConfig.moveFileToolName:
             return try handleMoveFileToolCall(params)
+            
+        case McpConfig.moveDirToolName:
+            return try handleMoveDirToolCall(params)
             
         case "tools":
             return handleToolsReferenceToolCall(params)
@@ -1541,10 +1564,31 @@ struct McpServer {
     /// - Returns: The result of the move file tool call
     /// - Throws: Error if sourcePath or destinationPath is missing
     private static func handleMoveFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments,
-              let sourcePath = arguments["sourcePath"]?.stringValue,
-              let destinationPath = arguments["destinationPath"]?.stringValue else {
-            return CallTool.Result(content: [.text("Missing sourcePath or destinationPath parameters")])
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text("Missing source and destination file parameters")])
+        }
+        
+        // Try to get source and destination paths from arguments
+        // First try named parameters, then positional
+        let sourcePath: String
+        let destinationPath: String
+        
+        if let namedSource = arguments["sourcePath"]?.stringValue,
+           let namedDest = arguments["destinationPath"]?.stringValue {
+            // Case 1: Named parameters
+            sourcePath = namedSource
+            destinationPath = namedDest
+        } else {
+            // Case 2: Positional parameters
+            let keys = arguments.keys.sorted()
+            if keys.count >= 2,
+               let firstArg = arguments[keys[0]]?.stringValue,
+               let secondArg = arguments[keys[1]]?.stringValue {
+                sourcePath = firstArg
+                destinationPath = secondArg
+            } else {
+                return CallTool.Result(content: [.text("Missing source and destination file parameters. Usage: move_file source_file destination_file")])
+            }
         }
         
         do {
@@ -1552,6 +1596,46 @@ struct McpServer {
             return CallTool.Result(content: [.text("Successfully moved file from \(sourcePath) to \(destinationPath)")])
         } catch {
             return CallTool.Result(content: [.text(String(format: "Error moving file: %@", error.localizedDescription))])
+        }
+    }
+
+    /// Handles a call to the move directory tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the move directory tool call
+    /// - Throws: Error if sourcePath or destinationPath is missing
+    private static func handleMoveDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text("Missing source and destination directory parameters")])
+        }
+        
+        // Try to get source and destination paths from arguments
+        // First try named parameters, then positional
+        let sourcePath: String
+        let destinationPath: String
+        
+        if let namedSource = arguments["sourcePath"]?.stringValue,
+           let namedDest = arguments["destinationPath"]?.stringValue {
+            // Case 1: Named parameters
+            sourcePath = namedSource
+            destinationPath = namedDest
+        } else {
+            // Case 2: Positional parameters
+            let keys = arguments.keys.sorted()
+            if keys.count >= 2,
+               let firstArg = arguments[keys[0]]?.stringValue,
+               let secondArg = arguments[keys[1]]?.stringValue {
+                sourcePath = firstArg
+                destinationPath = secondArg
+            } else {
+                return CallTool.Result(content: [.text("Missing source and destination directory parameters. Usage: move_dir source_directory destination_directory")])
+            }
+        }
+        
+        do {
+            try XcfFileManager.moveDirectory(from: sourcePath, to: destinationPath)
+            return CallTool.Result(content: [.text("Successfully moved directory from \(sourcePath) to \(destinationPath)")])
+        } catch {
+            return CallTool.Result(content: [.text(String(format: "Error moving directory: %@", error.localizedDescription))])
         }
     }
 } 
