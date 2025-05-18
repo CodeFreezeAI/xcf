@@ -137,6 +137,20 @@ write_file config.json '{"key": "value"}'  # JSON content
 | `mcp_xcf_read_file` | Read file contents | `mcp_xcf_read_file(filePath="main.swift")` |
 | `mcp_xcf_write_file` | Write file contents | `mcp_xcf_write_file(filePath="test.txt", content="Hello World")` |
 
+## 🎮 Standalone Action Tools
+| Tool | Purpose | Example |
+|------|---------|---------|
+| `mcp_xcf_show_help` | Display help | `mcp_xcf_show_help()` |
+| `mcp_xcf_grant_permission` | Grant permissions | `mcp_xcf_grant_permission()` |
+| `mcp_xcf_run_project` | Run project | `mcp_xcf_run_project()` |
+| `mcp_xcf_build_project` | Build project | `mcp_xcf_build_project()` |
+| `mcp_xcf_show_current_project` | Show project | `mcp_xcf_show_current_project()` |
+| `mcp_xcf_show_env` | Show env vars | `mcp_xcf_show_env()` |
+| `mcp_xcf_show_folder` | Show directory | `mcp_xcf_show_folder()` |
+| `mcp_xcf_list_projects` | List projects | `mcp_xcf_list_projects()` |
+| `mcp_xcf_select_project` | Select project | `mcp_xcf_select_project(projectNumber=1)` |
+| `mcp_xcf_analyze_swift_code` | Analyze code | `mcp_xcf_analyze_swift_code(filePath="main.swift")` |
+
 ## 🚀 Quick Workflow Examples
 
 ### Basic Project Workflow
@@ -153,7 +167,6 @@ run
 ### Code Analysis Workflow
 ```
 use_xcf
-xcf pwd     # Verify working directory
 cd_dir .    # Ensure correct context
 current
 snippet main.swift
@@ -165,7 +178,6 @@ build
 ```
 use_xcf
 xcf pwd     # Check current directory
-cd_dir .    # Confirm directory
 read_dir .
 read_file main.swift
 edit_file main.swift 10 15 "// Updated code"
