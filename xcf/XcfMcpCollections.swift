@@ -22,7 +22,13 @@ extension XcfMcpServer {
 
     static let allResources = [xcodeProjResource, fileContentsResource, buildResultsResource]
 
-    static let allPrompts = [buildPrompt, runPrompt, analyzeCodePrompt]
+    static let allPrompts = [
+        buildPrompt, runPrompt, analyzeCodePrompt,
+        snippetPrompt, writeFilePrompt, readFilePrompt, cdDirPrompt,
+        editFilePrompt, deleteFilePrompt, addDirPrompt, rmDirPrompt, readDirPrompt,
+        openDocPrompt, createDocPrompt, readDocPrompt, saveDocPrompt, editDocPrompt, closeDocPrompt,
+        moveFilePrompt, moveDirPrompt, xcfActionPrompt
+    ]
 
 }
 

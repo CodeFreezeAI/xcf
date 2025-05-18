@@ -36,13 +36,13 @@ extension XcfMcpServer {
     )
 
     /// Tool for super detailed help
-    static let superDetailedHelpTool = Tool(
-        name: "super_help",
-        description: "Super detailed help with all tools and examples",
-        inputSchema: .object([
-            McpConfig.typeKey: .string(McpConfig.objectType)
-        ])
-    )
+//    static let superDetailedHelpTool = Tool(
+//        name: "super_help",
+//        description: "Super detailed help with all tools and examples",
+//        inputSchema: .object([
+//            McpConfig.typeKey: .string(McpConfig.objectType)
+//        ])
+//    )
 
     /// Tool for tools reference
     static let toolsReferenceTool = Tool(
