@@ -11,6 +11,21 @@ import Foundation
 struct FuzzyLogicService {
     // MARK: - Public Interface
     
+    /// Expands a path handling both absolute paths and relative paths
+    /// - Parameters:
+    ///   - path: The path to expand
+    ///   - projectDir: The project directory to use for relative paths
+    /// - Returns: The expanded path
+    static func expandPath(_ path: String, relativeTo projectDir: String) -> String {
+        // For absolute paths
+        if path.hasPrefix("/") || path.hasPrefix("~") {
+            return (path as NSString).expandingTildeInPath
+        }
+        
+        // For relative paths
+        return (projectDir as NSString).appendingPathComponent(path)
+    }
+    
     /// Resolves any path (file or directory) using consistent rules
     /// - Parameter path: The path to resolve
     /// - Returns: A tuple containing the resolved path and any warning messages
@@ -25,35 +40,24 @@ struct FuzzyLogicService {
             return (projectDir, "")
         }
         
-        // For absolute paths
-        if path.hasPrefix("/") || path.hasPrefix("~") {
-            let expandedPath = (path as NSString).expandingTildeInPath
-            var isDir: ObjCBool = ObjCBool(isDirectory)
-            if FileManager.default.fileExists(atPath: expandedPath, isDirectory: &isDir) {
-                if isDirectory == isDir.boolValue {
-                    return (expandedPath, "")
-                }
-            }
-            // Even if file doesn't exist, return the expanded path for creation
-            return (expandedPath, "")
-        }
-        
         // For ".." path
         if path == ".." {
             return ((projectDir as NSString).deletingLastPathComponent, "")
         }
         
-        // For relative paths
-        let fullPath = (projectDir as NSString).appendingPathComponent(path)
+        // Expand the path
+        let expandedPath = expandPath(path, relativeTo: projectDir)
+        
+        // Validate the path if needed
         var isDir: ObjCBool = ObjCBool(isDirectory)
-        if FileManager.default.fileExists(atPath: fullPath, isDirectory: &isDir) {
+        if FileManager.default.fileExists(atPath: expandedPath, isDirectory: &isDir) {
             if isDirectory == isDir.boolValue {
-                return (fullPath, "")
+                return (expandedPath, "")
             }
         }
         
-        // If file/directory doesn't exist, return the full path for creation
-        return (fullPath, "")
+        // Even if file doesn't exist, return the expanded path for creation
+        return (expandedPath, "")
     }
     
     /// Resolves a file path using consistent rules

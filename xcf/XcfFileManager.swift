@@ -41,12 +41,7 @@ struct XcfFileManager {
         }
         
         // Determine the full path
-        let fullPath: String
-        if path.hasPrefix("/") || path.hasPrefix("~") {
-            fullPath = (path as NSString).expandingTildeInPath
-        } else {
-            fullPath = (projectDir as NSString).appendingPathComponent(path)
-        }
+        let fullPath = FuzzyLogicService.expandPath(path, relativeTo: projectDir)
         
         // Create intermediate directories if needed
         let directory = (fullPath as NSString).deletingLastPathComponent
@@ -224,12 +219,10 @@ struct XcfFileManager {
         let targetPath: String
         if directoryPath.isEmpty || directoryPath == "." {
             targetPath = projectDir
-        } else if directoryPath.hasPrefix("/") {
-            targetPath = directoryPath
         } else if directoryPath == ".." {
             targetPath = (projectDir as NSString).deletingLastPathComponent
         } else {
-            targetPath = (projectDir as NSString).appendingPathComponent(directoryPath)
+            targetPath = FuzzyLogicService.expandPath(directoryPath, relativeTo: projectDir)
         }
         
         // Verify directory exists

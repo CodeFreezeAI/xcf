@@ -100,8 +100,8 @@ struct SwiftAnalyzer {
         }
         
         // Determine which checks to run
-        let checksToRun = individualChecks.isEmpty ? 
-            checkGroups.flatMap { $0.checks } : individualChecks
+        let checksToRun = individualChecks.isEmpty ?
+        checkGroups.flatMap { $0.checks } : individualChecks
         
         // If we're analyzing the entire file, use the full file analysis
         if entireFile {
@@ -528,3 +528,4 @@ struct SwiftAnalyzer {
             return "Other Issues"
         }
     }
+}

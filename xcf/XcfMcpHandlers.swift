@@ -135,12 +135,7 @@ extension XcfMcpServer {
         }
         
         // Determine the full path
-        let fullPath: String
-        if filePath.hasPrefix("/") || filePath.hasPrefix("~") {
-            fullPath = (filePath as NSString).expandingTildeInPath
-        } else {
-            fullPath = (projectDir as NSString).appendingPathComponent(filePath)
-        }
+        let fullPath = FuzzyLogicService.expandPath(filePath, relativeTo: projectDir)
         
         do {
             let fileContents = try String(contentsOfFile: fullPath, encoding: .utf8)
@@ -796,12 +791,31 @@ extension XcfMcpServer {
 
     /// Handles reading a document from Xcode
      static func handleReadDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments,
-              let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
+        guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
         
-        if let content = XcfScript.readSwiftDocumentWithScriptingBridge(filePath: filePath) {
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+        } else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Use FuzzyLogicService to resolve the path
+        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
+        
+        // If there was a warning, print it
+        if !warning.isEmpty {
+            print(warning)
+        }
+        
+        if let content = XcfScript.readSwiftDocumentWithScriptingBridge(filePath: resolvedPath) {
             return CallTool.Result(content: [.text(content)])
         } else {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, filePath))])
