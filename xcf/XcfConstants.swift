@@ -663,7 +663,7 @@ Mode Activation:
 use_xcf
 Description: Activate XCF mode
 Parameters: none (type: string)
-Example: mcp_xcf_xcf action="use xcf"
+Example: mcp_xcf_use_xcf
 
 Parameter Types:
 - string: Text values, use quotes for values with spaces

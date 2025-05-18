@@ -48,7 +48,6 @@ lz main.swift        # Quick analysis
 ### Activation & Project Management
 | Command | Description | Example | Output |
 |---------|-------------|---------|--------|
-| `use xcf` | Activate XCF mode | `use xcf` | All xcf systems go! |
 | `show` | List open Xcode projects | `show` | 1. /path/to/project.xcodeproj |
 | `open #` | Select project by number | `open 1` | [Selects project] |
 | `current` | Show current project | `current` | Current project: /path/to/project.xcodeproj |

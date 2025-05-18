@@ -99,9 +99,8 @@ The tool is designed by Swift developers, for Swift developers. Commands like `b
 
 ## 📋 Commands Reference
 
-| Command | Description |
+| xcf Command | action Description |
 |---------|-------------|
-| `use xcf` | Activate xcf mode |
 | `show` | List open Xcode projects |
 | `open #` | Select project by number |
 | `run` | Run current project |
@@ -384,56 +383,48 @@ mcp_xcf_close_doc filePath="main.swift" saving=true
 ## 🔄 Workflow Examples
 
 ### Basic Workflow (For Humans)
-1. `xcf use xcf` - Activate the tool
-2. `xcf show` - See available projects
-3. `xcf open 1` - Select a project 
-4. `xcf build` - Build the project
-5. `xcf run` - Run the project
+1. `xcf show` - See available projects
+2. `xcf open 1` - Select a project 
+3. `xcf build` - Build the project
+4. `xcf run` - Run the project
 
 ### Code Analysis Workflow (For Humans)
-1. `xcf use xcf` - Activate the tool
-2. `xcf current` - Check current project
-3. `xcf snippet filename.swift` - Examine code
-4. `xcf lz filename.swift` - Analyze code
-5. `xcf build` - Build after fixing issues
+1. `xcf current` - Check current project
+2. `xcf snippet filename.swift` - Examine code
+3. `xcf lz filename.swift` - Analyze code
+4. `xcf build` - Build after fixing issues
 
 ### File Manipulation Workflow (For Humans)
-1. `xcf use xcf` - Activate the tool
-2. `xcf read_dir .` - List files in current directory
-3. `xcf read_file main.swift` - View file contents
-4. `xcf edit_file main.swift 10 15 "// Updated code"` - Edit the file
-5. `xcf build` - Build after changes
+1. `read_dir .` - List files in current directory
+2. `read_file main.swift` - View file contents
+3. `edit_file main.swift 10 15 "// Updated code"` - Edit the file
+4. `xcf build` - Build after changes
 
 ### Xcode Document Workflow (For Humans)
-1. `xcf use xcf` - Activate the tool
-2. `xcf open_doc main.swift` - Open document in Xcode
-3. `xcf edit_doc main.swift 10 20 "// New implementation"` - Edit in Xcode
-4. `xcf save_doc main.swift` - Save the document
+1. `open_doc main.swift` - Open document in Xcode
+2. `edit_doc main.swift 10 20 "// New implementation"` - Edit in Xcode
+4. `save_doc main.swift` - Save the document
 5. `xcf build` - Build after changes
 
 ### Basic Workflow (For AI Assistants)
-1. `mcp_xcf_xcf action="use xcf"` - Activate the tool
 2. `mcp_xcf_xcf action="show"` - See available projects
 3. `mcp_xcf_xcf action="open 1"` - Select a project 
 4. `mcp_xcf_xcf action="build"` - Build the project
 5. `mcp_xcf_xcf action="run"` - Run the project
 
 ### Code Analysis Workflow (For AI Assistants)
-1. `mcp_xcf_xcf action="use xcf"` - Activate the tool
 2. `mcp_xcf_xcf action="current"` - Check current project
 3. `mcp_xcf_snippet filePath="filename.swift" entireFile=true` - Examine code
 4. `mcp_xcf_analyzer filePath="filename.swift" entireFile=true` - Analyze code
 5. `mcp_xcf_xcf action="build"` - Build after fixing issues
 
 ### File Manipulation Workflow (For AI Assistants)
-1. `mcp_xcf_xcf action="use xcf"` - Activate the tool
 2. `mcp_xcf_read_dir directoryPath="."` - List files in current directory
 3. `mcp_xcf_read_file filePath="main.swift"` - View file contents
 4. `mcp_xcf_edit_file filePath="main.swift" startLine=10 endLine=15 replacement="// Updated code"` - Edit the file
 5. `mcp_xcf_xcf action="build"` - Build after changes
 
 ### Xcode Document Workflow (For AI Assistants)
-1. `mcp_xcf_xcf action="use xcf"` - Activate the tool
 2. `mcp_xcf_open_doc filePath="main.swift"` - Open document in Xcode
 3. `mcp_xcf_edit_doc filePath="main.swift" startLine=10 endLine=20 replacement="// New implementation"` - Edit in Xcode
 4. `mcp_xcf_save_doc filePath="main.swift"` - Save the document
