@@ -17,7 +17,11 @@ extension XcfMcpServer {
         addDirTool, rmDirTool, moveFileTool, moveDirTool,
         openDocTool, closeDocTool, createDocTool, readDocTool, saveDocTool, editDocTool,
         useXcfTool,
-        toolsReferenceTool
+        toolsReferenceTool,
+        // New action-specific tools
+        showHelpTool, grantPermissionTool, runProjectTool, buildProjectTool,
+        showCurrentProjectTool, showEnvTool, showFolderTool,
+        listProjectsTool, selectProjectTool, analyzeSwiftCodeTool
     ]
 
     static let allResources = [
@@ -162,6 +166,64 @@ extension XcfMcpServer {
             
         case "xcf_help":
             return handleQuickHelpToolCall(params)
+        
+        // Action-specific tool handlers
+        case "show_help":
+            return await CallTool.Result(content: [.text(XcfActionHandler.getHelpText())])
+            
+        case "grant_perm":
+            return await CallTool.Result(content: [.text(XcfActionHandler.grantPermission())])
+            
+        case "run_proj":
+            return CallTool.Result(content: [.text(await XcfActionHandler.runProject())])
+            
+        case "build_proj":
+            return CallTool.Result(content: [.text(await XcfActionHandler.buildProject())])
+            
+        case "show_current_proj":
+            return await CallTool.Result(content: [.text(XcfActionHandler.showCurrentProject())])
+            
+        case "show_env":
+            return await CallTool.Result(content: [.text(XcfActionHandler.showEnvironmentVariables())])
+            
+        case "show_dir":
+            return await CallTool.Result(content: [.text(XcfActionHandler.showCurrentFolder())])
+            
+        case "list_proj":
+            return await CallTool.Result(content: [.text(XcfActionHandler.listProjects())])
+            
+        case "select_proj":
+            if let projectNumber = params.arguments?["projectNumber"]?.intValue {
+                let action = "open \(projectNumber)"
+                return CallTool.Result(content: [.text(await XcfActionHandler.selectProject(action: action))])
+            } else {
+                return CallTool.Result(content: [.text(ErrorMessages.invalidProjectSelection)])
+            }
+            
+        case "analyze_swift_code":
+            guard let filePath = params.arguments?["filePath"]?.stringValue else {
+                return CallTool.Result(content: [.text("Missing filePath parameter")])
+            }
+            
+            var analyzeCommand = "analyze \(filePath)"
+            
+            // Add optional parameters if provided
+            if let startLine = params.arguments?["startLine"]?.intValue,
+               let endLine = params.arguments?["endLine"]?.intValue {
+                analyzeCommand += " \(startLine) \(endLine)"
+            }
+            
+            // Add check groups if provided
+            if let checkGroups = params.arguments?["checkGroups"]?.arrayValue,
+               !checkGroups.isEmpty {
+                for group in checkGroups {
+                    if let groupName = group.stringValue {
+                        analyzeCommand += " \(groupName)"
+                    }
+                }
+            }
+            
+            return await CallTool.Result(content: [.text(XcfActionHandler.handleAnalyzeAction(action: analyzeCommand))])
             
         default:
             throw MCPError.invalidParams(String(format: ErrorMessages.unknownTool, params.name))

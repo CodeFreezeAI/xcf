@@ -35,15 +35,6 @@ extension XcfMcpServer {
         ])
     )
 
-    /// Tool for super detailed help
-//    static let superDetailedHelpTool = Tool(
-//        name: "super_help",
-//        description: "Super detailed help with all tools and examples",
-//        inputSchema: .object([
-//            McpConfig.typeKey: .string(McpConfig.objectType)
-//        ])
-//    )
-
     /// Tool for tools reference
     static let toolsReferenceTool = Tool(
         name: "tools",
@@ -445,6 +436,124 @@ extension XcfMcpServer {
                 ])
             ]),
             McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string("saving")])
+        ])
+    )
+    
+    // MARK: - Xcf Action Tools
+    
+    /// Tool for showing help
+    static let showHelpTool = Tool(
+        name: "show_help",
+        description: "Display help information about available commands",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType)
+        ])
+    )
+    
+    /// Tool for granting permission
+    static let grantPermissionTool = Tool(
+        name: "grant_permission",
+        description: "Grant Xcode automation permissions",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType)
+        ])
+    )
+    
+    /// Tool for running the current project
+    static let runProjectTool = Tool(
+        name: "run_project",
+        description: "Run the current Xcode project",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType)
+        ])
+    )
+    
+    /// Tool for building the current project
+    static let buildProjectTool = Tool(
+        name: "build_project",
+        description: "Build the current Xcode project",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType)
+        ])
+    )
+    
+    /// Tool for showing the current project
+    static let showCurrentProjectTool = Tool(
+        name: "show_current_project",
+        description: "Show information about the currently selected project",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType)
+        ])
+    )
+    
+    /// Tool for showing environment variables
+    static let showEnvTool = Tool(
+        name: "show_env",
+        description: "Display all environment variables",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType)
+        ])
+    )
+    
+    /// Tool for showing current folder
+    static let showFolderTool = Tool(
+        name: "show_folder",
+        description: "Display the current working folder",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType)
+        ])
+    )
+    
+    /// Tool for listing projects
+    static let listProjectsTool = Tool(
+        name: "list_projects",
+        description: "List all open Xcode projects",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType)
+        ])
+    )
+    
+    /// Tool for selecting a project
+    static let selectProjectTool = Tool(
+        name: "select_project",
+        description: "Select an Xcode project by number",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                "projectNumber": .object([
+                    McpConfig.typeKey: .string(McpConfig.integerType),
+                    McpConfig.descriptionKey: .string("The number of the project to select")
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string("projectNumber")])
+        ])
+    )
+    
+    /// Tool for analyzing Swift code
+    static let analyzeSwiftCodeTool = Tool(
+        name: "analyze_swift_code",
+        description: "Analyze Swift code for potential issues",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                "filePath": .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Path to the Swift file to analyze")
+                ]),
+                "startLine": .object([
+                    McpConfig.typeKey: .string(McpConfig.integerType),
+                    McpConfig.descriptionKey: .string("Starting line number (1-indexed)")
+                ]),
+                "endLine": .object([
+                    McpConfig.typeKey: .string(McpConfig.integerType),
+                    McpConfig.descriptionKey: .string("Ending line number (1-indexed)")
+                ]),
+                "checkGroups": .object([
+                    McpConfig.typeKey: .string("array"),
+                    McpConfig.descriptionKey: .string("Check groups to perform (all, syntax, style, safety, performance, bestPractices)")
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string("filePath")])
         ])
     )
     

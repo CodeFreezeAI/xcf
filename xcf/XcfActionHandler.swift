@@ -195,7 +195,7 @@ struct XcfActionHandler {
     
     /// Runs the current project
     /// - Returns: A message indicating the result of the run operation
-    private static func runProject() async -> String {
+    static func runProject() async -> String {
         guard let currentProject = XcfXcodeProjectManager.shared.currentProject else { return ErrorMessages.noProjectSelected }
         let buildCheckForErrors = XcfScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
         
@@ -208,7 +208,7 @@ struct XcfActionHandler {
     
     /// Builds the current project
     /// - Returns: A message indicating the result of the build operation
-    private static func buildProject() async -> String {
+    static func buildProject() async -> String {
         guard let currentProject = XcfXcodeProjectManager.shared.currentProject else { return ErrorMessages.noProjectSelected }
         return XcfScript.buildCurrentWorkspace(projectPath: currentProject, run: false)
     }
@@ -217,13 +217,13 @@ struct XcfActionHandler {
     
     /// Gets help information about available commands
     /// - Returns: A formatted string containing help information
-    private static func getHelpText() -> String {
+    static func getHelpText() -> String {
         return McpConfig.helpText
     }
     
     /// Grants permission to use Xcode automation
     /// - Returns: A message indicating the result of the permission operation
-    private static func grantPermission() -> String {
+    static func grantPermission() -> String {
         // May not be needed anymore... leave for now.
         let script = grantAutomation()
         return executeWithOsascript(script: script)
@@ -231,7 +231,7 @@ struct XcfActionHandler {
     
     /// Lists all open Xcode projects
     /// - Returns: A formatted string containing a list of open projects
-    private static func listProjects() -> String {
+    static func listProjects() -> String {
         let xcArray = getSortedXcodeProjects()
 
         if xcArray.isEmpty {
@@ -256,7 +256,7 @@ struct XcfActionHandler {
     
     /// Displays information about the current project
     /// - Returns: A formatted string showing the current project
-    private static func showCurrentProject() -> String {
+    static func showCurrentProject() -> String {
         guard let currentProject = getCurrentProject() else {
             return ErrorMessages.noProjectSelected
         }
@@ -265,7 +265,7 @@ struct XcfActionHandler {
     
     /// Displays the current working folder
     /// - Returns: A formatted string showing the current folder path
-    private static func showCurrentFolder() -> String {
+    static func showCurrentFolder() -> String {
         guard let cf = XcfXcodeProjectManager.shared.currentFolder else {
             return "Current folder is not set"
         }
@@ -274,7 +274,7 @@ struct XcfActionHandler {
     
     /// Displays all environment variables
     /// - Returns: A formatted string showing all environment variables
-    private static func showEnvironmentVariables() -> String {
+    static func showEnvironmentVariables() -> String {
         let environment = ProcessInfo.processInfo.environment
         var envString = ""
         
@@ -326,7 +326,7 @@ struct XcfActionHandler {
     /// Handles the analyze action to analyze Swift code
     /// - Parameter action: The action string containing analyze command and arguments
     /// - Returns: A message containing the analysis results
-    private static func handleAnalyzeAction(action: String) -> String {
+    static func handleAnalyzeAction(action: String) -> String {
         // Parse the analyze command
         let parts = action.components(separatedBy: Format.spaceSeparator)
         

@@ -302,6 +302,18 @@ The analysis identifies issues like:
 - `mcp_xcf_edit_doc`: Edit document content in Xcode
 - `mcp_xcf_use_xcf`: Activate XCF mode
 
+### Standalone Action Tools
+- `mcp_xcf_show_help`: Display help information about available commands
+- `mcp_xcf_grant_permission`: Grant Xcode automation permissions
+- `mcp_xcf_run_project`: Run the current Xcode project
+- `mcp_xcf_build_project`: Build the current Xcode project
+- `mcp_xcf_show_current_project`: Show information about the currently selected project
+- `mcp_xcf_show_env`: Display all environment variables
+- `mcp_xcf_show_folder`: Display the current working folder
+- `mcp_xcf_list_projects`: List all open Xcode projects
+- `mcp_xcf_select_project`: Select an Xcode project by number
+- `mcp_xcf_analyze_swift_code`: Analyze Swift code for potential issues
+
 ### For AI Function Calls
 
 To get an entire file:
