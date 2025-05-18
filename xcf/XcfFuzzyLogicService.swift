@@ -116,11 +116,6 @@ struct FuzzyLogicService {
     private static func getSearchDirectories() -> Set<String> {
         var directories = Set<String>()
         
-        // Add current working directory
-        if let pwd = ProcessInfo.processInfo.environment["PWD"] {
-            directories.insert(pwd)
-        }
-        
         // Add current folder from project manager
         if let currentFolder = XcfXcodeProjectManager.shared.currentFolder {
             directories.insert(currentFolder)

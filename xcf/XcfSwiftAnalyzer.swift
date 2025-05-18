@@ -25,7 +25,7 @@ enum CheckGroup: String, CaseIterable {
         case .syntax:
             return [.swiftSyntax, .operatorPrecedence, .macroUsage]
         case .style:
-            return [.codeStyle, .namingConventions, .magicNumbers]
+            return [.codeStyle, .namingConventions]
         case .safety:
             return [.forceUnwraps, .immutableAssignments, .emptyCatchBlocks, .optionalChainingDepth]
         case .performance:
@@ -52,7 +52,6 @@ enum IndividualCheck: String, CaseIterable {
     case guardUsage = "guards"
     case longMethods = "longMethods"
     case emptyCatchBlocks = "emptyCatch"
-    case magicNumbers = "magicNumbers"
     case optionalChainingDepth = "optionalChain"
     case namingConventions = "naming"
 }
@@ -172,7 +171,7 @@ struct SwiftAnalyzer {
                 allIssues.append(contentsOf: try runCheck(checker.checkOperatorPrecedence, at: filePath))
             }
             
-            if checksToRun.isEmpty || checksToRun.contains(.codeStyle) {
+            if checksToRun.contains(.codeStyle) {
                 allIssues.append(contentsOf: try runCheck(checker.checkCodeStyle, at: filePath))
             }
             
@@ -202,10 +201,6 @@ struct SwiftAnalyzer {
             
             if checksToRun.isEmpty || checksToRun.contains(.emptyCatchBlocks) {
                 allIssues.append(contentsOf: try runCheck(checker.checkEmptyCatchBlocks, at: filePath))
-            }
-            
-            if checksToRun.isEmpty || checksToRun.contains(.magicNumbers) {
-                allIssues.append(contentsOf: try runCheck(checker.checkMagicNumbers, at: filePath))
             }
             
             if checksToRun.isEmpty || checksToRun.contains(.optionalChainingDepth) {
@@ -525,8 +520,6 @@ struct SwiftAnalyzer {
             return "Long Methods"
         } else if description.contains("catch") && description.contains("empty") {
             return "Exception Handling"
-        } else if description.contains("magic") || description.contains("number") {
-            return "Magic Numbers"
         } else if description.contains("naming") || description.contains("name") {
             return "Naming Conventions"
         } else if description.contains("syntax") || description.contains("parsing") {
@@ -535,29 +528,3 @@ struct SwiftAnalyzer {
             return "Other Issues"
         }
     }
-    
-    /// Executes a command with the given arguments
-    /// - Parameter arguments: The command and its arguments
-    /// - Returns: A tuple containing the command output and a success flag
-    private static func executeCommand(_ arguments: [String]) -> (String, Bool) {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-        process.arguments = arguments
-        
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = pipe
-        
-        do {
-            try process.run()
-            process.waitUntilExit()
-            
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            let output = String(data: data, encoding: .utf8) ?? "No output"
-            
-            return (output, process.terminationStatus == 0)
-        } catch {
-            return ("Error executing command: \(error.localizedDescription)", false)
-        }
-    }
-} 

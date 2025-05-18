@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/codefreezeai/xcf-swift",
       "state" : {
-        "branch" : "main",
-        "revision" : "914bc702121ced89ea66f5170cdaeaca79ac88c4"
+        "branch" : "1.0.0",
+        "revision" : "2bc70856401230b093956dee35ac9bec174fec62"
       }
     }
   ],

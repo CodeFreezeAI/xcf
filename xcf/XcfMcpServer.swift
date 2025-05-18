@@ -12,9 +12,6 @@ import MCP
 /// It defines tools, resources, and prompts, and configures the MCP server with appropriate handlers.
 class XcfMcpServer {
     static var XcfScript = XcfSwiftScript.shared
-
-    
-    
     /// Configures and starts the MCP server
     /// - Returns: The configured MCP server
     /// - Throws: Errors from server initialization or start

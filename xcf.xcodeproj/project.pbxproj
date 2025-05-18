@@ -346,7 +346,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/codefreezeai/xcf-swift";
 			requirement = {
-				branch = main;
+				branch = 1.0.0;
 				kind = branch;
 			};
 		};

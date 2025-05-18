@@ -345,7 +345,7 @@ struct XcfActionHandler {
                 Available check groups: all, syntax, style, safety, performance, bestPractices
                 Available checks: syntax, unusedVars, immutables, unreachable, forcedUnwraps, 
                                  operators, style, refactor, symbols, macros, complexity, 
-                                 guards, longMethods, emptyCatch, magicNumbers, optionalChain, naming
+                                 guards, longMethods, emptyCatch, optionalChain, naming
                 """
         }
         
