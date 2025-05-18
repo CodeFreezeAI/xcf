@@ -484,22 +484,58 @@ class XcfSwiftScript {
     /// Closes a Swift document in Xcode
     /// - Parameter filePath: The path to the Swift file to close
     /// - Returns: True if successful, false otherwise
-    func closeSwiftDocument(filePath: String) -> Bool {
+    func closeSwiftDocument(filePath: String, xcSaveOptions: XcodeSaveOptions ) -> Bool {
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
             print(ErrorMessages.failedToConnectXcode)
             return false
         }
         
+        // Use FileFinder to resolve the path
+        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
+        
+        // If there was a warning, print it
+        if !warning.isEmpty {
+            print(warning)
+        }
+        
         // Find the document in Xcode
-        guard let documents = xcode.documents?(),
-              let document = (documents as? [XcodeDocument])?.first(where: { $0.path == filePath }) else {
-            print("Document not found in Xcode: \(filePath)")
+        guard let documents = xcode.documents?() else {
+            print("No documents open in Xcode")
             return false
         }
         
-        // Close the document
-        document.closeSaving?(.no, savingIn: nil)
-        return true
+        // Debug information
+        print("Looking for document with path: \(resolvedPath)")
+        print("Number of open documents: \((documents as? [XcodeDocument])?.count ?? 0)")
+        
+        if let documentList = documents as? [XcodeDocument] {
+            for doc in documentList {
+                print("Document path: \(doc.path ?? "unknown")")
+            }
+        }
+        
+        // Try to find document with exact path
+        if let document = (documents as? [XcodeDocument])?.first(where: { $0.path == resolvedPath }) {
+            // Close the document
+            document.closeSaving?(xcSaveOptions, savingIn: nil)
+            return true
+        }
+        
+        // Try to find document with filename match (more lenient)
+        let filename = (resolvedPath as NSString).lastPathComponent
+        if let document = (documents as? [XcodeDocument])?.first(where: { 
+            if let docPath = $0.path {
+                return (docPath as NSString).lastPathComponent == filename
+            }
+            return false
+        }) {
+            // Close the document
+            document.closeSaving?(xcSaveOptions, savingIn: nil)
+            return true
+        }
+        
+        print("Document not found in Xcode: \(resolvedPath)")
+        return false
     }
 
     /// Deletes a file using ScriptingBridge

@@ -1,8 +1,8 @@
 //
-//  hqandle.swift
+//  XcfMcpHandlers.swift
 //  xcf
 //
-//  Created by Todd Bruss on 5/17/25.
+//  Created by Todd Bruss on 5/17/25
 //
 
 import Foundation
@@ -829,9 +829,24 @@ extension XcfMcpServer {
 
     /// Handles editing a document in Xcode
      static func handleEditDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments,
-              let filePath = arguments[McpConfig.filePathParamName]?.stringValue,
-              let startLine = arguments[McpConfig.startLineParamName]?.intValue,
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text(McpConfig.missingLineParamsError)])
+        }
+        
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+        } else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Validate other required parameters
+        guard let startLine = arguments[McpConfig.startLineParamName]?.intValue,
               let endLine = arguments[McpConfig.endLineParamName]?.intValue,
               let replacement = arguments[McpConfig.replacementParamName]?.stringValue else {
             return CallTool.Result(content: [.text(McpConfig.missingLineParamsError)])
@@ -921,6 +936,62 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text("Successfully moved directory from \(sourcePath) to \(destinationPath)")])
         } catch {
             return CallTool.Result(content: [.text(String(format: "Error moving directory: %@", error.localizedDescription))])
+        }
+    }
+
+    /// Handles closing a document in Xcode
+    static func handleCloseDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        // Debug: Print out the entire params
+        print("Close Doc Tool Call Params: \(params)")
+        
+        guard let arguments = params.arguments else {
+            print("No arguments provided")
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Debug: Print out the arguments
+        print("Arguments: \(arguments)")
+        
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+            print("FilePath from named parameter: \(filePath)")
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+            print("FilePath from first argument: \(filePath)")
+        } else {
+            print("No filePath found")
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Get saving option, handling both boolean and string representations
+        let savingParam: Bool
+        if let boolValue = arguments["saving"]?.boolValue {
+            savingParam = boolValue
+            print("Saving parameter (bool): \(savingParam)")
+        } else if let stringValue = arguments["saving"]?.stringValue {
+            // Handle string representations of boolean
+            savingParam = ["true", "yes", "1"].contains(stringValue.lowercased())
+            print("Saving parameter (string): \(stringValue), parsed as: \(savingParam)")
+        } else {
+            print("No saving parameter found")
+            return CallTool.Result(content: [.text("Missing 'saving' parameter")])
+        }
+        
+        // Convert boolean to XcodeSaveOptions
+        let saveOptions: XcodeSaveOptions = savingParam ? .yes : .no
+        
+        print("Attempting to close document: \(filePath) with save options: \(saveOptions)")
+        
+        if XcfScript.closeSwiftDocument(filePath: filePath, xcSaveOptions: saveOptions) {
+            print("Document closed successfully")
+            return CallTool.Result(content: [.text(McpConfig.documentClosedSuccessfully)])
+        } else {
+            print("Failed to close document")
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorClosingFile, filePath))])
         }
     }
 }

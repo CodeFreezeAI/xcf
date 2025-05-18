@@ -2,7 +2,7 @@
 //  XcfMcpTools.swift
 //  xcf
 //
-//  Created by Todd Bruss on 5/17/25.
+//  Created by Todd Bruss on 5/17/25
 //
 
 import Foundation
@@ -425,6 +425,26 @@ extension XcfMcpServer {
                 ])
             ]),
             McpConfig.requiredKey: .array([.string("sourcePath"), .string("destinationPath")])
+        ])
+    )
+    
+    /// Tool for closing documents in Xcode
+    static let closeDocTool = Tool(
+        name: McpConfig.closeDocToolName,
+        description: McpConfig.closeDocToolDesc,
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                ]),
+                "saving": .object([
+                    McpConfig.typeKey: .string(McpConfig.booleanType),
+                    McpConfig.descriptionKey: .string("Whether to save the document before closing")
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string("saving")])
         ])
     )
     

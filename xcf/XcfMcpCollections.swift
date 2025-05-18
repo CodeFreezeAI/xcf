@@ -15,7 +15,7 @@ extension XcfMcpServer {
         writeFileTool, readFileTool, cdDirTool,
         editFileTool, deleteFileTool,
         addDirTool, rmDirTool, moveFileTool, moveDirTool,
-        openDocTool, createDocTool, readDocTool, saveDocTool, editDocTool,
+        openDocTool, closeDocTool, createDocTool, readDocTool, saveDocTool, editDocTool,
         useXcfTool,
         toolsReferenceTool
     ]
@@ -141,6 +141,9 @@ extension XcfMcpServer {
             
         case McpConfig.moveDirToolName:
             return try handleMoveDirToolCall(params)
+            
+        case McpConfig.closeDocToolName:
+            return try handleCloseDocToolCall(params)
             
         case "tools":
             return handleToolsReferenceToolCall(params)

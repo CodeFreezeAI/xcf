@@ -155,6 +155,7 @@ struct McpConfig {
     static let readDocToolName = "read_doc"
     static let saveDocToolName = "save_doc"
     static let editDocToolName = "edit_doc"
+    static let closeDocToolName = "close_doc"
     
     // Tool descriptions
     static let listToolsDesc = "Lists all available tools on this server"
@@ -183,6 +184,7 @@ struct McpConfig {
     static let readDocToolDesc = "Read document content from Xcode"
     static let saveDocToolDesc = "Save document in Xcode"
     static let editDocToolDesc = "Edit document content in Xcode"
+    static let closeDocToolDesc = "Close a document in Xcode"
     
     // Server config
     static let serverName = AppConstants.appName
@@ -323,6 +325,7 @@ struct McpConfig {
     static let documentReadSuccessfully = "Document read successfully"
     static let documentSavedSuccessfully = "Document saved successfully"
     static let documentEditedSuccessfully = "Document edited successfully"
+    static let documentClosedSuccessfully = "Document closed successfully"
     
     // Error messages
     static let errorChangingDirectory = "Error changing directory: %@"
