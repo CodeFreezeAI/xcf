@@ -213,8 +213,8 @@ class XcfSwiftScript {
             print(warning)
         }
         
-        // Verify the file exists and is a Swift file
-        if !resolvedPath.hasSuffix(".swift") || !FileManager.default.fileExists(atPath: resolvedPath) {
+        // Verify the file exists
+        if !FileManager.default.fileExists(atPath: resolvedPath) {
             print("File does not exist or is not a Swift file: \(resolvedPath)")
             return false
         }
@@ -227,47 +227,41 @@ class XcfSwiftScript {
         return false
     }
     
-    /// Creates a new Swift document with FileManager
-    /// - Parameters:
-    ///   - filePath: The path where the Swift file should be created
-    ///   - content: Initial content of the Swift file (optional)
-    /// - Returns: True if successful, false otherwise
-    func createSwiftDocumentWithFileManager(filePath: String, content: String = "") -> Bool {
-        do {
-            try XcfFileManager.createSwiftDocument(filePath: filePath, content: content)
-            return true
-        } catch {
-            print("Error creating file: \(error.localizedDescription)")
-            return false
-        }
-    }
-    
     /// Creates a new Swift document using Xcode ScriptingBridge
     /// - Parameters:
     ///   - filePath: The path where the Swift file should be created
     ///   - content: Initial content of the Swift file (optional)
     /// - Returns: True if successful, false otherwise
     func createSwiftDocumentWithScriptingBridge(filePath: String, content: String = "") -> Bool {
-        // First create the file using FileManager
-        if !createSwiftDocumentWithFileManager(filePath: filePath, content: content) {
-            return false
-        }
-        
-        // Then open it in Xcode
-        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
+        guard let _: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
             print(ErrorMessages.failedToConnectXcode)
             return false
         }
         
-        // Ensure the file path ends with .swift
-        let path = filePath.hasSuffix(".swift") ? filePath : filePath + ".swift"
+        // Use FileFinder to resolve the path
+        let (resolvedPath, warning) = FileFinder.resolveFilePath(filePath)
         
-        // Open the document in Xcode
-        if let _ = xcode.open?(path as Any) {
-            return true
+        // If there was a warning, print it
+        if !warning.isEmpty {
+            print(warning)
         }
         
-        return false
+        // First create the file using FileManager
+        do {
+            try XcfFileManager.writeFile(content: content, to: resolvedPath)
+        } catch {
+            return false
+        }
+        
+        
+        // Verify the file exists and is a Swift file
+        if !FileManager.default.fileExists(atPath: resolvedPath) {
+            print("File does not exist or is not a Swift file: \(resolvedPath)")
+            //return false
+        }
+        
+        // Try to open the document
+        return openSwiftDocument(filePath: resolvedPath)
     }
     
     // MARK: - Document Reading
@@ -455,41 +449,6 @@ class XcfSwiftScript {
     }
     
     // MARK: - Directory Operations
-    
-    /// Creates a directory at the specified path
-    /// - Parameter directoryPath: The path where the directory should be created
-    /// - Returns: True if successful, false otherwise
-    func createDirectory(at directoryPath: String) -> Bool {
-        do {
-            try FileManager.default.createDirectory(atPath: directoryPath, withIntermediateDirectories: true)
-            return true
-        } catch {
-            print("Error creating directory: \(error.localizedDescription)")
-            return false
-        }
-    }
-    
-    /// Lists files and directories at the specified path
-    /// - Parameters:
-    ///   - directoryPath: The path to list contents from
-    ///   - extension: Optional file extension filter (e.g., "swift")
-    /// - Returns: Array of file/directory paths, or empty array if operation failed
-    func listDirectory(at directoryPath: String, extension fileExtension: String? = nil) -> [String] {
-        do {
-            let contents = try FileManager.default.contentsOfDirectory(atPath: directoryPath)
-            
-            if let ext = fileExtension {
-                return contents.filter { $0.hasSuffix(".\(ext)") }
-                    .map { directoryPath + "/" + $0 }
-            } else {
-                return contents.map { directoryPath + "/" + $0 }
-            }
-        } catch {
-            print("Error listing directory: \(error.localizedDescription)")
-            return []
-        }
-    }
-    
     /// Shows a directory selection dialog and returns the selected path
     /// - Returns: The selected directory path, or nil if cancelled
     func selectDirectory() -> String? {
