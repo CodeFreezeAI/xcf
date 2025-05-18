@@ -341,8 +341,11 @@ class XcfSwiftScript {
         // Update the document text
         document.setText?(content)
         
-        // Save the document (if needed)
+        // Save the document
         document.closeSaving?(.yes, savingIn: nil)
+        
+        // Reopen the document 
+        _ = xcode.open?(filePath as Any)
         
         return true
     }
@@ -378,48 +381,75 @@ class XcfSwiftScript {
             return false
         }
         
-        // Open the document in Xcode if it's not already open
-        guard let document = xcode.open?(filePath as Any) as? XcodeSourceDocument else {
-            print("Failed to open document in Xcode")
+        // Use FuzzyLogicService to resolve the path
+        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
+        
+        // If there was a warning, print it
+        if !warning.isEmpty {
+            print(warning)
+        }
+        
+        print("Attempting to edit document at path: \(resolvedPath)")
+        
+        // Try to open the document in Xcode
+        guard let document = xcode.open?(resolvedPath as Any) as? XcodeSourceDocument else {
+            print("Failed to open document in Xcode: \(resolvedPath)")
             return false
         }
         
-        // Get the content of the document
-        guard let content = document.text else {
+        // Get the current content of the document using Scripting Bridge
+        guard let fullText = document.text else {
             print("Failed to get document text")
             return false
         }
         
-        let lines = content.components(separatedBy: .newlines)
+        print("Successfully got document text, length: \(fullText.count)")
         
-        // Validate line numbers
-        guard startLine > 0, endLine > 0, startLine <= lines.count, endLine <= lines.count, startLine <= endLine else {
-            print("Invalid line numbers. File has \(lines.count) lines.")
+        // Split the text into lines
+        let lines = fullText.components(separatedBy: .newlines)
+        print("Document has \(lines.count) lines")
+        
+        // Check line range validity
+        guard startLine >= 1, endLine >= startLine, endLine <= lines.count else {
+            print("Invalid line range: \(startLine)-\(endLine). Document has \(lines.count) lines.")
             return false
         }
         
-        // Find the character range for the specified lines
-        var startIndex = 0
-        var endIndex = 0
+        // Create a new text with the replacement
+        var newLines = [String]()
         
-        for i in 1..<startLine {
-            startIndex += lines[i-1].count + 1 // +1 for newline
+        // Add lines before the replacement
+        for i in 0..<(startLine-1) {
+            newLines.append(lines[i])
         }
         
-        for i in 1...endLine {
-            endIndex += lines[i-1].count
-            if i < endLine {
-                endIndex += 1 // +1 for newline except after the last line
+        // Add the replacement lines
+        let replacementLines = replacement.components(separatedBy: .newlines)
+        newLines.append(contentsOf: replacementLines)
+        
+        // Add lines after the replacement
+        if endLine < lines.count {
+            for i in endLine..<lines.count {
+                newLines.append(lines[i])
             }
         }
         
-        // Create a new string with the replacement
-        let prefix = content.prefix(startIndex)
-        let suffix = content.suffix(from: content.index(content.startIndex, offsetBy: endIndex))
-        let newContent = prefix + replacement + suffix
+        // Join back into a single string
+        let newText = newLines.joined(separator: "\n")
+        print("Created new text, length: \(newText.count)")
         
-        // Update the document text
-        document.setText?(String(newContent))
+        // Use Scripting Bridge to update the document
+        document.setText?(newText)
+        print("Document text has been updated")
+        
+        // Save file to disk by writing directly to the file
+        do {
+            try newText.write(toFile: resolvedPath, atomically: true, encoding: .utf8)
+            print("Saved changes to disk: \(resolvedPath)")
+        } catch {
+            print("Error saving file to disk: \(error.localizedDescription)")
+            return false
+        }
         
         return true
     }
