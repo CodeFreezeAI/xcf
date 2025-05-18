@@ -63,6 +63,23 @@ XCF provides a rich set of tools for AI assistants:
 | `mcp_xcf_read_file` | Read file contents | `mcp_xcf_read_file(filePath="main.swift")` |
 | `mcp_xcf_write_file` | Write file contents | `mcp_xcf_write_file(filePath="test.txt", content="Hello World")` |
 
+### Standalone Action Tools
+
+In addition to the general-purpose tools, XCF now provides dedicated tools for each action:
+
+| Tool | Purpose | Example Usage |
+|------|---------|---------------|
+| `mcp_xcf_show_help` | Display help information | `mcp_xcf_show_help()` |
+| `mcp_xcf_grant_permission` | Grant Xcode permissions | `mcp_xcf_grant_permission()` |
+| `mcp_xcf_run_project` | Run the current project | `mcp_xcf_run_project()` |
+| `mcp_xcf_build_project` | Build the current project | `mcp_xcf_build_project()` |
+| `mcp_xcf_show_current_project` | Show selected project | `mcp_xcf_show_current_project()` |
+| `mcp_xcf_show_env` | Display environment variables | `mcp_xcf_show_env()` |
+| `mcp_xcf_show_folder` | Show current directory | `mcp_xcf_show_folder()` |
+| `mcp_xcf_list_projects` | List all Xcode projects | `mcp_xcf_list_projects()` |
+| `mcp_xcf_select_project` | Select a project by number | `mcp_xcf_select_project(projectNumber=1)` |
+| `mcp_xcf_analyze_swift_code` | Analyze Swift code | `mcp_xcf_analyze_swift_code(filePath="main.swift")` |
+
 ### Workflow Patterns
 
 #### Basic Project Management
