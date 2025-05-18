@@ -271,20 +271,18 @@ struct XcfFileManager {
     ///   - content: Initial content of the Swift file (optional)
     /// - Returns: True if successful, false otherwise
     static func createSwiftDocument(filePath: String, content: String = "") throws {
-        // Ensure the file path ends with .swift
-        let path = filePath.hasSuffix(".swift") ? filePath : filePath + ".swift"
         
         // Check if file already exists
-        if FileManager.default.fileExists(atPath: path) {
-            throw NSError(domain: "XcfFileManager", code: 4, userInfo: [NSLocalizedDescriptionKey: "File already exists at: \(path)"])
+        if FileManager.default.fileExists(atPath: filePath) {
+            throw NSError(domain: "XcfFileManager", code: 4, userInfo: [NSLocalizedDescriptionKey: "File already exists at: \(filePath)"])
         }
         
         // Create the directory structure if it doesn't exist
-        let directory = (path as NSString).deletingLastPathComponent
+        let directory = (filePath as NSString).deletingLastPathComponent
         try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
         
         // Write the content to the new file
-        try content.write(toFile: path, atomically: true, encoding: .utf8)
+        try content.write(toFile: filePath, atomically: true, encoding: .utf8)
     }
 
     /// Edits a Swift document by replacing text at specified range using FileManager

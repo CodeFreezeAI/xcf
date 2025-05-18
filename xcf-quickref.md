@@ -1,8 +1,3 @@
----
-description: xcf Xcode MCP Server - Quick Reference
-globs: 
-alwaysApply: false
----
 # XCF Quick Reference Guide 🚀
 
 ## 🎛️ XCF Core Actions
@@ -187,4 +182,4 @@ build
 
 ---
 
-Created by XCodeFreeze Automation - Swift Development at Light Speed! 🚀
+Created by XCodeFreeze Automation - Swift Development at Light Speed! 🚀 

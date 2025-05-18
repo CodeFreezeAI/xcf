@@ -477,24 +477,14 @@ struct XcfActionHandler {
     ///   - replacement: Text to replace the specified range with
     /// - Returns: The edited file contents and language
     static func editFile(filePath: String, startLine: Int, endLine: Int, replacement: String) -> (String, String) {
-        let useScriptingBridge = filePath.hasSuffix(".swift")
-        
-        if useScriptingBridge {
-            if XcfSwiftScript.shared.editSwiftDocumentWithScriptingBridge(filePath: filePath, startLine: startLine, endLine: endLine, replacement: replacement) {
-                // Return the updated file content
-                if let content = XcfSwiftScript.shared.readSwiftDocumentWithScriptingBridge(filePath: filePath) {
-                    return (content, CaptureSnippet.determineLanguage(from: filePath))
-                }
-            }
-        } else {
-            if XcfSwiftScript.shared.editSwiftDocumentWithFileManager(filePath: filePath, startLine: startLine, endLine: endLine, replacement: replacement) {
-                // Return the updated file content
-                if let content = XcfSwiftScript.shared.readSwiftDocumentWithFileManager(filePath: filePath) {
-                    return (content, CaptureSnippet.determineLanguage(from: filePath))
-                }
+   
+        if XcfSwiftScript.shared.editSwiftDocumentWithFileManager(filePath: filePath, startLine: startLine, endLine: endLine, replacement: replacement) {
+            // Return the updated file content
+            if let content = XcfSwiftScript.shared.readSwiftDocumentWithFileManager(filePath: filePath) {
+                return (content, CaptureSnippet.determineLanguage(from: filePath))
             }
         }
-        
+ 
         return ("Failed to edit file", "text")
     }
     

@@ -20,7 +20,16 @@ extension XcfMcpServer {
         toolsReferenceTool
     ]
 
-    static let allResources = [xcodeProjResource, fileContentsResource, buildResultsResource]
+    static let allResources = [
+        xcodeProjResource, 
+        fileContentsResource, 
+        buildResultsResource,
+        codeSnippetResource,
+        directoryContentsResource,
+        codeAnalysisResource,
+        xcodeDocumentResource,
+        fileSystemResource
+    ]
 
     static let allPrompts = [
         buildPrompt, runPrompt, analyzeCodePrompt,

@@ -30,4 +30,39 @@ extension XcfMcpServer {
         uri: McpConfig.buildResultsResourceURI,
         description: McpConfig.buildResultsResourceDesc
     )
+    
+    /// Resource for accessing code snippets
+    static let codeSnippetResource = Resource(
+        name: "codeSnippet",
+        uri: "\(AppConstants.appName)://resources/codeSnippet",
+        description: "Extracted code snippets from files"
+    )
+    
+    /// Resource for accessing directory contents
+    static let directoryContentsResource = Resource(
+        name: "directoryContents",
+        uri: "\(AppConstants.appName)://resources/directoryContents",
+        description: "Directory contents and structure"
+    )
+    
+    /// Resource for accessing code analysis
+    static let codeAnalysisResource = Resource(
+        name: "codeAnalysis",
+        uri: "\(AppConstants.appName)://resources/codeAnalysis",
+        description: "Results of code analysis"
+    )
+    
+    /// Resource for accessing Xcode document contents
+    static let xcodeDocumentResource = Resource(
+        name: "xcodeDocument",
+        uri: "\(AppConstants.appName)://resources/xcodeDocument",
+        description: "Content and status of Xcode documents"
+    )
+    
+    /// Resource for accessing file system operations
+    static let fileSystemResource = Resource(
+        name: "fileSystem",
+        uri: "\(AppConstants.appName)://resources/fileSystem",
+        description: "Status and information about file system operations"
+    )
 }

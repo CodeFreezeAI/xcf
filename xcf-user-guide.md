@@ -1,8 +1,3 @@
----
-description: xcf Xcode MCP Server - User Guide
-globs: 
-alwaysApply: false
----
 # XCF Xcode MCP Server - Comprehensive User Guide 🚀
 
 ## 🌟 Introduction
@@ -258,8 +253,8 @@ help  # Available commands
 
 ## 🌐 Community & Support
 
-- GitHub Repository: [XCF GitHub](mdc:https:/github.com/codefreezeai/xcf)
-- Website: [xcf.ai](mdc:https:/xcf.ai)
+- GitHub Repository: [XCF GitHub](https://github.com/codefreezeai/xcf)
+- Website: [xcf.ai](https://xcf.ai)
 - Community: Open to contributions!
 
 ## 📋 Version Information
@@ -268,4 +263,4 @@ help  # Available commands
 
 ---
 
-Created by XCodeFreeze Automation - Empowering Swift Developers Worldwide! 🚀
+Created by XCodeFreeze Automation - Empowering Swift Developers Worldwide! 🚀 

@@ -1,8 +1,3 @@
----
-description: xcf Xcode MCP Server - AI Guide
-globs: 
-alwaysApply: false
----
 # XCF - AI Assistant Integration Guide
 
 ## 🤖 Overview for AI Assistants
@@ -230,4 +225,4 @@ XCF intelligently handles actions by:
 
 ---
 
-Created by XCodeFreeze Automation - Empowering AI-driven Swift development!
+Created by XCodeFreeze Automation - Empowering AI-driven Swift development! 

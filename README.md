@@ -4,11 +4,11 @@
 [![XCF Website](https://img.shields.io/badge/Website-xcf.ai-blue)](https://xcf.ai) [![Pure Swift](https://img.shields.io/badge/100%25-Swift-orange)](https://github.com/codefreezeai/xcf)
 
 #### In the works:
-- File Operations
-- Directory Operations
-- Scripting Bridge Xcode Doc Operations
-- Fuzzy Logic
-- Swift code analysis without building in Xcode
+- ✅ File Operations - Now Available!
+- ✅ Directory Operations - Now Available!
+- ✅ Scripting Bridge Xcode Doc Operations - Now Available!
+- ✅ Fuzzy Logic - Now Available!
+- ✅ Swift code analysis without building in Xcode - Now Available!
 - XCodeFreeze MCP Client
 
 Speed up writing Xcode apps with xcf, a dead simple Swift-based MCP server specifically designed for Cursor. Works seamlessly with VSCode and Claude, with no TypeScript, no JavaScript, no BS!
@@ -88,10 +88,14 @@ These environment variables let you:
 - **Real-time Error Handling:** `xcf build` or `xcf run` sends errors and warnings from Xcode directly to your AI IDE
 - **AI-Powered Fixes:** Let Claude fix bugs and mistakes during your coding sessions
 - **Intuitive Commands:** Simple, developer-friendly command structure for maximum productivity
+- **Comprehensive File Operations:** Read, write, edit, and delete files with ease
+- **Directory Management:** Navigate, list, create, and remove directories
+- **Xcode Document Integration:** Open, create, read, save, edit, and close Xcode documents directly
+- **Advanced Code Analysis:** Get detailed Swift code analysis without building in Xcode
 
 ## 🛠️ Perfect for Swift Developers
 
-The tool is designed by Swift developers, for Swift developers. Commands like `build`, `run`, and `show` make the workflow intuitive and natural.
+The tool is designed by Swift developers, for Swift developers. Commands like `build`, `run`, `show`, and our new file and directory operations make the workflow intuitive and natural.
 
 ## 📋 Commands Reference
 
@@ -106,6 +110,41 @@ The tool is designed by Swift developers, for Swift developers. Commands like `b
 | `env` | Show environment variables |
 | `pwd` | Show current folder (aliases: dir, path) |
 | `help` | Display all available commands |
+
+### File Operations
+| Command | Description |
+|---------|-------------|
+| `read_file <file>` | Read content from a file |
+| `write_file <file> <content>` | Write content to a file |
+| `edit_file <file> <start> <end> <content>` | Edit specific lines in a file |
+| `delete_file <file>` | Delete a file |
+| `move_file <source> <destination>` | Move a file from one location to another |
+
+### Directory Operations
+| Command | Description |
+|---------|-------------|
+| `cd_dir <path>` | Change directory |
+| `read_dir [path] [extension]` | List directory contents |
+| `add_dir <path>` | Create directory |
+| `rm_dir <path>` | Remove directory |
+| `move_dir <source> <destination>` | Move a directory from one location to another |
+
+### Xcode Document Operations
+| Command | Description |
+|---------|-------------|
+| `open_doc <file>` | Open document in Xcode |
+| `create_doc <file> [content]` | Create new Xcode document |
+| `read_doc <file>` | Read Xcode document |
+| `save_doc <file>` | Save Xcode document |
+| `edit_doc <file> <start> <end> <content>` | Edit Xcode document |
+| `close_doc <file> <saving>` | Close a document in Xcode |
+
+### Analysis Tools
+| Command | Description |
+|---------|-------------|
+| `snippet <file> [start] [end]` | Extract code snippets |
+| `analyzer <file> [start] [end]` | Analyze Swift code |
+| `lz <file>` | Shorthand for analyzer |
 
 ## 📄 Using Snippets
 
@@ -241,9 +280,28 @@ The analysis identifies issues like:
 ### Function-Based Tools
 - `mcp_xcf_xcf`: Execute xcf actions/commands
 - `mcp_xcf_list`: Show all available tools
-- `mcp_xcf_snippet`: Access file contents
+- `mcp_xcf_snippet`: Extract code snippets from files
 - `mcp_xcf_analyzer`: Analyze Swift code for potential issues
 - `mcp_xcf_help`: Get help information
+- `mcp_xcf_xcf_help`: Get help for xcf actions only
+- `mcp_xcf_tools`: Show detailed reference for all tools
+- `mcp_xcf_read_dir`: List contents of a directory
+- `mcp_xcf_read_file`: Read content from a file
+- `mcp_xcf_write_file`: Write content to a file
+- `mcp_xcf_edit_file`: Edit content in a file
+- `mcp_xcf_delete_file`: Delete a file
+- `mcp_xcf_cd_dir`: Change current directory
+- `mcp_xcf_add_dir`: Create a new directory
+- `mcp_xcf_rm_dir`: Remove a directory
+- `mcp_xcf_move_file`: Move a file from one location to another
+- `mcp_xcf_move_dir`: Move a directory from one location to another
+- `mcp_xcf_open_doc`: Open a document in Xcode
+- `mcp_xcf_close_doc`: Close a document in Xcode
+- `mcp_xcf_create_doc`: Create a new document in Xcode
+- `mcp_xcf_read_doc`: Read document content from Xcode
+- `mcp_xcf_save_doc`: Save document in Xcode
+- `mcp_xcf_edit_doc`: Edit document content in Xcode
+- `mcp_xcf_use_xcf`: Activate XCF mode
 
 ### For AI Function Calls
 
@@ -265,6 +323,55 @@ mcp_xcf_analyzer(filePath="/full/path/to/file.swift", entireFile=true)
 For specific line ranges:
 ```
 mcp_xcf_analyzer(filePath="/full/path/to/file.swift", startLine=10, endLine=50)
+```
+
+### Working with Files and Directories
+
+Read a file:
+```
+mcp_xcf_read_file filePath="main.swift"
+```
+
+Write to a file:
+```
+mcp_xcf_write_file filePath="test.txt" content="Hello World"
+```
+
+Edit specific lines in a file:
+```
+mcp_xcf_edit_file filePath="main.swift" startLine=10 endLine=20 replacement="new code here"
+```
+
+List directory contents:
+```
+mcp_xcf_read_dir directoryPath="."
+```
+
+Create a new directory:
+```
+mcp_xcf_add_dir directoryPath="new_folder"
+```
+
+### Working with Xcode Documents
+
+Open a document in Xcode:
+```
+mcp_xcf_open_doc filePath="main.swift"
+```
+
+Create a new document:
+```
+mcp_xcf_create_doc filePath="new_file.swift" content="import Foundation"
+```
+
+Edit a document:
+```
+mcp_xcf_edit_doc filePath="main.swift" startLine=5 endLine=10 replacement="// New code"
+```
+
+Close a document:
+```
+mcp_xcf_close_doc filePath="main.swift" saving=true
 ```
 
 ## 🔒 Security Features
@@ -290,6 +397,20 @@ mcp_xcf_analyzer(filePath="/full/path/to/file.swift", startLine=10, endLine=50)
 4. `xcf lz filename.swift` - Analyze code
 5. `xcf build` - Build after fixing issues
 
+### File Manipulation Workflow (For Humans)
+1. `xcf use xcf` - Activate the tool
+2. `xcf read_dir .` - List files in current directory
+3. `xcf read_file main.swift` - View file contents
+4. `xcf edit_file main.swift 10 15 "// Updated code"` - Edit the file
+5. `xcf build` - Build after changes
+
+### Xcode Document Workflow (For Humans)
+1. `xcf use xcf` - Activate the tool
+2. `xcf open_doc main.swift` - Open document in Xcode
+3. `xcf edit_doc main.swift 10 20 "// New implementation"` - Edit in Xcode
+4. `xcf save_doc main.swift` - Save the document
+5. `xcf build` - Build after changes
+
 ### Basic Workflow (For AI Assistants)
 1. `mcp_xcf_xcf action="use xcf"` - Activate the tool
 2. `mcp_xcf_xcf action="show"` - See available projects
@@ -303,6 +424,20 @@ mcp_xcf_analyzer(filePath="/full/path/to/file.swift", startLine=10, endLine=50)
 3. `mcp_xcf_snippet filePath="filename.swift" entireFile=true` - Examine code
 4. `mcp_xcf_analyzer filePath="filename.swift" entireFile=true` - Analyze code
 5. `mcp_xcf_xcf action="build"` - Build after fixing issues
+
+### File Manipulation Workflow (For AI Assistants)
+1. `mcp_xcf_xcf action="use xcf"` - Activate the tool
+2. `mcp_xcf_read_dir directoryPath="."` - List files in current directory
+3. `mcp_xcf_read_file filePath="main.swift"` - View file contents
+4. `mcp_xcf_edit_file filePath="main.swift" startLine=10 endLine=15 replacement="// Updated code"` - Edit the file
+5. `mcp_xcf_xcf action="build"` - Build after changes
+
+### Xcode Document Workflow (For AI Assistants)
+1. `mcp_xcf_xcf action="use xcf"` - Activate the tool
+2. `mcp_xcf_open_doc filePath="main.swift"` - Open document in Xcode
+3. `mcp_xcf_edit_doc filePath="main.swift" startLine=10 endLine=20 replacement="// New implementation"` - Edit in Xcode
+4. `mcp_xcf_save_doc filePath="main.swift"` - Save the document
+5. `mcp_xcf_xcf action="build"` - Build after changes
 
 ## 📺 Demo
 
