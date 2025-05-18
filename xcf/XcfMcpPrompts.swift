@@ -214,4 +214,83 @@ extension XcfMcpServer {
             Prompt.Argument(name: "action", description: "The xcf action to execute", required: true)
         ]
     )
+    
+    // MARK: - Standalone Action Tool Prompts
+    
+    /// Prompt for showing help
+    static let showHelpPrompt = Prompt(
+        name: McpConfig.showHelpPromptName,
+        description: McpConfig.showHelpToolDesc,
+        arguments: []
+    )
+    
+    /// Prompt for granting permission
+    static let grantPermissionPrompt = Prompt(
+        name: McpConfig.grantPermissionPromptName,
+        description: McpConfig.grantPermissionToolDesc,
+        arguments: []
+    )
+    
+    /// Prompt for running a project (standalone)
+    static let runProjectPrompt = Prompt(
+        name: McpConfig.runProjectPromptName,
+        description: McpConfig.runProjectToolDesc,
+        arguments: []
+    )
+    
+    /// Prompt for building a project (standalone)
+    static let buildProjectPrompt = Prompt(
+        name: McpConfig.buildProjectPromptName,
+        description: McpConfig.buildProjectToolDesc,
+        arguments: []
+    )
+    
+    /// Prompt for showing current project
+    static let showCurrentProjectPrompt = Prompt(
+        name: McpConfig.showCurrentProjectPromptName,
+        description: McpConfig.showCurrentProjectToolDesc,
+        arguments: []
+    )
+    
+    /// Prompt for showing environment variables
+    static let showEnvPrompt = Prompt(
+        name: McpConfig.showEnvPromptName,
+        description: McpConfig.showEnvToolDesc,
+        arguments: []
+    )
+    
+    /// Prompt for showing current folder
+    static let showFolderPrompt = Prompt(
+        name: McpConfig.showFolderPromptName,
+        description: McpConfig.showFolderToolDesc,
+        arguments: []
+    )
+    
+    /// Prompt for listing projects
+    static let listProjectsPrompt = Prompt(
+        name: McpConfig.listProjectsPromptName,
+        description: McpConfig.listProjectsToolDesc,
+        arguments: []
+    )
+    
+    /// Prompt for selecting a project
+    static let selectProjectPrompt = Prompt(
+        name: McpConfig.selectProjectPromptName,
+        description: McpConfig.selectProjectToolDesc,
+        arguments: [
+            Prompt.Argument(name: McpConfig.projectNumberParamName, description: McpConfig.projectNumberParamDesc, required: true)
+        ]
+    )
+    
+    /// Prompt for analyzing Swift code
+    static let analyzeSwiftCodePrompt = Prompt(
+        name: McpConfig.analyzeSwiftCodePromptName,
+        description: McpConfig.analyzeSwiftCodeToolDesc,
+        arguments: [
+            Prompt.Argument(name: McpConfig.filePathParamName, description: McpConfig.filePathParamDesc, required: true),
+            Prompt.Argument(name: McpConfig.startLineParamName, description: McpConfig.startLineParamDesc, required: false),
+            Prompt.Argument(name: McpConfig.endLineParamName, description: McpConfig.endLineParamDesc, required: false),
+            Prompt.Argument(name: McpConfig.checkGroupsParamName, description: McpConfig.checkGroupsParamDesc, required: false)
+        ]
+    )
 }

@@ -443,8 +443,8 @@ extension XcfMcpServer {
     
     /// Tool for showing help
     static let showHelpTool = Tool(
-        name: "show_help",
-        description: "Display help information about available commands",
+        name: McpConfig.showHelpToolName,
+        description: McpConfig.showHelpToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
@@ -452,8 +452,8 @@ extension XcfMcpServer {
     
     /// Tool for granting permission
     static let grantPermissionTool = Tool(
-        name: "grant_permission",
-        description: "Grant Xcode automation permissions",
+        name: McpConfig.grantPermissionToolName,
+        description: McpConfig.grantPermissionToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
@@ -461,8 +461,8 @@ extension XcfMcpServer {
     
     /// Tool for running the current project
     static let runProjectTool = Tool(
-        name: "run_project",
-        description: "Run the current Xcode project",
+        name: McpConfig.runProjectToolName,
+        description: McpConfig.runProjectToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
@@ -470,8 +470,8 @@ extension XcfMcpServer {
     
     /// Tool for building the current project
     static let buildProjectTool = Tool(
-        name: "build_project",
-        description: "Build the current Xcode project",
+        name: McpConfig.buildProjectToolName,
+        description: McpConfig.buildProjectToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
@@ -479,8 +479,8 @@ extension XcfMcpServer {
     
     /// Tool for showing the current project
     static let showCurrentProjectTool = Tool(
-        name: "show_current_project",
-        description: "Show information about the currently selected project",
+        name: McpConfig.showCurrentProjectToolName,
+        description: McpConfig.showCurrentProjectToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
@@ -488,8 +488,8 @@ extension XcfMcpServer {
     
     /// Tool for showing environment variables
     static let showEnvTool = Tool(
-        name: "show_env",
-        description: "Display all environment variables",
+        name: McpConfig.showEnvToolName,
+        description: McpConfig.showEnvToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
@@ -497,8 +497,8 @@ extension XcfMcpServer {
     
     /// Tool for showing current folder
     static let showFolderTool = Tool(
-        name: "show_folder",
-        description: "Display the current working folder",
+        name: McpConfig.showFolderToolName,
+        description: McpConfig.showFolderToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
@@ -506,8 +506,8 @@ extension XcfMcpServer {
     
     /// Tool for listing projects
     static let listProjectsTool = Tool(
-        name: "list_projects",
-        description: "List all open Xcode projects",
+        name: McpConfig.listProjectsToolName,
+        description: McpConfig.listProjectsToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
@@ -515,45 +515,45 @@ extension XcfMcpServer {
     
     /// Tool for selecting a project
     static let selectProjectTool = Tool(
-        name: "select_project",
-        description: "Select an Xcode project by number",
+        name: McpConfig.selectProjectToolName,
+        description: McpConfig.selectProjectToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType),
             McpConfig.propertiesKey: .object([
-                "projectNumber": .object([
+                McpConfig.projectNumberParamName: .object([
                     McpConfig.typeKey: .string(McpConfig.integerType),
-                    McpConfig.descriptionKey: .string("The number of the project to select")
+                    McpConfig.descriptionKey: .string(McpConfig.projectNumberParamDesc)
                 ])
             ]),
-            McpConfig.requiredKey: .array([.string("projectNumber")])
+            McpConfig.requiredKey: .array([.string(McpConfig.projectNumberParamName)])
         ])
     )
     
     /// Tool for analyzing Swift code
     static let analyzeSwiftCodeTool = Tool(
-        name: "analyze_swift_code",
-        description: "Analyze Swift code for potential issues",
+        name: McpConfig.analyzeSwiftCodeToolName,
+        description: McpConfig.analyzeSwiftCodeToolDesc,
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType),
             McpConfig.propertiesKey: .object([
-                "filePath": .object([
+                McpConfig.filePathParamName: .object([
                     McpConfig.typeKey: .string(McpConfig.stringType),
-                    McpConfig.descriptionKey: .string("Path to the Swift file to analyze")
+                    McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
                 ]),
-                "startLine": .object([
+                McpConfig.startLineParamName: .object([
                     McpConfig.typeKey: .string(McpConfig.integerType),
-                    McpConfig.descriptionKey: .string("Starting line number (1-indexed)")
+                    McpConfig.descriptionKey: .string(McpConfig.startLineParamDesc)
                 ]),
-                "endLine": .object([
+                McpConfig.endLineParamName: .object([
                     McpConfig.typeKey: .string(McpConfig.integerType),
-                    McpConfig.descriptionKey: .string("Ending line number (1-indexed)")
+                    McpConfig.descriptionKey: .string(McpConfig.endLineParamDesc)
                 ]),
-                "checkGroups": .object([
+                McpConfig.checkGroupsParamName: .object([
                     McpConfig.typeKey: .string("array"),
-                    McpConfig.descriptionKey: .string("Check groups to perform (all, syntax, style, safety, performance, bestPractices)")
+                    McpConfig.descriptionKey: .string(McpConfig.checkGroupsParamDesc)
                 ])
             ]),
-            McpConfig.requiredKey: .array([.string("filePath")])
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
         ])
     )
     

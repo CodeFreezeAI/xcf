@@ -32,7 +32,13 @@ extension XcfMcpServer {
         directoryContentsResource,
         codeAnalysisResource,
         xcodeDocumentResource,
-        fileSystemResource
+        fileSystemResource,
+        // Standalone action tool resources
+        helpResource,
+        permissionResource,
+        projectManagementResource,
+        environmentResource,
+        directoryResource
     ]
 
     static let allPrompts = [
@@ -40,7 +46,11 @@ extension XcfMcpServer {
         snippetPrompt, writeFilePrompt, readFilePrompt, cdDirPrompt,
         editFilePrompt, deleteFilePrompt, addDirPrompt, rmDirPrompt, readDirPrompt,
         openDocPrompt, createDocPrompt, readDocPrompt, saveDocPrompt, editDocPrompt, closeDocPrompt,
-        moveFilePrompt, moveDirPrompt, xcfActionPrompt
+        moveFilePrompt, moveDirPrompt, xcfActionPrompt,
+        // Standalone action tool prompts
+        showHelpPrompt, grantPermissionPrompt, runProjectPrompt, buildProjectPrompt,
+        showCurrentProjectPrompt, showEnvPrompt, showFolderPrompt,
+        listProjectsPrompt, selectProjectPrompt, analyzeSwiftCodePrompt
     ]
 
 }
@@ -168,53 +178,53 @@ extension XcfMcpServer {
             return handleQuickHelpToolCall(params)
         
         // Action-specific tool handlers
-        case "show_help":
+        case McpConfig.showHelpToolName:
             return await CallTool.Result(content: [.text(XcfActionHandler.getHelpText())])
             
-        case "grant_perm":
+        case McpConfig.grantPermissionToolName:
             return await CallTool.Result(content: [.text(XcfActionHandler.grantPermission())])
             
-        case "run_proj":
+        case McpConfig.runProjectToolName:
             return CallTool.Result(content: [.text(await XcfActionHandler.runProject())])
             
-        case "build_proj":
+        case McpConfig.buildProjectToolName:
             return CallTool.Result(content: [.text(await XcfActionHandler.buildProject())])
             
-        case "show_current_proj":
+        case McpConfig.showCurrentProjectToolName:
             return await CallTool.Result(content: [.text(XcfActionHandler.showCurrentProject())])
             
-        case "show_env":
+        case McpConfig.showEnvToolName:
             return await CallTool.Result(content: [.text(XcfActionHandler.showEnvironmentVariables())])
             
-        case "show_dir":
+        case McpConfig.showFolderToolName:
             return await CallTool.Result(content: [.text(XcfActionHandler.showCurrentFolder())])
             
-        case "list_proj":
+        case McpConfig.listProjectsToolName:
             return await CallTool.Result(content: [.text(XcfActionHandler.listProjects())])
             
-        case "select_proj":
-            if let projectNumber = params.arguments?["projectNumber"]?.intValue {
+        case McpConfig.selectProjectToolName:
+            if let projectNumber = params.arguments?[McpConfig.projectNumberParamName]?.intValue {
                 let action = "open \(projectNumber)"
                 return CallTool.Result(content: [.text(await XcfActionHandler.selectProject(action: action))])
             } else {
                 return CallTool.Result(content: [.text(ErrorMessages.invalidProjectSelection)])
             }
             
-        case "analyze_swift_code":
-            guard let filePath = params.arguments?["filePath"]?.stringValue else {
-                return CallTool.Result(content: [.text("Missing filePath parameter")])
+        case McpConfig.analyzeSwiftCodeToolName:
+            guard let filePath = params.arguments?[McpConfig.filePathParamName]?.stringValue else {
+                return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
             }
             
             var analyzeCommand = "analyze \(filePath)"
             
             // Add optional parameters if provided
-            if let startLine = params.arguments?["startLine"]?.intValue,
-               let endLine = params.arguments?["endLine"]?.intValue {
+            if let startLine = params.arguments?[McpConfig.startLineParamName]?.intValue,
+               let endLine = params.arguments?[McpConfig.endLineParamName]?.intValue {
                 analyzeCommand += " \(startLine) \(endLine)"
             }
             
             // Add check groups if provided
-            if let checkGroups = params.arguments?["checkGroups"]?.arrayValue,
+            if let checkGroups = params.arguments?[McpConfig.checkGroupsParamName]?.arrayValue,
                !checkGroups.isEmpty {
                 for group in checkGroups {
                     if let groupName = group.stringValue {

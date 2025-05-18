@@ -186,6 +186,69 @@ struct McpConfig {
     static let editDocToolDesc = "Edit document content in Xcode"
     static let closeDocToolDesc = "Close a document in Xcode"
     
+    // Standalone action tool names
+    static let showHelpToolName = "show_help"
+    static let grantPermissionToolName = "grant_permission"
+    static let runProjectToolName = "run_project"
+    static let buildProjectToolName = "build_project"
+    static let showCurrentProjectToolName = "show_current_project"
+    static let showEnvToolName = "show_env"
+    static let showFolderToolName = "show_folder"
+    static let listProjectsToolName = "list_projects"
+    static let selectProjectToolName = "select_project"
+    static let analyzeSwiftCodeToolName = "analyze_swift_code"
+    
+    // Standalone action tool descriptions
+    static let showHelpToolDesc = "Display help information about available commands"
+    static let grantPermissionToolDesc = "Grant Xcode automation permissions"
+    static let runProjectToolDesc = "Run the current Xcode project"
+    static let buildProjectToolDesc = "Build the current Xcode project"
+    static let showCurrentProjectToolDesc = "Show information about the currently selected project"
+    static let showEnvToolDesc = "Display all environment variables"
+    static let showFolderToolDesc = "Display the current working folder"
+    static let listProjectsToolDesc = "List all open Xcode projects"
+    static let selectProjectToolDesc = "Select an Xcode project by number"
+    static let analyzeSwiftCodeToolDesc = "Analyze Swift code for potential issues"
+    
+    // Standalone action prompt names
+    static let showHelpPromptName = "showHelp"
+    static let grantPermissionPromptName = "grantPermission"
+    static let runProjectPromptName = "runProject"
+    static let buildProjectPromptName = "buildProject"
+    static let showCurrentProjectPromptName = "showCurrentProject"
+    static let showEnvPromptName = "showEnvironment"
+    static let showFolderPromptName = "showFolder"
+    static let listProjectsPromptName = "listProjects"
+    static let selectProjectPromptName = "selectProject"
+    static let analyzeSwiftCodePromptName = "analyzeSwiftCode"
+    
+    // Standalone action tool parameter names
+    static let projectNumberParamName = "projectNumber"
+    static let projectNumberParamDesc = "The number of the project to select"
+    static let checkGroupsParamName = "checkGroups"
+    static let checkGroupsParamDesc = "Check groups to perform (all, syntax, style, safety, performance, bestPractices)"
+    
+    // Standalone action resource names
+    static let helpResourceName = "help"
+    static let helpResourceDesc = "Help information about available commands"
+    static let helpResourceURI = "\(AppConstants.appName)://resources/help"
+    
+    static let permissionResourceName = "permission"
+    static let permissionResourceDesc = "Xcode automation permission status"
+    static let permissionResourceURI = "\(AppConstants.appName)://resources/permission"
+    
+    static let projectManagementResourceName = "projectManagement"
+    static let projectManagementResourceDesc = "Project management operations and status"
+    static let projectManagementResourceURI = "\(AppConstants.appName)://resources/projectManagement"
+    
+    static let environmentResourceName = "environment"
+    static let environmentResourceDesc = "Environment variables and system information"
+    static let environmentResourceURI = "\(AppConstants.appName)://resources/environment"
+    
+    static let directoryResourceName = "directory"
+    static let directoryResourceDesc = "Current directory and path information"
+    static let directoryResourceURI = "\(AppConstants.appName)://resources/directory"
+    
     // Server config
     static let serverName = AppConstants.appName
     static let serverVersion = "1.0.4"

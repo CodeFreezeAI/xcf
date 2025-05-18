@@ -65,4 +65,41 @@ extension XcfMcpServer {
         uri: "\(AppConstants.appName)://resources/fileSystem",
         description: "Status and information about file system operations"
     )
+    
+    // MARK: - Standalone Action Tool Resources
+    
+    /// Resource for accessing help information
+    static let helpResource = Resource(
+        name: McpConfig.helpResourceName,
+        uri: McpConfig.helpResourceURI,
+        description: McpConfig.helpResourceDesc
+    )
+    
+    /// Resource for accessing permission status
+    static let permissionResource = Resource(
+        name: McpConfig.permissionResourceName,
+        uri: McpConfig.permissionResourceURI,
+        description: McpConfig.permissionResourceDesc
+    )
+    
+    /// Resource for accessing project management
+    static let projectManagementResource = Resource(
+        name: McpConfig.projectManagementResourceName,
+        uri: McpConfig.projectManagementResourceURI,
+        description: McpConfig.projectManagementResourceDesc
+    )
+    
+    /// Resource for accessing environment information
+    static let environmentResource = Resource(
+        name: McpConfig.environmentResourceName,
+        uri: McpConfig.environmentResourceURI,
+        description: McpConfig.environmentResourceDesc
+    )
+    
+    /// Resource for accessing directory information
+    static let directoryResource = Resource(
+        name: McpConfig.directoryResourceName,
+        uri: McpConfig.directoryResourceURI,
+        description: McpConfig.directoryResourceDesc
+    )
 }
