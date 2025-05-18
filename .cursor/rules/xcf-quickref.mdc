@@ -181,7 +181,7 @@ build
 
 ## 🔍 Directory Management Tips
 - Always use `xcf pwd` before operations
-- Use `cd_dir .` to confirm current directory
+- OR 'cd_dir .` to confirm current directory
 - Verify path before file/directory actions
 
 ---
