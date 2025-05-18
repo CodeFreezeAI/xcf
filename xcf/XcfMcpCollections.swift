@@ -91,9 +91,6 @@ extension XcfMcpServer {
         case McpConfig.helpToolName:
             return handleHelpToolCall(params)
             
-//        case McpConfig.superDetailedHelpToolName:
-//            return handleSuperDetailedHelpToolCall(params)
-            
         case McpConfig.useXcfToolName:
             return CallTool.Result(content: [.text(SuccessMessages.xcfActive)])
             
@@ -147,6 +144,9 @@ extension XcfMcpServer {
             
         case "tools":
             return handleToolsReferenceToolCall(params)
+            
+        case "xcf_help":
+            return handleQuickHelpToolCall(params)
             
         default:
             throw MCPError.invalidParams(String(format: ErrorMessages.unknownTool, params.name))

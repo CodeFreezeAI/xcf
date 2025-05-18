@@ -132,7 +132,7 @@ struct McpConfig {
     static let listToolsName = "list"
     static let xcfToolName = AppConstants.appName
     static let snippetToolName = "snippet"
-    static let quickHelpToolName = "?"
+    static let quickHelpToolName = "xcf_help"
     static let helpToolName = "help"
     static let analyzerToolName = "analyzer"
     static let useXcfToolName = "use_xcf"
@@ -380,10 +380,6 @@ struct HelpText {
     // Quick help for xcf actions only
     static let basic = """
 XCF Actions:
-? - Show this quick help
-help - Show regular help with examples
-
-Core Actions:
 grant - Grant Xcode automation permissions
 show - List open projects
 open # - Select project by number
@@ -537,10 +533,10 @@ Description: Lists all available tools on this server
 Parameters: none (type: string)
 Example: mcp_xcf_list
 
-?
+xcf_help
 Description: Quick help for xcf commands
 Parameters: none (type: string)
-Example: mcp_xcf_xcf action="?"
+Example: mcp_xcf_xcf action="xcf_help"
 
 help
 Description: Regular help with common examples

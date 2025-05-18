@@ -69,11 +69,6 @@ extension XcfMcpServer {
         return CallTool.Result(content: [.text(HelpText.detailed)])
     }
 
-    /// Handles a call to the super detailed help tool
-     static func handleSuperDetailedHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
-        return CallTool.Result(content: [.text(HelpText.toolsReference)])
-    }
-
     /// Handles a call to the tools reference tool
      static func handleToolsReferenceToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
         return CallTool.Result(content: [.text(HelpText.toolsReference)])
