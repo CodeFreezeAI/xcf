@@ -4,10 +4,7 @@
 //
 //  Created by Todd Bruss on 5/4/25.
 //
-
 import Foundation
-import AppKit
-import AppKit
 
 // Core app constants
 struct AppConstants {
@@ -358,7 +355,7 @@ struct McpConfig {
     static let welcomeMessage = "**********************\n \(AppConstants.appName) Xcode MCP Server \n**** \(McpConfig.serverVersion) xfc.ai ****\n*** Copyright 2025 ***\nXCodeFreeze Automation\n***** V IX MMXXV *****\n"
     static let errorStartingServer = "Error starting MCP server: %@"
     
-    // Help text
+    // Help text reference
     static let helpText = HelpText.basic
     
     // MIME types

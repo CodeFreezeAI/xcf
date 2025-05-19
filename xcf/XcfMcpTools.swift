@@ -16,7 +16,7 @@ extension XcfMcpServer {
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
     )
-
+    
     /// Tool for quick help (xcf actions only)
     static let quickHelpTool = Tool(
         name: "xcf_help",
@@ -25,7 +25,7 @@ extension XcfMcpServer {
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
     )
-
+    
     /// Tool for regular help
     static let helpTool = Tool(
         name: "help",
@@ -34,7 +34,7 @@ extension XcfMcpServer {
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
     )
-
+    
     /// Tool for tools reference
     static let toolsReferenceTool = Tool(
         name: "tools",
@@ -43,7 +43,7 @@ extension XcfMcpServer {
             McpConfig.typeKey: .string(McpConfig.objectType)
         ])
     )
-
+    
     /// Tool for executing xcf actions
     static let xcfTool = Tool(
         name: McpConfig.xcfToolName,
@@ -144,7 +144,7 @@ extension XcfMcpServer {
             McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string(McpConfig.contentParamName)])
         ])
     )
-
+    
     /// Tool for reading files
     static let readFileTool = Tool(
         name: McpConfig.readFileToolName,
@@ -160,7 +160,7 @@ extension XcfMcpServer {
             McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
         ])
     )
-
+    
     /// Tool for changing directory
     static let cdDirTool = Tool(
         name: McpConfig.cdDirToolName,
@@ -176,7 +176,7 @@ extension XcfMcpServer {
             McpConfig.requiredKey: .array([.string(McpConfig.directoryPathParamName)])
         ])
     )
-
+    
     /// Tool for editing files
     static let editFileTool = Tool(
         name: McpConfig.editFileToolName,
@@ -209,7 +209,7 @@ extension XcfMcpServer {
             ])
         ])
     )
-
+    
     /// Tool for deleting files
     static let deleteFileTool = Tool(
         name: McpConfig.deleteFileToolName,
@@ -225,7 +225,7 @@ extension XcfMcpServer {
             McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
         ])
     )
-
+    
     /// Tool for adding directories
     static let addDirTool = Tool(
         name: McpConfig.addDirToolName,
@@ -241,7 +241,7 @@ extension XcfMcpServer {
             McpConfig.requiredKey: .array([.string(McpConfig.directoryPathParamName)])
         ])
     )
-
+    
     /// Tool for removing directories
     static let rmDirTool = Tool(
         name: McpConfig.rmDirToolName,
@@ -257,7 +257,7 @@ extension XcfMcpServer {
             McpConfig.requiredKey: .array([.string(McpConfig.directoryPathParamName)])
         ])
     )
-
+    
     /// Tool for opening documents in Xcode
     static let openDocTool = Tool(
         name: McpConfig.openDocToolName,
@@ -273,7 +273,7 @@ extension XcfMcpServer {
             McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
         ])
     )
-
+    
     /// Tool for creating documents in Xcode
     static let createDocTool = Tool(
         name: McpConfig.createDocToolName,
@@ -293,7 +293,7 @@ extension XcfMcpServer {
             McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
         ])
     )
-
+    
     /// Tool for reading documents from Xcode
     static let readDocTool = Tool(
         name: McpConfig.readDocToolName,
@@ -309,7 +309,7 @@ extension XcfMcpServer {
             McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
         ])
     )
-
+    
     /// Tool for saving documents in Xcode
     static let saveDocTool = Tool(
         name: McpConfig.saveDocToolName,
@@ -325,7 +325,7 @@ extension XcfMcpServer {
             McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
         ])
     )
-
+    
     /// Tool for editing documents in Xcode
     static let editDocTool = Tool(
         name: McpConfig.editDocToolName,
@@ -557,4 +557,44 @@ extension XcfMcpServer {
         ])
     )
     
+    
+    /// Tool for calculating document end line
+    static let calculateEndLineTool = Tool(
+        name: "calculate_end_line",
+        description: "Calculate the total number of lines in a document",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Path to the file to calculate end line")
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
+        ])
+    )
+    
+    /// Tool for searching lines in a document
+    static let searchLinesTool = Tool(
+        name: "search_lines",
+        description: "Search for lines containing specific text in a document",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Path to the file to search")
+                ]),
+                "searchText": .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Text to search for in the file")
+                ]),
+                "caseSensitive": .object([
+                    McpConfig.typeKey: .string(McpConfig.booleanType),
+                    McpConfig.descriptionKey: .string("Whether the search should be case-sensitive")
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string("searchText")])
+        ])
+    )
 }

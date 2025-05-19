@@ -14,7 +14,7 @@ extension XcfMcpServer {
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the xcf tool call
     /// - Throws: Error if action is missing
-     static func handleXcfToolCall(_ params: CallTool.Parameters) async throws -> CallTool.Result {
+    static func handleXcfToolCall(_ params: CallTool.Parameters) async throws -> CallTool.Result {
         if let arguments = params.arguments,
            let action = arguments[McpConfig.actionParamName]?.stringValue {
             print(String(format: McpConfig.actionFound, action))
@@ -30,7 +30,7 @@ extension XcfMcpServer {
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the snippet tool call
     /// - Throws: Error if filePath is missing
-     static func handleSnippetToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleSnippetToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
         }
@@ -60,25 +60,25 @@ extension XcfMcpServer {
     }
     
     /// Handles a call to the quick help tool (xcf actions only)
-     static func handleQuickHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
+    static func handleQuickHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
         return CallTool.Result(content: [.text(HelpText.basic)])
     }
-
+    
     /// Handles a call to the regular help tool
-     static func handleHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
+    static func handleHelpToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
         return CallTool.Result(content: [.text(HelpText.detailed)])
     }
-
+    
     /// Handles a call to the tools reference tool
-     static func handleToolsReferenceToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
+    static func handleToolsReferenceToolCall(_ params: CallTool.Parameters) -> CallTool.Result {
         return CallTool.Result(content: [.text(HelpText.toolsReference)])
     }
-
+    
     /// Handles a call to the write file tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the write file tool call
     /// - Throws: Error if filePath or content is missing
-     static func handleWriteFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleWriteFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
@@ -110,9 +110,9 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorWritingFile, error.localizedDescription))])
         }
     }
-
+    
     /// Handles a call to the read file tool
-     static func handleReadFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleReadFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
@@ -144,19 +144,19 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, error.localizedDescription))])
         }
     }
-
+    
     /// Handles a call to the change directory tool
-     static func handleCdDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleCdDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         // Get the current folder first as we'll need it
         guard let currentFolder = XcfXcodeProjectManager.shared.currentFolder else {
             return CallTool.Result(content: [.text("No current folder is set. Please select a project first.")])
         }
-
+        
         // If no arguments provided, show current directory
         if params.arguments == nil || params.arguments?.isEmpty == true {
             return CallTool.Result(content: [.text("Current directory: \(currentFolder)")])
         }
-
+        
         let arguments = params.arguments!
         
         // Determine the directory to change to
@@ -199,12 +199,12 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorChangingDirectory, error.localizedDescription))])
         }
     }
-
+    
     /// Handles a call to the edit file tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the edit file tool call
     /// - Throws: Error if filePath, start line, end line, or replacement content is missing
-     static func handleEditFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleEditFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingLineParamsError)])
         }
@@ -267,12 +267,12 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorEditingFile, error.localizedDescription))])
         }
     }
-
+    
     /// Handles a call to the delete file tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the delete file tool call
     /// - Throws: Error if filePath is missing
-     static func handleDeleteFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleDeleteFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
@@ -296,12 +296,12 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorDeletingFile, error.localizedDescription))])
         }
     }
-
+    
     /// Handles a call to the add directory tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the add directory tool call
     /// - Throws: Error if directory path is missing
-     static func handleAddDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleAddDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments,
               let directoryPath = arguments[McpConfig.directoryPathParamName]?.stringValue else {
             return CallTool.Result(content: [.text(McpConfig.missingDirectoryPathParamError)])
@@ -314,12 +314,12 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorCreatingDirectory, error.localizedDescription))])
         }
     }
-
+    
     /// Handles a call to the remove directory tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the remove directory tool call
     /// - Throws: Error if directory path is missing
-     static func handleRmDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleRmDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments,
               let directoryPath = arguments[McpConfig.directoryPathParamName]?.stringValue else {
             return CallTool.Result(content: [.text(McpConfig.missingDirectoryPathParamError)])
@@ -357,7 +357,7 @@ extension XcfMcpServer {
     
     /// Handles a request for the Xcode projects resource
     /// - Returns: The Xcode projects resource content
-     static func handleXcodeProjectsResource() async throws -> ReadResource.Result {
+    static func handleXcodeProjectsResource() async throws -> ReadResource.Result {
         let projects = await XcfActionHandler.getSortedXcodeProjects()
         let content = Resource.Content.text(
             projects.joined(separator: McpConfig.newLineSeparator),
@@ -369,7 +369,7 @@ extension XcfMcpServer {
     /// Handles a request for the build results resource
     /// - Returns: The build results resource content
     /// - Throws: Error if no project is selected
-     static func handleBuildResultsResource() async throws -> ReadResource.Result {
+    static func handleBuildResultsResource() async throws -> ReadResource.Result {
         guard let currentProject = await XcfActionHandler.getCurrentProject() else {
             throw MCPError.invalidParams(ErrorMessages.noProjectSelected)
         }
@@ -388,7 +388,7 @@ extension XcfMcpServer {
     /// - Parameter params: The parameters for the prompt request
     /// - Returns: The result of the prompt request
     /// - Throws: Invalid parameter errors
-     static func handlePromptRequest(_ params: GetPrompt.Parameters) throws -> GetPrompt.Result {
+    static func handlePromptRequest(_ params: GetPrompt.Parameters) throws -> GetPrompt.Result {
         switch params.name {
         case McpConfig.buildPromptName:
             return handleBuildPrompt(params)
@@ -407,7 +407,7 @@ extension XcfMcpServer {
     /// Handles a request for the build project prompt
     /// - Parameter params: The parameters for the prompt request
     /// - Returns: The build project prompt messages
-     static func handleBuildPrompt(_ params: GetPrompt.Parameters) -> GetPrompt.Result {
+    static func handleBuildPrompt(_ params: GetPrompt.Parameters) -> GetPrompt.Result {
         // Get project path from arguments or use placeholder
         let projectPath = params.arguments?[McpConfig.projectPathArgName]?.stringValue ?? McpConfig.projectPathPlaceholder
         
@@ -421,7 +421,7 @@ extension XcfMcpServer {
     /// Handles a request for the run project prompt
     /// - Parameter params: The parameters for the prompt request
     /// - Returns: The run project prompt messages
-     static func handleRunPrompt(_ params: GetPrompt.Parameters) -> GetPrompt.Result {
+    static func handleRunPrompt(_ params: GetPrompt.Parameters) -> GetPrompt.Result {
         // Get project path from arguments or use placeholder
         let projectPath = params.arguments?[McpConfig.projectPathArgName]?.stringValue ?? McpConfig.projectPathPlaceholder
         
@@ -436,7 +436,7 @@ extension XcfMcpServer {
     /// - Parameter params: The parameters for the prompt request
     /// - Returns: The analyze code prompt messages
     /// - Throws: File access errors
-     static func handleAnalyzeCodePrompt(_ params: GetPrompt.Parameters) throws -> GetPrompt.Result {
+    static func handleAnalyzeCodePrompt(_ params: GetPrompt.Parameters) throws -> GetPrompt.Result {
         // Get file path from arguments or use placeholder
         let filePath = params.arguments?[McpConfig.filePathArgName]?.stringValue ?? McpConfig.filePathPlaceholder
         let includeSnippet = params.arguments?[McpConfig.includeSnippetArgName]?.boolValue ?? false
@@ -464,7 +464,7 @@ extension XcfMcpServer {
     /// - Parameter filePath: Path to the file to extract code from
     /// - Returns: A message containing the code snippet
     /// - Throws: File access errors
-     static func createCodeSnippetMessage(filePath: String) throws -> Prompt.Message {
+    static func createCodeSnippetMessage(filePath: String) throws -> Prompt.Message {
         let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
         let language = FileFinder.determineLanguage(from: filePath)
         let resourceUri = "\(McpConfig.fileContentsResourceURI)/\(filePath)"
@@ -487,7 +487,7 @@ extension XcfMcpServer {
     ///   - startLine: The line to start extraction from
     ///   - endLine: The line to end extraction at
     /// - Returns: The extracted code snippet
-     static func handleCodeSnippet(filePath: String, entireFile: Bool, startLine: Int? = nil, endLine: Int? = nil) -> CallTool.Result {
+    static func handleCodeSnippet(filePath: String, entireFile: Bool, startLine: Int? = nil, endLine: Int? = nil) -> CallTool.Result {
         // Resolve the file path using multiple strategies
         let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
         
@@ -514,7 +514,7 @@ extension XcfMcpServer {
     /// Handles extracting an entire file as a code snippet
     /// - Parameter filePath: Path to the file to extract
     /// - Returns: The extracted code snippet
-     static func handleEntireFileSnippet(filePath: String, warning: String = "") -> CallTool.Result {
+    static func handleEntireFileSnippet(filePath: String, warning: String = "") -> CallTool.Result {
         do {
             let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
             let language = FileFinder.determineLanguage(from: filePath)
@@ -530,7 +530,7 @@ extension XcfMcpServer {
     ///   - startLine: The line to start extraction from
     ///   - endLine: The line to end extraction at
     /// - Returns: The extracted code snippet
-     static func handleLineRangeSnippet(filePath: String, startLine: Int, endLine: Int, warning: String = "") -> CallTool.Result {
+    static func handleLineRangeSnippet(filePath: String, startLine: Int, endLine: Int, warning: String = "") -> CallTool.Result {
         let (snippet, language) = CaptureSnippet.getCodeSnippet(
             filePath: filePath,
             startLine: startLine,
@@ -547,7 +547,7 @@ extension XcfMcpServer {
     ///   - startLine: The line to start extraction from
     ///   - endLine: The line to end extraction at
     /// - Returns: The extracted code snippet
-     static func handleAnalyzerCodeSnippet(filePath: String, entireFile: Bool, startLine: Int? = nil, endLine: Int? = nil) -> CallTool.Result {
+    static func handleAnalyzerCodeSnippet(filePath: String, entireFile: Bool, startLine: Int? = nil, endLine: Int? = nil) -> CallTool.Result {
         // Use SwiftAnalyzer to analyze the code
         let (analysisResult, language) = SwiftAnalyzer.analyzeCode(
             filePath: filePath,
@@ -570,7 +570,7 @@ extension XcfMcpServer {
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the analyzer tool call
     /// - Throws: Error if filePath is missing
-     static func handleAnalyzerToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleAnalyzerToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
         }
@@ -604,7 +604,7 @@ extension XcfMcpServer {
     /// Extracts a file path from a URI query string
     /// - Parameter uri: The URI to extract the file path from
     /// - Returns: The extracted file path, or nil if not found
-     static func extractFilePathFromUri(_ uri: String) -> String? {
+    static func extractFilePathFromUri(_ uri: String) -> String? {
         let uriComponents = uri.components(separatedBy: "?")
         guard uriComponents.count > 1,
               let queryItems = URLComponents(string: "?" + uriComponents[1])?.queryItems,
@@ -620,7 +620,7 @@ extension XcfMcpServer {
     /// - Parameter uri: The URI of the resource request
     /// - Returns: The file contents resource
     /// - Throws: Invalid parameter errors or file access errors
-     static func handleFileContentsResource(uri: String) throws -> ReadResource.Result {
+    static func handleFileContentsResource(uri: String) throws -> ReadResource.Result {
         guard let filePath = extractFilePathFromUri(uri) else {
             throw MCPError.invalidParams(McpConfig.missingFilePathParamError)
         }
@@ -637,17 +637,17 @@ extension XcfMcpServer {
             throw MCPError.invalidParams(error.localizedDescription)
         }
     }
-
+    
     /// Handles a call to the read directory tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the read directory tool call
     /// - Throws: Error if directory cannot be read
-     static func handleReadDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleReadDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         // Get the current folder first as we'll need it
         guard let currentFolder = XcfXcodeProjectManager.shared.currentFolder else {
             return CallTool.Result(content: [.text("No current folder is set. Please select a project first.")])
         }
-
+        
         let arguments = params.arguments!
         
         // Determine the directory to read
@@ -710,12 +710,12 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingDirectory, error.localizedDescription))])
         }
     }
-
+    
     /// Handles a call to the create directory tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the create directory tool call
     /// - Throws: MCPError for invalid parameters or FileManager errors
-     static func handleCreateDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleCreateDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments,
               let directoryPath = arguments[McpConfig.directoryPathParamName]?.stringValue else {
             throw MCPError.invalidParams(McpConfig.missingDirectoryPathParamError)
@@ -728,12 +728,12 @@ extension XcfMcpServer {
             throw MCPError.invalidParams(String(format: ErrorMessages.errorCreatingDirectory, error.localizedDescription))
         }
     }
-
+    
     /// Handles a call to the create file tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the create file tool call
     /// - Throws: Error if filePath or content is missing
-     static func handleCreateFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleCreateFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments,
               let filePath = arguments[McpConfig.filePathParamName]?.stringValue,
               let content = arguments[McpConfig.contentParamName]?.stringValue else {
@@ -747,9 +747,9 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorCreatingFile, error.localizedDescription))])
         }
     }
-
+    
     /// Handles opening a document in Xcode
-     static func handleOpenDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleOpenDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
@@ -772,9 +772,9 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorOpeningFile, filePath))])
         }
     }
-
+    
     /// Handles creating a document in Xcode
-     static func handleCreateDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleCreateDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments,
               let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
@@ -788,9 +788,9 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorCreatingFile, filePath))])
         }
     }
-
+    
     /// Handles reading a document from Xcode
-     static func handleReadDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleReadDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
@@ -821,9 +821,9 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, filePath))])
         }
     }
-
+    
     /// Handles saving a document in Xcode
-     static func handleSaveDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleSaveDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments,
               let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
@@ -835,9 +835,9 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorWritingFile, filePath))])
         }
     }
-
+    
     /// Handles editing a document in Xcode
-     static func handleEditDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleEditDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text(McpConfig.missingLineParamsError)])
         }
@@ -867,12 +867,12 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorEditingFile, filePath))])
         }
     }
-
+    
     /// Handles a call to the move file tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the move file tool call
     /// - Throws: Error if sourcePath or destinationPath is missing
-     static func handleMoveFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleMoveFileToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text("Missing source and destination file parameters")])
         }
@@ -907,12 +907,12 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: "Error moving file: %@", error.localizedDescription))])
         }
     }
-
+    
     /// Handles a call to the move directory tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the move directory tool call
     /// - Throws: Error if sourcePath or destinationPath is missing
-     static func handleMoveDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+    static func handleMoveDirToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text("Missing source and destination directory parameters")])
         }
@@ -947,7 +947,7 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: "Error moving directory: %@", error.localizedDescription))])
         }
     }
-
+    
     /// Handles closing a document in Xcode
     static func handleCloseDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         // Debug: Print out the entire params
@@ -1001,6 +1001,67 @@ extension XcfMcpServer {
         } else {
             print("Failed to close document")
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorClosingFile, filePath))])
+        }
+    }
+    
+    /// Handles a call to calculate the end line of a document
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the end line calculation tool call
+    /// - Throws: Error if filePath is missing
+    static func handleCalculateEndLineToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Resolve the file path using multiple strategies
+        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
+        
+        // Validate file path
+        guard FileManager.default.fileExists(atPath: resolvedPath) else {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, "File not found. Tried searching for \(filePath) in multiple locations."))])
+        }
+        
+        // Calculate end line
+        if let endLine = XcfSwiftScript.shared.calculateDocumentEndLine(filePath: resolvedPath) {
+            return CallTool.Result(content: [.text(warning + "Total lines in document: \(endLine)")])
+        } else {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, "Unable to calculate end line"))])
+        }
+    }
+    
+    /// Handles a call to search lines in a document
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the search lines tool call
+    /// - Throws: Error if filePath or searchText is missing
+    static func handleSearchLinesToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments,
+              let filePath = arguments[McpConfig.filePathParamName]?.stringValue,
+              let searchText = arguments["searchText"]?.stringValue else {
+            return CallTool.Result(content: [.text("Missing filePath or searchText parameters")])
+        }
+        
+        // Resolve the file path using multiple strategies
+        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
+        
+        // Validate file path
+        guard FileManager.default.fileExists(atPath: resolvedPath) else {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, "File not found. Tried searching for \(filePath) in multiple locations."))])
+        }
+        
+        // Determine case sensitivity
+        let caseSensitive = arguments["caseSensitive"]?.boolValue ?? false
+        
+        // Search lines
+        if let matchedLines = XcfSwiftScript.shared.searchLinesInDocument(filePath: resolvedPath, searchText: searchText, caseSensitive: caseSensitive) {
+            if matchedLines.isEmpty {
+                return CallTool.Result(content: [.text(warning + "No lines found containing '\(searchText)'")])
+            } else {
+                let lineNumbers = matchedLines.map { String($0) }.joined(separator: ", ")
+                return CallTool.Result(content: [.text(warning + "Lines containing '\(searchText)': \(lineNumbers)")])
+            }
+        } else {
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, "Unable to search lines"))])
         }
     }
 }

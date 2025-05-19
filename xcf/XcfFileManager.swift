@@ -36,8 +36,8 @@ struct XcfFileManager {
         guard FileManager.default.fileExists(atPath: projectDir, isDirectory: &isProjectDirDirectory),
               isProjectDirDirectory.boolValue else {
             throw NSError(domain: "XcfFileManager",
-                         code: 2,
-                         userInfo: [NSLocalizedDescriptionKey: "Invalid project directory: \(projectDir)"])
+                          code: 2,
+                          userInfo: [NSLocalizedDescriptionKey: "Invalid project directory: \(projectDir)"])
         }
         
         // Determine the full path
@@ -47,8 +47,8 @@ struct XcfFileManager {
         let directory = (fullPath as NSString).deletingLastPathComponent
         if !FileManager.default.fileExists(atPath: directory) {
             try FileManager.default.createDirectory(atPath: directory,
-                                                 withIntermediateDirectories: true,
-                                                 attributes: nil)
+                                                    withIntermediateDirectories: true,
+                                                    attributes: nil)
         }
         
         // Write the file
@@ -175,8 +175,8 @@ struct XcfFileManager {
         guard FileManager.default.fileExists(atPath: projectDir, isDirectory: &isProjectDirDirectory),
               isProjectDirDirectory.boolValue else {
             throw NSError(domain: "XcfFileManager",
-                         code: 2,
-                         userInfo: [NSLocalizedDescriptionKey: "Invalid project directory: \(projectDir)"])
+                          code: 2,
+                          userInfo: [NSLocalizedDescriptionKey: "Invalid project directory: \(projectDir)"])
         }
         
         // Now resolve the target path
@@ -190,8 +190,8 @@ struct XcfFileManager {
         guard FileManager.default.fileExists(atPath: resolvedPath, isDirectory: &isDirectory),
               isDirectory.boolValue else {
             throw NSError(domain: "XcfFileManager",
-                         code: 2,
-                         userInfo: [NSLocalizedDescriptionKey: "Directory not found: \(resolvedPath)"])
+                          code: 2,
+                          userInfo: [NSLocalizedDescriptionKey: "Directory not found: \(resolvedPath)"])
         }
         
         // Change the directory
@@ -211,8 +211,8 @@ struct XcfFileManager {
         // Get and verify the project directory
         guard let projectDir = XcfXcodeProjectManager.shared.currentFolder else {
             throw NSError(domain: "XcfFileManager",
-                         code: 2,
-                         userInfo: [NSLocalizedDescriptionKey: "No current project directory set"])
+                          code: 2,
+                          userInfo: [NSLocalizedDescriptionKey: "No current project directory set"])
         }
         
         // For "." or empty path, use project directory directly
@@ -230,8 +230,8 @@ struct XcfFileManager {
         guard FileManager.default.fileExists(atPath: targetPath, isDirectory: &isDirectory),
               isDirectory.boolValue else {
             throw NSError(domain: "XcfFileManager",
-                         code: 1,
-                         userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, targetPath)])
+                          code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryNotFound, targetPath)])
         }
         
         // Get directory contents
@@ -240,7 +240,7 @@ struct XcfFileManager {
         // Apply extension filter if specified
         if let ext = fileExtension {
             return contents.filter { $0.hasSuffix("." + ext) }
-                         .map { (targetPath as NSString).appendingPathComponent($0) }
+                .map { (targetPath as NSString).appendingPathComponent($0) }
         }
         
         return contents.map { (targetPath as NSString).appendingPathComponent($0) }
@@ -264,7 +264,7 @@ struct XcfFileManager {
             return nil
         }
     }
-
+    
     /// Creates a new Swift document with FileManager
     /// - Parameters:
     ///   - filePath: The path where the Swift file should be created
@@ -284,7 +284,7 @@ struct XcfFileManager {
         // Write the content to the new file
         try content.write(toFile: filePath, atomically: true, encoding: .utf8)
     }
-
+    
     /// Edits a Swift document by replacing text at specified range using FileManager
     /// - Parameters:
     ///   - filePath: The path to the Swift file to edit
@@ -320,7 +320,7 @@ struct XcfFileManager {
         
         return (newContent, warning)
     }
-
+    
     /// Moves a file from one location to another
     /// - Parameters:
     ///   - sourcePath: Path of the file to move
@@ -387,4 +387,29 @@ struct XcfFileManager {
         // Move the directory
         try FileManager.default.moveItem(atPath: resolvedSourcePath, toPath: resolvedDestPath)
     }
-} 
+    
+    /// Searches a file for lines containing specific text
+    /// - Parameters:
+    ///   - filePath: Path to the file to search
+    ///   - searchText: Text to search for in the file
+    ///   - caseSensitive: Whether the search should be case-sensitive (default is false)
+    /// - Returns: A tuple with matched line numbers and any warnings
+    /// - Throws: Error if file cannot be read
+    static func searchLinesInFile(at filePath: String, searchText: String, caseSensitive: Bool = false) throws -> ([Int], String) {
+        let (content, warning) = try readFile(at: filePath)
+        let lines = content.components(separatedBy: .newlines)
+        
+        var matchedLineNumbers: [Int] = []
+        
+        for (index, line) in lines.enumerated() {
+            let lineToCheck = caseSensitive ? line : line.lowercased()
+            let searchTextToCheck = caseSensitive ? searchText : searchText.lowercased()
+            
+            if lineToCheck.contains(searchTextToCheck) {
+                matchedLineNumbers.append(index + 1) // Convert to 1-indexed line numbers
+            }
+        }
+        
+        return (matchedLineNumbers, warning)
+    }
+}

@@ -13,7 +13,7 @@ class XcfSwiftScript {
     static let shared = XcfSwiftScript()
     private var files: Set<String> = []
     func buildCurrentWorkspace(projectPath: String, run: Bool = false) -> String {
-
+        
         // Get Xcode application instance
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
             return ErrorMessages.failedToConnectXcode
@@ -52,7 +52,7 @@ class XcfSwiftScript {
         guard let result = buildResult else {
             return ErrorMessages.failedToGetBuildResult
         }
-            
+        
         // Wait for build to complete
         while !(result.completed ?? false) {
             Thread.sleep(forTimeInterval: XcodeConstants.buildPollInterval)
@@ -61,7 +61,7 @@ class XcfSwiftScript {
         var buildResults = ""
         
         files = [] // Reset files collection before processing
-
+        
         // Handle build errors with the original approach
         if let buildErrors = result.buildErrors?() {
             processIssues(issues: buildErrors, issueType: XcodeConstants.errorIssueType, buildResults: &buildResults)
@@ -80,7 +80,7 @@ class XcfSwiftScript {
             processIssues(issues: testFailures, issueType: XcodeConstants.testFailureIssueType, buildResults: &buildResults)
         }
         
-         // Send entire file(s) at the end, uses a set to avoid duplicates
+        // Send entire file(s) at the end, uses a set to avoid duplicates
         for file in files {
             buildResults += "\(XcodeConstants.filePrefix)\(file)\(XcodeConstants.fileSuffix)\(Format.newLine)"
             let (fileContent, language) = CaptureSnippet.getCodeSnippet(filePath: file, startLine: 1, endLine: Int.max, entireFile: true)
@@ -88,7 +88,7 @@ class XcfSwiftScript {
             buildResults += fileContent
             buildResults += "\(Format.newLine)\(XcodeConstants.codeBlockEnd)\(Format.newLine)"
         }
-
+        
         // Return build results
         return buildResults.isEmpty ? SuccessMessages.buildSuccess : buildResults
     }
@@ -102,8 +102,8 @@ class XcfSwiftScript {
                    let startLine = issue.startingLineNumber,
                    let endLine = issue.endingLineNumber {
                     files.insert(filePath)
-                    buildResults += String(format: XcodeConstants.issueFormat, 
-                                         filePath, startLine, startingColNum, issueType, issueMessage) + Format.newLine
+                    buildResults += String(format: XcodeConstants.issueFormat,
+                                           filePath, startLine, startingColNum, issueType, issueMessage) + Format.newLine
                     buildResults += formatCodeSnippet(filePath: filePath, startLine: startLine, endLine: endLine)
                 } else {
                     buildResults += "[\(issueType)] \(issueMessage)\(Format.newLine)"
@@ -147,8 +147,8 @@ class XcfSwiftScript {
         
         return Array(paths).sorted()
     }
-
-     // New method to get schemes
+    
+    // New method to get schemes
     func getSchemes() -> [String] {
         // Get Xcode application instance
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
@@ -338,7 +338,7 @@ class XcfSwiftScript {
         // Save the document
         document.closeSaving?(.yes, savingIn: nil)
         
-        // Reopen the document 
+        // Reopen the document
         _ = xcode.open?(filePath as Any)
         
         return true
@@ -512,7 +512,7 @@ class XcfSwiftScript {
         
         // Try to find document with filename match (more lenient)
         let filename = (resolvedPath as NSString).lastPathComponent
-        if let document = (documents as? [XcodeDocument])?.first(where: { 
+        if let document = (documents as? [XcodeDocument])?.first(where: {
             if let docPath = $0.path {
                 return (docPath as NSString).lastPathComponent == filename
             }
@@ -526,7 +526,7 @@ class XcfSwiftScript {
         print("Document not found in Xcode: \(resolvedPath)")
         return false
     }
-
+    
     /// Deletes a file using ScriptingBridge
     /// - Parameter filePath: The path to the file to delete
     /// - Returns: True if successful, false otherwise
@@ -544,5 +544,48 @@ class XcfSwiftScript {
         
         // Then delete the file using FileManager
         return deleteFileWithFileManager(at: filePath)
+    }
+    
+    /// Calculates the total number of lines in a document
+    /// - Parameter filePath: Path to the file to count lines
+    /// - Returns: Total number of lines in the document, or nil if the file cannot be read
+    func calculateDocumentEndLine(filePath: String) -> Int? {
+        do {
+            let (content, _) = try XcfFileManager.readFile(at: filePath)
+            let lines = content.components(separatedBy: .newlines)
+            return lines.count
+        } catch {
+            print("Error calculating end line: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    
+    /// Searches a file for lines containing specific text
+    /// - Parameters:
+    ///   - filePath: Path to the file to search
+    ///   - searchText: Text to search for in the file
+    ///   - caseSensitive: Whether the search should be case-sensitive (default is false)
+    /// - Returns: An array of line numbers where the text is found, or nil if the file cannot be read
+    func searchLinesInDocument(filePath: String, searchText: String, caseSensitive: Bool = false) -> [Int]? {
+        do {
+            let (content, _) = try XcfFileManager.readFile(at: filePath)
+            let lines = content.components(separatedBy: .newlines)
+            
+            var matchedLineNumbers: [Int] = []
+            
+            for (index, line) in lines.enumerated() {
+                let lineToCheck = caseSensitive ? line : line.lowercased()
+                let searchTextToCheck = caseSensitive ? searchText : searchText.lowercased()
+                
+                if lineToCheck.contains(searchTextToCheck) {
+                    matchedLineNumbers.append(index + 1)  // Convert to 1-indexed line numbers
+                }
+            }
+            
+            return matchedLineNumbers
+        } catch {
+            print("Error searching lines: \(error.localizedDescription)")
+            return nil
+        }
     }
 }
