@@ -8,14 +8,15 @@
 import Foundation
 import MCP
 
+//MARK: emoved til we have it right: editFileTool, deleteFileTool, editDocTool, moveFileTool, rmDirTool, moveDirTool, writeFileTool, addDirTool,
+
+
 // Collections
 extension XcfMcpServer {
     static let allTools = [
         xcfTool, listToolsTool, quickHelpTool, helpTool, snippetTool, analyzerTool, readDirTool,
-        writeFileTool, readFileTool, cdDirTool,
-        editFileTool, deleteFileTool,
-        addDirTool, rmDirTool, moveFileTool, moveDirTool,
-        openDocTool, closeDocTool, createDocTool, readDocTool, saveDocTool, editDocTool,
+        readFileTool, cdDirTool,
+        openDocTool, closeDocTool, createDocTool, readDocTool, saveDocTool,
         useXcfTool,
         toolsReferenceTool,
         // New action-specific tools
@@ -24,15 +25,14 @@ extension XcfMcpServer {
         listProjectsTool, selectProjectTool, analyzeSwiftCodeTool
     ]
 
+    //MARK: removed resources til we have it right fileContentsResource,        directoryContentsResource,         fileSystemResource,
+
     static let allResources = [
         xcodeProjResource, 
-        fileContentsResource, 
         buildResultsResource,
         codeSnippetResource,
-        directoryContentsResource,
         codeAnalysisResource,
         xcodeDocumentResource,
-        fileSystemResource,
         // Standalone action tool resources
         helpResource,
         permissionResource,
@@ -40,13 +40,16 @@ extension XcfMcpServer {
         environmentResource,
         directoryResource
     ]
+    
+    
+    //MARK: removed prompts editFilePrompt, deleteFilePrompt, addDirPrompt, rmDirPrompt, readDirPrompt, moveFilePrompt, moveDirPrompt, editDocPrompt,  writeFilePrompt,
 
     static let allPrompts = [
         buildPrompt, runPrompt, analyzeCodePrompt,
-        snippetPrompt, writeFilePrompt, readFilePrompt, cdDirPrompt,
-        editFilePrompt, deleteFilePrompt, addDirPrompt, rmDirPrompt, readDirPrompt,
-        openDocPrompt, createDocPrompt, readDocPrompt, saveDocPrompt, editDocPrompt, closeDocPrompt,
-        moveFilePrompt, moveDirPrompt, xcfActionPrompt,
+        snippetPrompt, readFilePrompt, cdDirPrompt,
+        
+        openDocPrompt, createDocPrompt, readDocPrompt, saveDocPrompt, closeDocPrompt,
+        xcfActionPrompt,
         // Standalone action tool prompts
         showHelpPrompt, grantPermissionPrompt, runProjectPrompt, buildProjectPrompt,
         showCurrentProjectPrompt, showEnvPrompt, showFolderPrompt,

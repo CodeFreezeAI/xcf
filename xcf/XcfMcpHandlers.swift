@@ -261,8 +261,8 @@ extension XcfMcpServer {
         }
         
         do {
-            try XcfFileManager.editFile(at: filePath, startLine: startLine, endLine: endLine, replacementContent: replacementContent)
-            return CallTool.Result(content: [.text(McpConfig.fileEditedSuccessfully)])
+            let (content, _) = try XcfFileManager.editSwiftDocument(filePath: filePath, startLine: startLine, endLine: endLine, replacement: replacementContent)
+            return CallTool.Result(content: [.text(content)])
         } catch {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorEditingFile, error.localizedDescription))])
         }

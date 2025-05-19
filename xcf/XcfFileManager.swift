@@ -84,34 +84,34 @@ struct XcfFileManager {
     ///   - endLine: Last line to edit (1-indexed)
     ///   - replacementContent: New content for the specified line range
     /// - Throws: Error if file cannot be edited
-    static func editFile(at filePath: String, startLine: Int, endLine: Int, replacementContent: String) throws {
-        // Security check with path resolution
-        let (allowed, resolvedPath, error) = SecurityManager.shared.isFileOperationAllowed(filePath, operation: "edit")
-        if !allowed {
-            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
-        }
-        
-        guard FileManager.default.fileExists(atPath: resolvedPath) else {
-            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileNotFound, filePath)])
-        }
-        
-        do {
-            let content = try String(contentsOfFile: resolvedPath, encoding: .utf8)
-            var lines = content.components(separatedBy: .newlines)
-            
-            guard startLine > 0, endLine <= lines.count, startLine <= endLine else {
-                throw NSError(domain: "XcfFileManager", code: 3, userInfo: [NSLocalizedDescriptionKey: ErrorMessages.invalidLineNumbers])
-            }
-            
-            let replacementLines = replacementContent.components(separatedBy: .newlines)
-            lines.replaceSubrange((startLine - 1)...(endLine - 1), with: replacementLines)
-            
-            let newContent = lines.joined(separator: "\n")
-            try newContent.write(toFile: resolvedPath, atomically: true, encoding: .utf8)
-        } catch {
-            throw error
-        }
-    }
+//    static func editFileCommentedOut(at filePath: String, startLine: Int, endLine: Int, replacementContent: String) throws {
+//        // Security check with path resolution
+//        let (allowed, resolvedPath, error) = SecurityManager.shared.isFileOperationAllowed(filePath, operation: "edit")
+//        if !allowed {
+//            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
+//        }
+//        
+//        guard FileManager.default.fileExists(atPath: resolvedPath) else {
+//            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileNotFound, filePath)])
+//        }
+//        
+//        do {
+//            let content = try String(contentsOfFile: resolvedPath, encoding: .utf8)
+//            var lines = content.components(separatedBy: .newlines)
+//            
+//            guard startLine > 0, endLine <= lines.count, startLine <= endLine else {
+//                throw NSError(domain: "XcfFileManager", code: 3, userInfo: [NSLocalizedDescriptionKey: ErrorMessages.invalidLineNumbers])
+//            }
+//            
+//            let replacementLines = replacementContent.components(separatedBy: .newlines)
+//            lines.replaceSubrange((startLine - 1)...(endLine - 1), with: replacementLines)
+//            
+//            let newContent = lines.joined(separator: "\n")
+//            try newContent.write(toFile: resolvedPath, atomically: true, encoding: .utf8)
+//        } catch {
+//            throw error
+//        }
+//    }
     
     /// Deletes a file
     /// - Parameter filePath: Path to the file to delete
@@ -297,8 +297,13 @@ struct XcfFileManager {
         let (content, warning) = try readFile(at: filePath)
         let lines = content.components(separatedBy: .newlines)
         
+        var endLine = endLine
+        if endLine > lines.count {
+            endLine = lines.count
+        }
+        
         // Validate line numbers
-        guard startLine > 0, endLine > 0, startLine <= lines.count, endLine <= lines.count, startLine <= endLine else {
+        guard startLine > 0, endLine > 0, startLine <= lines.count, startLine <= endLine else {
             throw NSError(domain: "XcfFileManager", code: 5, userInfo: [NSLocalizedDescriptionKey: "Invalid line numbers. File has \(lines.count) lines."])
         }
         

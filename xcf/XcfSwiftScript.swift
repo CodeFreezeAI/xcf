@@ -403,8 +403,13 @@ class XcfSwiftScript {
         let lines = fullText.components(separatedBy: .newlines)
         print("Document has \(lines.count) lines")
         
+        var endLine = endLine
+        if endLine > lines.count {
+            endLine = lines.count
+        }
+        
         // Check line range validity
-        guard startLine >= 1, endLine >= startLine, endLine <= lines.count else {
+        guard startLine >= 1, endLine >= startLine else {
             print("Invalid line range: \(startLine)-\(endLine). Document has \(lines.count) lines.")
             return false
         }
@@ -587,5 +592,54 @@ class XcfSwiftScript {
             print("Error searching lines: \(error.localizedDescription)")
             return nil
         }
+    }
+    
+    /// Performs a find and replace operation in a Swift document using ScriptingBridge
+    /// - Parameters:
+    ///   - filePath: The path to the Swift file to modify
+    ///   - findString: The string to find and replace
+    ///   - replaceString: The string to replace the found text with
+    /// - Returns: A tuple with a boolean indicating success and an optional error message
+    func findAndReplaceInSwiftDocument(filePath: String, findString: String, replaceString: String) -> (success: Bool, errorMessage: String?) {
+        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
+            return (false, ErrorMessages.failedToConnectXcode)
+        }
+        
+        // Open the document in Xcode if it's not already open
+        guard let document = xcode.open?(filePath as Any) as? XcodeSourceDocument else {
+            return (false, "Failed to open document in Xcode")
+        }
+        
+        // Get the current text of the document
+        guard var documentText = document.text?() else {
+            return (false, "Failed to retrieve document text")
+        }
+        
+        // Count occurrences of findString
+        let occurrences = documentText.components(separatedBy: findString).count - 1
+        
+        // Check if findString is not found
+        guard occurrences > 0 else {
+            return (false, "Find string '\(findString)' not found in the document")
+        }
+        
+        // Check if findString appears more than once
+        guard occurrences == 1 else {
+            return (false, "Find string '\(findString)' appears multiple times in the document")
+        }
+        
+        // Perform the find and replace
+        documentText = documentText.replacingOccurrences(of: findString, with: replaceString)
+        
+        // Update the document text
+        document.setText?(documentText)
+        
+        // Save the document
+        document.closeSaving?(.yes, savingIn: nil)
+        
+        // Reopen the document to ensure changes are reflected
+        _ = xcode.open?(filePath as Any)
+        
+        return (true, nil)
     }
 }
