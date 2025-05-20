@@ -8,7 +8,7 @@
 import Foundation
 import MCP
 
-//MARK: Removed til we have it right: editFileTool, deleteFileTool, editDocTool, moveFileTool, rmDirTool, moveDirTool, writeFileTool, addDirTool,
+//MARK: emoved til we have it right: editFileTool, deleteFileTool, editDocTool, moveFileTool, rmDirTool, moveDirTool, writeFileTool, addDirTool,
 
 
 // Collections
@@ -22,9 +22,7 @@ extension XcfMcpServer {
         // New action-specific tools
         showHelpTool, grantPermissionTool, runProjectTool, buildProjectTool,
         showCurrentProjectTool, showEnvTool, showFolderTool,
-        listProjectsTool, selectProjectTool, analyzeSwiftCodeTool,
-        // New diff tools
-        createDiffTool, applyDiffTool
+        listProjectsTool, selectProjectTool, analyzeSwiftCodeTool
     ]
 
     //MARK: removed resources til we have it right fileContentsResource,        directoryContentsResource,         fileSystemResource,
@@ -239,12 +237,6 @@ extension XcfMcpServer {
             }
             
             return await CallTool.Result(content: [.text(XcfActionHandler.handleAnalyzeAction(action: analyzeCommand))])
-            
-        case "create_diff":
-            return try handleCreateDiffToolCall(params)
-            
-        case "apply_diff":
-            return try handleApplyDiffToolCall(params)
             
         default:
             throw MCPError.invalidParams(String(format: ErrorMessages.unknownTool, params.name))

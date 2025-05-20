@@ -60,9 +60,4 @@ extension XcfMcpServer {
         }
     }
 
-    /// A custom method handler for string-based methods
-    struct MethodHandler {
-        let name: String
-        let handler: (CallTool.Parameters) -> CallTool.Result
-    }
 }

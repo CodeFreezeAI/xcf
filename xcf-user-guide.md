@@ -140,64 +140,6 @@ delete_file temp.txt                   # Delete file
 move_file old.swift new.swift           # Move/rename file
 ```
 
-### Diff Operations
-
-XCF provides powerful diff tools for comparing and applying changes to files and strings.
-
-#### Basic Diff Operations
-```bash
-# Create a diff between two strings
-create_diff "old text" "new text"
-
-# Apply a diff to a source string
-apply_diff "old text" "+new line\n-old line"
-```
-
-#### Document-Based Diff Operations
-```bash
-# Create a diff from an entire document
-create_diff main.swift destString="updated content" entireFile=true
-
-# Create a diff from specific lines
-create_diff main.swift destString="updated content" startLine=10 endLine=20
-
-# Apply a diff to a document
-apply_diff main.swift destString="+new line\n-old line" startLine=10 endLine=20
-```
-
-#### Diff Operation Parameters
-- `sourceString`: Original source string (optional)
-- `destString`: Destination string or diff to apply
-- `filePath`: Path to source document (optional)
-- `startLine`: Start line for partial document diff (optional)
-- `endLine`: End line for partial document diff (optional)
-- `entireFile`: Use entire file for diff (optional, default: false)
-
-#### Workflow Example
-```bash
-# Typical diff workflow
-read_file main.swift                   # Read current file
-create_diff main.swift destString="updated content"  # Generate diff
-apply_diff main.swift destString="+new line\n-old line"  # Apply changes
-build                                  # Rebuild project
-```
-
-#### Best Practices
-1. Always review diffs before applying
-2. Use line ranges for precise modifications
-3. Backup files before applying large changes
-4. Use `build` to verify changes don't break compilation
-
-#### Diff Syntax
-- `+`: Add a line
-- `-`: Remove a line
-- Lines without `+` or `-` remain unchanged
-
-#### Error Handling
-- Diffs that cannot be applied will return an error
-- Partial diffs support line-specific modifications
-- Use `entireFile=true` for complete document replacement
-
 ## 📁 Directory Operations
 
 ### Checking Current Directory
@@ -296,7 +238,7 @@ XCF now provides direct tools for each action, making it easier to use and disco
 | `mcp_xcf_analyze_swift_code` | Analyze Swift code for potential issues |
 
 ### AI-Optimized Workflow Example
-```@
+```python
 # Basic workflow using standalone tools
 mcp_xcf_use_xcf()               # Activate XCF
 mcp_xcf_list_projects()         # List available projects
@@ -307,7 +249,7 @@ mcp_xcf_run_project()           # Run the project
 # Code analysis using dedicated tools
 mcp_xcf_show_current_project()  # Check current project
 mcp_xcf_analyze_swift_code(filePath="main.swift")  # Analyze code
-```@
+```
 
 ## 🔒 Security & Best Practices
 

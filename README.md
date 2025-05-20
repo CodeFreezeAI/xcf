@@ -144,26 +144,6 @@ The tool is designed by Swift developers, for Swift developers. Commands like `b
 | `analyzer <file> [start] [end]` | Analyze Swift code |
 | `lz <file>` | Shorthand for analyzer |
 
-### Diff Operations
-| Command | Description | Example |
-|---------|-------------|---------|
-| `create_diff <source> <dest>` | Create a diff between two strings | `create_diff "old text" "new text"` |
-| `apply_diff <source> <diff>` | Apply a diff to a source string | `apply_diff "old text" "+new line\n-old line"` |
-
-### Advanced Diff Operations
-| Command | Description | Example |
-|---------|-------------|---------|
-| `create_diff <file>` | Create a diff from a document | `create_diff main.swift destString="updated content"` |
-| `apply_diff <file>` | Apply a diff to a document | `apply_diff main.swift destString="+new line\n-old line"` |
-
-#### Diff Operation Parameters
-- `sourceString`: Original source string (optional)
-- `destString`: Destination string or diff to apply
-- `filePath`: Path to source document (optional)
-- `startLine`: Start line for partial document diff (optional)
-- `endLine`: End line for partial document diff (optional)
-- `entireFile`: Use entire file for diff (optional, default: false)
-
 ## 📄 Using Snippets
 
 ### For Human Commands

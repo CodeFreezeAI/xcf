@@ -828,7 +828,7 @@ extension XcfMcpServer {
               let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
-
+        
         if XcfScript.writeSwiftDocumentWithScriptingBridge(filePath: filePath, content: "") {
             return CallTool.Result(content: [.text(McpConfig.documentSavedSuccessfully)])
         } else {
@@ -1062,102 +1062,6 @@ extension XcfMcpServer {
             }
         } else {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, "Unable to search lines"))])
-        }
-    }
-    
-    /// Handles a call to the create diff tool
-    /// - Parameter params: The parameters for the tool call
-    /// - Returns: The result of the create diff tool call
-    /// - Throws: Error if filePath or destString is missing
-    static func handleCreateDiffToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
-        }
-        
-        // Try to get filePath from arguments in two ways:
-        // 1. As a named parameter (filePath=...)
-        // 2. As a direct argument (first argument after command)
-        let filePath: String
-        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
-            filePath = namedPath
-        } else if let firstArg = arguments.first?.value.stringValue {
-            filePath = firstArg
-        } else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
-        }
-        
-        // Get destString (required)
-        let destString: String
-        if let namedContent = arguments[McpConfig.contentParamName]?.stringValue {
-            destString = namedContent
-        } else {
-            return CallTool.Result(content: [.text("Missing destination string parameter")])
-        }
-        
-        // Optional parameters
-        let entireFile = arguments[McpConfig.entireFileParamName]?.boolValue ?? false
-        let startLine = arguments[McpConfig.startLineParamName]?.intValue
-        let endLine = arguments[McpConfig.endLineParamName]?.intValue
-        
-        do {
-            let diffResult = try XcfSwiftDiff.createDiffFromDocument(
-                filePath: filePath,
-                destString: destString,
-                startLine: startLine,
-                endLine: endLine,
-                entireFile: entireFile
-            )
-            return CallTool.Result(content: [.text(diffResult)])
-        } catch {
-            return CallTool.Result(content: [.text("Error creating diff: \(error.localizedDescription)")])
-        }
-    }
-    
-    /// Handles a call to the apply diff tool
-    /// - Parameter params: The parameters for the tool call
-    /// - Returns: The result of the apply diff tool call
-    /// - Throws: Error if filePath or destString is missing
-    static func handleApplyDiffToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
-        }
-        
-        // Try to get filePath from arguments in two ways:
-        // 1. As a named parameter (filePath=...)
-        // 2. As a direct argument (first argument after command)
-        let filePath: String
-        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
-            filePath = namedPath
-        } else if let firstArg = arguments.first?.value.stringValue {
-            filePath = firstArg
-        } else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
-        }
-        
-        // Get destString (required)
-        let destString: String
-        if let namedContent = arguments[McpConfig.contentParamName]?.stringValue {
-            destString = namedContent
-        } else {
-            return CallTool.Result(content: [.text("Missing destination string parameter")])
-        }
-        
-        // Optional parameters
-        let entireFile = arguments[McpConfig.entireFileParamName]?.boolValue ?? false
-        let startLine = arguments[McpConfig.startLineParamName]?.intValue
-        let endLine = arguments[McpConfig.endLineParamName]?.intValue
-        
-        do {
-            let success = try XcfSwiftDiff.applyDiffToDocument(
-                filePath: filePath,
-                destString: destString,
-                startLine: startLine,
-                endLine: endLine,
-                entireFile: entireFile
-            )
-            return CallTool.Result(content: [.text(success ? "Diff applied successfully" : "Failed to apply diff")])
-        } catch {
-            return CallTool.Result(content: [.text("Error applying diff: \(error.localizedDescription)")])
         }
     }
 }
