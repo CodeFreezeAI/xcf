@@ -7,6 +7,10 @@
 
 import Foundation
 import MCP
+import SwiftDiff
+
+// Create aliases for the SwiftDiff types to ensure proper access
+typealias StringIndex = String.Index
 
 extension XcfMcpServer {
     
@@ -15,8 +19,7 @@ extension XcfMcpServer {
     /// - Returns: The result of the xcf tool call
     /// - Throws: Error if action is missing
     static func handleXcfToolCall(_ params: CallTool.Parameters) async throws -> CallTool.Result {
-        if let arguments = params.arguments,
-           let action = arguments[McpConfig.actionParamName]?.stringValue {
+        if let action = params.arguments?[McpConfig.actionParamName]?.stringValue {
             print(String(format: McpConfig.actionFound, action))
             return CallTool.Result(content: [.text(await XcfActionHandler.handleAction(action: action))])
         } else {
@@ -828,7 +831,7 @@ extension XcfMcpServer {
               let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
-        
+
         if XcfScript.writeSwiftDocumentWithScriptingBridge(filePath: filePath, content: "") {
             return CallTool.Result(content: [.text(McpConfig.documentSavedSuccessfully)])
         } else {
@@ -1064,4 +1067,148 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, "Unable to search lines"))])
         }
     }
+    
+    /// Handles a call to the create_diff tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the create_diff tool call
+    /// - Throws: Error if filePath or destString is missing
+    static func handleCreateDiffToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+        } else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Get destString
+        guard let destString = arguments["destString"]?.stringValue else {
+            return CallTool.Result(content: [.text("Missing destString parameter")])
+        }
+        
+        // Optional parameters
+        let startLine = arguments[McpConfig.startLineParamName]?.intValue
+        let endLine = arguments[McpConfig.endLineParamName]?.intValue
+        let entireFile = arguments[McpConfig.entireFileParamName]?.boolValue ?? false
+        
+        do {
+            // Create the diff
+            let diffOperations = try createDiffFromDocument(
+                filePath: filePath,
+                destString: destString,
+                startLine: startLine,
+                endLine: endLine,
+                entireFile: entireFile
+            )
+            
+            // Convert diff operations to a string representation for output
+            let diffString = diffOperations.map { op -> String in
+                switch op {
+                case .insert(index: let index, substring: let substring):
+                    return "Insert at index \(index): \(substring)"
+                case .delete(range: let range):
+                    return "Delete range: \(range)"
+                case .replace(range: let range, substring: let substring):
+                    return "Replace at range \(range): with \(substring)"
+                }
+            }.joined(separator: "\n")
+            
+            return CallTool.Result(content: [.text(diffString)])
+        } catch {
+            return CallTool.Result(content: [.text("Error creating diff: \(error.localizedDescription)")])
+        }
+    }
+    
+    /// Handles a call to the apply_diff tool
+    /// - Parameter params: The parameters for the tool call
+    /// - Returns: The result of the apply_diff tool call
+    /// - Throws: Error if filePath or operations is missing
+    static func handleApplyDiffToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Try to get filePath from arguments in two ways:
+        // 1. As a named parameter (filePath=...)
+        // 2. As a direct argument (first argument after command)
+        let filePath: String
+        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
+            filePath = namedPath
+        } else if let firstArg = arguments.first?.value.stringValue {
+            filePath = firstArg
+        } else {
+            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        }
+        
+        // Get operations
+        guard let operationsArg = arguments["operations"],
+              let operationsArray = operationsArg.arrayValue else {
+            return CallTool.Result(content: [.text("Missing operations parameter")])
+        }
+        
+        // Convert operations to DiffOperation array
+        var diffOperations = [DiffOperation]()
+        for op in operationsArray {
+            guard let opDict = op.objectValue else {
+                return CallTool.Result(content: [.text("Invalid operation format")])
+            }
+            
+            guard let type = opDict["type"]?.stringValue,
+                  let index = opDict["index"]?.intValue else {
+                return CallTool.Result(content: [.text("Missing operation type or index")])
+            }
+            
+            switch type {
+            case "insert":
+                guard let element = opDict["element"]?.stringValue else {
+                    return CallTool.Result(content: [.text("Missing element for insert operation")])
+                }
+                let insertIndex = StringIndex(utf16Offset: index, in: "")
+                diffOperations.append(.insert(index: insertIndex, substring: element))
+            case "delete":
+                let deleteIndex = StringIndex(utf16Offset: index, in: "")
+                // Create a range that just includes the character at the index
+                let endIndex = "".index(deleteIndex, offsetBy: 1)
+                diffOperations.append(.delete(range: deleteIndex..<endIndex))
+            case "replace":
+                guard let element = opDict["element"]?.stringValue else {
+                    return CallTool.Result(content: [.text("Missing element for replace operation")])
+                }
+                let replaceIndex = StringIndex(utf16Offset: index, in: "")
+                // Create a range that just includes the character at the index
+                let endIndex = "".index(replaceIndex, offsetBy: 1)
+                diffOperations.append(.replace(range: replaceIndex..<endIndex, substring: element))
+            default:
+                return CallTool.Result(content: [.text("Unknown operation type: \(type)")])
+            }
+        }
+        
+        do {
+            // Apply the diff
+            let success = try applyDiffToDocument(
+                filePath: filePath,
+                operations: diffOperations
+            )
+            
+            return CallTool.Result(content: [.text(success ? "Diff applied successfully" : "Failed to apply diff")])
+        } catch {
+            return CallTool.Result(content: [.text("Error applying diff: \(error.localizedDescription)")])
+        }
+    }
+    
+//    /// Handles a tool call request
+//    /// - Parameter params: The parameters for the tool call
+//    /// - Returns: The result of the tool call
+//    static func handleToolCall(_ params: CallTool.Parameters) async throws -> CallTool.Result {
+//        // Default fallback implementation
+//        return CallTool.Result(content: [.text("Tool call handled but no specific implementation was found")])
+//    }
 }

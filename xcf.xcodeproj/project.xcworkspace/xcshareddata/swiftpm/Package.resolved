@@ -1,5 +1,5 @@
 {
-  "originHash" : "9ec1c89ea374275bf540fe00ef9934daf5436fdb30676dc998e5bb9f932bc7e6",
+  "originHash" : "5c7b82acb5617d2398568bae83a923ada88dcbef13712c21ed6736c3a61188c0",
   "pins" : [
     {
       "identity" : "eventsource",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "07957602bb99a5355c810187e66e6ce378a1057d",
         "version" : "1.1.1"
+      }
+    },
+    {
+      "identity" : "swift-diff",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/codefreezeai/swift-diff",
+      "state" : {
+        "branch" : "main",
+        "revision" : "12d8d6e29a918ba361d9e9981e0aa4659a20b1f2"
       }
     },
     {

@@ -8,6 +8,7 @@
 import Foundation
 import MCP
 
+
 extension XcfMcpServer {
     static let listToolsTool = Tool(
         name: McpConfig.listToolsName,
@@ -595,6 +596,61 @@ extension XcfMcpServer {
                 ])
             ]),
             McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string("searchText")])
+        ])
+    )
+    
+    /// Tool for creating a diff between documents
+    static let createDiffTool = Tool(
+        name: "create_diff",
+        description: "Create a diff between documents or document sections",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Path to the source document")
+                ]),
+                "destString": .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Destination string to compare against")
+                ]),
+                McpConfig.startLineParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.integerType),
+                    McpConfig.descriptionKey: .string("Optional starting line for partial document diff"),
+                    McpConfig.requiredKey: .bool(false)
+                ]),
+                McpConfig.endLineParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.integerType),
+                    McpConfig.descriptionKey: .string("Optional ending line for partial document diff"),
+                    McpConfig.requiredKey: .bool(false)
+                ]),
+                McpConfig.entireFileParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.booleanType),
+                    McpConfig.descriptionKey: .string("Whether to use the entire file for diffing"),
+                    McpConfig.requiredKey: .bool(false)
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string("destString")])
+        ])
+    )
+    
+    /// Tool for applying a diff to a document
+    static let applyDiffTool = Tool(
+        name: "apply_diff",
+        description: "Apply diff operations to a document",
+        inputSchema: .object([
+            McpConfig.typeKey: .string(McpConfig.objectType),
+            McpConfig.propertiesKey: .object([
+                McpConfig.filePathParamName: .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("Path to the source document")
+                ]),
+                "operations": .object([
+                    McpConfig.typeKey: .string(McpConfig.arrayType),
+                    McpConfig.descriptionKey: .string("Diff operations to apply")
+                ])
+            ]),
+            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string("operations")])
         ])
     )
 }

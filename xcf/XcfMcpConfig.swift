@@ -126,6 +126,10 @@ struct Paths {
 
 // Define MCP server configurations
 struct McpConfig {
+    
+    // Add missing type constants
+    static let arrayType = "array"
+    
     // Tool names
     static let listToolsName = "list"
     static let xcfToolName = AppConstants.appName
@@ -309,6 +313,11 @@ struct McpConfig {
     static let endLineParamDesc = "Ending line number (1-indexed)"
     static let entireFileParamName = "entireFile"
     static let entireFileParamDesc = "Set to true to get the entire file content"
+    
+    // Argument names for tools
+    static let startLineArgName = "startLine"
+    static let endLineArgName = "endLine"
+    static let entireFileArgName = "entireFile"
     
     // Schema keys
     static let typeKey = "type"

@@ -295,7 +295,11 @@ class XcfSwiftScript {
         }
         
         // Return the document text
-        return document.text
+        guard let documentText = document.text else {
+            return nil
+        }
+        
+        return documentText
     }
     
     // MARK: - Document Writing
@@ -392,15 +396,15 @@ class XcfSwiftScript {
         }
         
         // Get the current content of the document using Scripting Bridge
-        guard let fullText = document.text else {
+        guard let documentText = document.text else {
             print("Failed to get document text")
             return false
         }
         
-        print("Successfully got document text, length: \(fullText.count)")
+        print("Successfully got document text, length: \(documentText.count)")
         
         // Split the text into lines
-        let lines = fullText.components(separatedBy: .newlines)
+        let lines = documentText.components(separatedBy: .newlines)
         print("Document has \(lines.count) lines")
         
         var endLine = endLine
@@ -611,7 +615,7 @@ class XcfSwiftScript {
         }
         
         // Get the current text of the document
-        guard var documentText = document.text?() else {
+        guard var documentText = document.text else {
             return (false, "Failed to retrieve document text")
         }
         

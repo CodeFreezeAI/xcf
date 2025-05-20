@@ -22,7 +22,8 @@ extension XcfMcpServer {
         // New action-specific tools
         showHelpTool, grantPermissionTool, runProjectTool, buildProjectTool,
         showCurrentProjectTool, showEnvTool, showFolderTool,
-        listProjectsTool, selectProjectTool, analyzeSwiftCodeTool
+        listProjectsTool, selectProjectTool, analyzeSwiftCodeTool,
+        createDiffTool, applyDiffTool
     ]
 
     //MARK: removed resources til we have it right fileContentsResource,        directoryContentsResource,         fileSystemResource,
@@ -49,7 +50,7 @@ extension XcfMcpServer {
         snippetPrompt, readFilePrompt, cdDirPrompt,
         
         openDocPrompt, createDocPrompt, readDocPrompt, saveDocPrompt, closeDocPrompt,
-        xcfActionPrompt,
+        xcfActionPrompt, createDiffPrompt, applyDiffPrompt,
         // Standalone action tool prompts
         showHelpPrompt, grantPermissionPrompt, runProjectPrompt, buildProjectPrompt,
         showCurrentProjectPrompt, showEnvPrompt, showFolderPrompt,
@@ -96,6 +97,8 @@ extension XcfMcpServer {
         return result
     }
 }
+
+
 // MARK: - Tool Call Handling
 extension XcfMcpServer {
     
@@ -243,3 +246,4 @@ extension XcfMcpServer {
         }
     }
 }
+

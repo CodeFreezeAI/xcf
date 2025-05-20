@@ -215,6 +215,29 @@ extension XcfMcpServer {
         ]
     )
     
+    /// Prompt for creating a diff between documents
+    static let createDiffPrompt = Prompt(
+        name: "createDiff",
+        description: "Create a diff between documents or document sections",
+        arguments: [
+            Prompt.Argument(name: McpConfig.filePathArgName, description: McpConfig.filePathArgDesc, required: true),
+            Prompt.Argument(name: "destString", description: "Destination string to compare against", required: true),
+            Prompt.Argument(name: McpConfig.startLineArgName, description: "Optional starting line for partial document diff", required: false),
+            Prompt.Argument(name: McpConfig.endLineArgName, description: "Optional ending line for partial document diff", required: false),
+            Prompt.Argument(name: McpConfig.entireFileArgName, description: "Whether to use the entire file for diffing", required: false)
+        ]
+    )
+    
+    /// Prompt for applying a diff to a document
+    static let applyDiffPrompt = Prompt(
+        name: "applyDiff",
+        description: "Apply diff operations to a document",
+        arguments: [
+            Prompt.Argument(name: McpConfig.filePathArgName, description: McpConfig.filePathArgDesc, required: true),
+            Prompt.Argument(name: "operations", description: "Diff operations to apply", required: true)
+        ]
+    )
+    
     // MARK: - Standalone Action Tool Prompts
     
     /// Prompt for showing help
