@@ -1,0 +1,6 @@
+Hello, world!
+This is a modified test file.
+We will use this to demonstrate diff operations.
+A brand new line added.
+Line 4 of the original file.
+Another new line at the end. 

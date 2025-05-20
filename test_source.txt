@@ -1,0 +1,5 @@
+Hello, world!
+This is a test file.
+We will use this to demonstrate diff operations.
+Line 4 of the original file.
+Last line of the original file. 

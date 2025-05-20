@@ -193,6 +193,34 @@ build
 - Use `cd_dir .` to confirm current directory
 - Verify path before file/directory actions
 
+## 🔀 Diff Operations
+| Command | Description | Example |
+|---------|-------------|---------|
+| `create_diff <source> <dest>` | Create a diff between strings | `create_diff "old" "new"` |
+| `apply_diff <source> <diff>` | Apply a diff to a string | `apply_diff "old" "+new\n-old"` |
+
+### Document-Based Diff Operations
+| Command | Description | Example |
+|---------|-------------|---------|
+| `create_diff <file>` | Create diff from document | `create_diff main.swift destString="updated"` |
+| `apply_diff <file>` | Apply diff to document | `apply_diff main.swift destString="+line\n-line"` |
+
+### Diff Operation Parameters
+- `sourceString`: Original source string (optional)
+- `destString`: Destination string or diff
+- `filePath`: Source document path (optional)
+- `startLine`: Partial diff start line (optional)
+- `endLine`: Partial diff end line (optional)
+- `entireFile`: Use entire file (optional, default: false)
+
+### Diff Workflow Example
+```bash
+# Compare and update code
+create_diff main.swift destString="updated content"
+apply_diff main.swift destString="+new line\n-old line"
+build  # Rebuild after changes
+```
+
 ---
 
 Created by XCodeFreeze Automation - Swift Development at Light Speed! 🚀 

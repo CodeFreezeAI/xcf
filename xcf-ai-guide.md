@@ -75,11 +75,50 @@ In addition to the general-purpose tools, XCF now provides dedicated tools for e
 | `mcp_xcf_select_project` | Select a project by number | `mcp_xcf_select_project(projectNumber=1)` |
 | `mcp_xcf_analyze_swift_code` | Analyze Swift code | `mcp_xcf_analyze_swift_code(filePath="main.swift")` |
 
+### Diff Operations Tools
+
+XCF provides powerful diff tools for comparing and applying changes:
+
+| Tool | Purpose | Example Usage |
+|------|---------|---------------|
+| `create_diff` | Create a diff between two strings or from a document | `mcp_xcf_xcf(action="create_diff sourceString='old text' destString='new text'")` |
+| `apply_diff` | Apply a diff to a source string or document | `mcp_xcf_xcf(action="apply_diff sourceString='old text' destString='+new line\n-old line'")` |
+
+#### Document-Based Diff Examples
+```@
+# Create diff from an entire file
+mcp_xcf_xcf(action="create_diff filePath='main.swift' destString='updated content' entireFile=true)
+
+# Create diff from specific lines
+mcp_xcf_xcf(action="create_diff filePath='main.swift' destString='updated content' startLine=10 endLine=20)
+
+# Apply diff to a file
+mcp_xcf_xcf(action="apply_diff filePath='main.swift' destString='+new line\n-old line' startLine=10 endLine=20)
+```
+
+#### Diff Tool Parameters
+- `sourceString`: Original source string (optional)
+- `destString`: Destination string or diff to apply
+- `filePath`: Path to source document (optional)
+- `startLine`: Start line for partial document diff (optional)
+- `endLine`: End line for partial document diff (optional)
+- `entireFile`: Use entire file for diff (optional, default: false)
+
+### Diff Workflow Example
+
+```@
+# Workflow for comparing and updating code
+current_content = mcp_xcf_read_file(filePath="main.swift")
+diff = mcp_xcf_xcf(action="create_diff sourceString=current_content destString="updated code")
+mcp_xcf_xcf(action="apply_diff filePath="main.swift" destString=diff)
+mcp_xcf_xcf(action="build")  # Rebuild after changes
+```
+
 ### Workflow Patterns
 
 #### Basic Project Management
 
-```
+```@
 # Activate XCF
 use_xcf
 
@@ -94,7 +133,7 @@ run
 
 #### Code Analysis Workflow
 
-```
+```@
 # Activate XCF
 use_xcf
 
@@ -125,7 +164,7 @@ XCF uses intelligent path resolution for file operations:
 
 ### File Access Examples
 
-```python
+```@
 # These are equivalent
 mcp_xcf_snippet(filePath="/full/path/to/file.swift")
 mcp_xcf_snippet(filePath="file.swift")  # Smart resolution
@@ -143,7 +182,7 @@ The Swift code analyzer provides:
 
 ### Analysis Example
 
-```python
+```@
 # Analyze entire file
 mcp_xcf_analyzer(filePath="main.swift", entireFile=true)
 
@@ -200,7 +239,7 @@ Refer to the User Guide for a complete list of available tools and their detaile
 
 ### Comprehensive Workflow Example
 
-```
+```@
 # Full project lifecycle management
 mcp_xcf_xcf(action="grant")  # Authorize XCF
 mcp_xcf_xcf(action="show")   # List projects
@@ -216,7 +255,7 @@ mcp_xcf_xcf(action="lz main.swift")       # Quick analysis
 
 ### Environment and Context Management
 
-```python
+```@
 # Check environment and context
 mcp_xcf_xcf(action="env")    # Show environment variables
 mcp_xcf_xcf(action="pwd")    # Show current working directory

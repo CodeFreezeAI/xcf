@@ -1,0 +1,3 @@
+This is the original file.
+It has multiple lines of text.
+We will create a diff from this file.

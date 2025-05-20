@@ -611,7 +611,7 @@ class XcfSwiftScript {
         }
         
         // Get the current text of the document
-        guard var documentText = document.text?() else {
+        guard let documentText = document.text else {
             return (false, "Failed to retrieve document text")
         }
         
@@ -629,10 +629,10 @@ class XcfSwiftScript {
         }
         
         // Perform the find and replace
-        documentText = documentText.replacingOccurrences(of: findString, with: replaceString)
+        let updatedText = documentText.replacingOccurrences(of: findString, with: replaceString)
         
         // Update the document text
-        document.setText?(documentText)
+        document.setText?(updatedText)
         
         // Save the document
         document.closeSaving?(.yes, savingIn: nil)
