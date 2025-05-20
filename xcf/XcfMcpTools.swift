@@ -613,21 +613,6 @@ extension XcfMcpServer {
                 "destString": .object([
                     McpConfig.typeKey: .string(McpConfig.stringType),
                     McpConfig.descriptionKey: .string("Destination string to compare against")
-                ]),
-                McpConfig.startLineParamName: .object([
-                    McpConfig.typeKey: .string(McpConfig.integerType),
-                    McpConfig.descriptionKey: .string("Optional starting line for partial document diff"),
-                    McpConfig.requiredKey: .bool(false)
-                ]),
-                McpConfig.endLineParamName: .object([
-                    McpConfig.typeKey: .string(McpConfig.integerType),
-                    McpConfig.descriptionKey: .string("Optional ending line for partial document diff"),
-                    McpConfig.requiredKey: .bool(false)
-                ]),
-                McpConfig.entireFileParamName: .object([
-                    McpConfig.typeKey: .string(McpConfig.booleanType),
-                    McpConfig.descriptionKey: .string("Whether to use the entire file for diffing"),
-                    McpConfig.requiredKey: .bool(false)
                 ])
             ]),
             McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string("destString")])

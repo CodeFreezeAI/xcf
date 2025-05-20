@@ -9,7 +9,6 @@ import Foundation
 import MCP
 import SwiftDiff
 
-// Create aliases for the SwiftDiff types to ensure proper access
 typealias StringIndex = String.Index
 
 extension XcfMcpServer {
@@ -831,7 +830,7 @@ extension XcfMcpServer {
               let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
-
+        
         if XcfScript.writeSwiftDocumentWithScriptingBridge(filePath: filePath, content: "") {
             return CallTool.Result(content: [.text(McpConfig.documentSavedSuccessfully)])
         } else {
@@ -1068,25 +1067,26 @@ extension XcfMcpServer {
         }
     }
     
+    
     /// Handles a call to the create_diff tool
     /// - Parameter params: The parameters for the tool call
     /// - Returns: The result of the create_diff tool call
-    /// - Throws: Error if filePath or destString is missing
+    /// - Throws: Error if sourceString or destString is missing
     static func handleCreateDiffToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+            return CallTool.Result(content: [.text(McpConfig.missingSourceStringParamError)])
         }
         
-        // Try to get filePath from arguments in two ways:
-        // 1. As a named parameter (filePath=...)
+        // Try to get sourceString from arguments in two ways:
+        // 1. As a named parameter (sourceString=...)
         // 2. As a direct argument (first argument after command)
-        let filePath: String
-        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
-            filePath = namedPath
+        let sourceString: String
+        if let namedSource = arguments["sourceString"]?.stringValue {
+            sourceString = namedSource
         } else if let firstArg = arguments.first?.value.stringValue {
-            filePath = firstArg
+            sourceString = firstArg
         } else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+            return CallTool.Result(content: [.text(McpConfig.missingSourceStringParamError)])
         }
         
         // Get destString
@@ -1094,19 +1094,11 @@ extension XcfMcpServer {
             return CallTool.Result(content: [.text("Missing destString parameter")])
         }
         
-        // Optional parameters
-        let startLine = arguments[McpConfig.startLineParamName]?.intValue
-        let endLine = arguments[McpConfig.endLineParamName]?.intValue
-        let entireFile = arguments[McpConfig.entireFileParamName]?.boolValue ?? false
-        
         do {
             // Create the diff
             let diffOperations = try createDiffFromDocument(
-                filePath: filePath,
-                destString: destString,
-                startLine: startLine,
-                endLine: endLine,
-                entireFile: entireFile
+                sourceString: sourceString,
+                destString: destString
             )
             
             // Convert diff operations to a string representation for output
@@ -1204,11 +1196,6 @@ extension XcfMcpServer {
         }
     }
     
-//    /// Handles a tool call request
-//    /// - Parameter params: The parameters for the tool call
-//    /// - Returns: The result of the tool call
-//    static func handleToolCall(_ params: CallTool.Parameters) async throws -> CallTool.Result {
-//        // Default fallback implementation
-//        return CallTool.Result(content: [.text("Tool call handled but no specific implementation was found")])
-//    }
 }
+
+

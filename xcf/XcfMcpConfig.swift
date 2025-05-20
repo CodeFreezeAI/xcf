@@ -129,6 +129,7 @@ struct McpConfig {
     
     // Add missing type constants
     static let arrayType = "array"
+    static let missingSourceStringParamError = "Missing source string parameter Error"
     
     // Tool names
     static let listToolsName = "list"
