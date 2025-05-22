@@ -6,7 +6,8 @@
 #### In the works... 
 - File Operations
 - Directory Operations
-- Scripting Bridge Xcode Doc Operations 
+- Scripting Bridge Xcode Doc Operations
+- Diff Tools
 - ✅ Fuzzy Logic - Now Available!
 - ✅ Swift code analysis without building in Xcode
 
