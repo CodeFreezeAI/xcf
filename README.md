@@ -4,7 +4,7 @@
 
 [![XCF Website](https://img.shields.io/badge/Website-xcf.ai-blue)](https://xcf.ai) [![Pure Swift](https://img.shields.io/badge/100%25-Swift-orange)](https://github.com/codefreezeai/xcf)
 
-#### Draft, Not all new features in this read me are released or final...
+### Draft, Not all new features in this read me are released or finalized...
 - File Operations
 - Directory Operations
 - Scripting Bridge Xcode Doc Operations
