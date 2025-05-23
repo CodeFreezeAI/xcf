@@ -69,7 +69,7 @@ For non-Cursor clients or users requiring strict project-level control:
     "xcf": {
       "type": "stdio",
       "command": "Applications/xcf.app/Contents/MacOS/xcf",
-      "args": ["server"]
+      "args": ["server"],
       "env": {
           "XCODE_PROJECT_FOLDER": "/path/to/project/",
           "XCODE_PROJECT": "/path/to/project/project.xcodeproj"
