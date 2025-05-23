@@ -9,7 +9,7 @@
 - Directory Operations
 - Scripting Bridge Xcode Doc Operations
 - Diff Tools
-- ✅ Fuzzy Logic - Now Available!
+- ✅ Fuzzy Logic
 - ✅ Swift code analysis without building in Xcode
 
 Speed up writing Xcode apps with xcf, a dead simple Swift-based MCP server specifically designed for Cursor. Works seamlessly with VSCode and Claude, with no TypeScript, no JavaScript, no BS!
