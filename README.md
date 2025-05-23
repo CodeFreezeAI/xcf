@@ -1,4 +1,4 @@
-# 🚀 XCF Xcode MCP Server
+# 🚀 XCF Xcode MCP Server (Draft)
 ## The Swift way to Super Charge your AI Workflow!
 
 [![XCF Website](https://img.shields.io/badge/Website-xcf.ai-blue)](https://xcf.ai) [![Pure Swift](https://img.shields.io/badge/100%25-Swift-orange)](https://github.com/codefreezeai/xcf)
