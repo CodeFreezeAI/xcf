@@ -25,7 +25,7 @@ extension XcfMcpServer {
         listProjectsTool, selectProjectTool, analyzeSwiftCodeTool,
         
         //MARK: NOT implemented yet
-        //createDiffTool, applyDiffTool
+        createDiffTool, applyDiffTool
     ]
 
     //MARK: removed resources til we have it right fileContentsResource,        directoryContentsResource,         fileSystemResource,
@@ -187,6 +187,12 @@ extension XcfMcpServer {
             
         case "xcf_help":
             return handleQuickHelpToolCall(params)
+
+        case "create_diff":
+            return try handleCreateDiffToolCall(params)
+            
+        case "apply_diff":
+            return try handleApplyDiffToolCall(params)
         
         // Action-specific tool handlers
         case McpConfig.showHelpToolName:

@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA1AB2A02DDFBA2800385711 /* MultiLineDiff in Frameworks */ = {isa = PBXBuildFile; productRef = EA1AB29F2DDFBA2800385711 /* MultiLineDiff */; };
 		EA284A9B2DD2CBCE00920DB6 /* xcf-swift in Frameworks */ = {isa = PBXBuildFile; productRef = EA284A9A2DD2CBCE00920DB6 /* xcf-swift */; };
-		EA6822E92DDC29DA00251F01 /* SwiftDiff in Frameworks */ = {isa = PBXBuildFile; productRef = EA6822E82DDC29DA00251F01 /* SwiftDiff */; };
 		EA8D403E2DD0618900464A89 /* MCP in Frameworks */ = {isa = PBXBuildFile; productRef = EA8D403D2DD0618900464A89 /* MCP */; };
 /* End PBXBuildFile section */
 
@@ -30,8 +30,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA284A9B2DD2CBCE00920DB6 /* xcf-swift in Frameworks */,
+				EA1AB2A02DDFBA2800385711 /* MultiLineDiff in Frameworks */,
 				EA8D403E2DD0618900464A89 /* MCP in Frameworks */,
-				EA6822E92DDC29DA00251F01 /* SwiftDiff in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,7 +76,7 @@
 			packageProductDependencies = (
 				EA8D403D2DD0618900464A89 /* MCP */,
 				EA284A9A2DD2CBCE00920DB6 /* xcf-swift */,
-				EA6822E82DDC29DA00251F01 /* SwiftDiff */,
+				EA1AB29F2DDFBA2800385711 /* MultiLineDiff */,
 			);
 			productName = xcf;
 			productReference = EA8D401C2DD0533700464A89 /* xcf.app */;
@@ -109,7 +109,7 @@
 			packageReferences = (
 				EA8D403C2DD0618900464A89 /* XCRemoteSwiftPackageReference "swift-sdk" */,
 				EA284A992DD2CBCE00920DB6 /* XCRemoteSwiftPackageReference "xcf-swift" */,
-				EA6822E72DDC29DA00251F01 /* XCRemoteSwiftPackageReference "swift-diff" */,
+				EA1AB29E2DDFBA2800385711 /* XCRemoteSwiftPackageReference "swift-multi-line-diff" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EA8D401D2DD0533700464A89 /* Products */;
@@ -346,19 +346,19 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		EA1AB29E2DDFBA2800385711 /* XCRemoteSwiftPackageReference "swift-multi-line-diff" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/codefreezeai/swift-multi-line-diff.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.1;
+			};
+		};
 		EA284A992DD2CBCE00920DB6 /* XCRemoteSwiftPackageReference "xcf-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/codefreezeai/xcf-swift";
 			requirement = {
 				branch = 1.0.0;
-				kind = branch;
-			};
-		};
-		EA6822E72DDC29DA00251F01 /* XCRemoteSwiftPackageReference "swift-diff" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/codefreezeai/swift-diff";
-			requirement = {
-				branch = main;
 				kind = branch;
 			};
 		};
@@ -373,15 +373,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		EA1AB29F2DDFBA2800385711 /* MultiLineDiff */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA1AB29E2DDFBA2800385711 /* XCRemoteSwiftPackageReference "swift-multi-line-diff" */;
+			productName = MultiLineDiff;
+		};
 		EA284A9A2DD2CBCE00920DB6 /* xcf-swift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = EA284A992DD2CBCE00920DB6 /* XCRemoteSwiftPackageReference "xcf-swift" */;
 			productName = "xcf-swift";
-		};
-		EA6822E82DDC29DA00251F01 /* SwiftDiff */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EA6822E72DDC29DA00251F01 /* XCRemoteSwiftPackageReference "swift-diff" */;
-			productName = SwiftDiff;
 		};
 		EA8D403D2DD0618900464A89 /* MCP */ = {
 			isa = XCSwiftPackageProductDependency;

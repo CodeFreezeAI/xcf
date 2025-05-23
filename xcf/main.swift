@@ -7,6 +7,7 @@
 
 import Cocoa
 import MCP
+import MultiLineDiff
 
 // Process command line arguments
 func handleArguments() {
@@ -31,20 +32,25 @@ func handleArguments() {
         // Initialize the application
         NSApplication.shared.setActivationPolicy(.prohibited)
         RunLoop.current.run()
-
+        
     } else {
-        // Call the modal display function from a separate file
-        //ModalDisplay.showServerRequiredAlert()
-        // Initialize the application
         NSApplication.shared.setActivationPolicy(.accessory)
-        ModalDisplay.showServerRequiredAlert()
-        NSApplication.shared.setActivationPolicy(.prohibited)
-        exit(0)
+        
+       // let x = try! createDiffFromString(original: "Hello My World!", modified: "Hello My! World!")
+        
+       // let y = try! applyDiffFromString(original: "Hello My World!", UUID: "ewfwe")
+        
+       // print(y)
+       // ModalDisplay().showServerRequiredAlert()
+        NSApplication.shared.terminate(nil)
+
     }
 }
 
-enum ModalDisplay {
-    static func showServerRequiredAlert() {
+
+class ModalDisplay {
+  
+    func showServerRequiredAlert() {
         let alert = NSAlert()
         alert.messageText = "Use 'server' argument in your mcp.json"
         alert.informativeText = "/Applications/xcf.app/Contents/MacOS/xcf server"
@@ -53,6 +59,8 @@ enum ModalDisplay {
         quitButton.hasDestructiveAction = false
         quitButton.keyEquivalent = "\r" // Return key
         alert.runModal()
+
+       
     }
 }
 

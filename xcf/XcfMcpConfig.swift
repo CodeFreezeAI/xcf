@@ -104,6 +104,9 @@ struct ErrorMessages {
     // Directory operation errors
     static let errorChangingDirectory = "Error changing directory: %@"
     static let errorRemovingDirectory = "Error removing directory: %@"
+    
+    // Error message for creating a diff
+    static let errorCreatingDiff = "Error creating diff: %@"
 }
 
 // Define success messages

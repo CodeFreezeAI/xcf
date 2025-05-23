@@ -10,7 +10,7 @@ import MCP
 
 /// McpServer handles all MCP protocol interactions for the xcf tool.
 /// It defines tools, resources, and prompts, and configures the MCP server with appropriate handlers.
-class XcfMcpServer {
+class XcfMcpServer{
     static var XcfScript = XcfSwiftScript.shared
     /// Configures and starts the MCP server
     /// - Returns: The configured MCP server

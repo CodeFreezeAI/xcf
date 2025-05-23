@@ -289,7 +289,7 @@ class XcfSwiftScript {
         }
         
         // Open the document in Xcode if it's not already open
-        guard let document = xcode.open?(filePath as Any) as? XcodeSourceDocument else {
+        guard let document = xcode.open?(filePath as Any) as? XcodeTextDocument else {
             print("Failed to open document in Xcode")
             return nil
         }

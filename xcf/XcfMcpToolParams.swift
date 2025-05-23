@@ -10,6 +10,7 @@ import MCP
 
 
 extension XcfMcpServer {
+ 
     static let listToolsTool = Tool(
         name: McpConfig.listToolsName,
         description: McpConfig.listToolsDesc,
@@ -606,16 +607,16 @@ extension XcfMcpServer {
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType),
             McpConfig.propertiesKey: .object([
-                McpConfig.filePathParamName: .object([
+                "sourceString": .object([
                     McpConfig.typeKey: .string(McpConfig.stringType),
-                    McpConfig.descriptionKey: .string("Path to the source document")
+                    McpConfig.descriptionKey: .string("Source string to modify")
                 ]),
                 "destString": .object([
                     McpConfig.typeKey: .string(McpConfig.stringType),
-                    McpConfig.descriptionKey: .string("Destination string to compare against")
+                    McpConfig.descriptionKey: .string("Destination string to create")
                 ])
             ]),
-            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string("destString")])
+            McpConfig.requiredKey: .array([.string("sourceString"), .string("destString")])
         ])
     )
     
@@ -626,16 +627,16 @@ extension XcfMcpServer {
         inputSchema: .object([
             McpConfig.typeKey: .string(McpConfig.objectType),
             McpConfig.propertiesKey: .object([
-                McpConfig.filePathParamName: .object([
+                "sourceString": .object([
                     McpConfig.typeKey: .string(McpConfig.stringType),
-                    McpConfig.descriptionKey: .string("Path to the source document")
+                    McpConfig.descriptionKey: .string("Source string to modify")
                 ]),
-                "operations": .object([
-                    McpConfig.typeKey: .string(McpConfig.arrayType),
-                    McpConfig.descriptionKey: .string("Diff operations to apply")
+                "uuid": .object([
+                    McpConfig.typeKey: .string(McpConfig.stringType),
+                    McpConfig.descriptionKey: .string("uuid of the diff to apply")
                 ])
             ]),
-            McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string("operations")])
+            McpConfig.requiredKey: .array([.string("sourceString"), .string("uuid")])
         ])
     )
 }

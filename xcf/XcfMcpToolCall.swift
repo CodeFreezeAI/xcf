@@ -7,7 +7,7 @@
 
 import Foundation
 import MCP
-import SwiftDiff
+import MultiLineDiff
 
 typealias StringIndex = String.Index
 
@@ -1067,55 +1067,29 @@ extension XcfMcpServer {
         }
     }
     
-    
-    /// Handles a call to the create_diff tool
+    /// Handles a call to create a diff for a document
     /// - Parameter params: The parameters for the tool call
-    /// - Returns: The result of the create_diff tool call
-    /// - Throws: Error if sourceString or destString is missing
+    /// - Returns: The result of the create diff tool call
+    /// - Throws: MCPError for invalid parameters or diff creation errors
     static func handleCreateDiffToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
-            return CallTool.Result(content: [.text(McpConfig.missingSourceStringParamError)])
+            throw MCPError.invalidParams("Missing Params, fix later")
         }
         
-        // Try to get sourceString from arguments in two ways:
-        // 1. As a named parameter (sourceString=...)
-        // 2. As a direct argument (first argument after command)
-        let sourceString: String
-        if let namedSource = arguments["sourceString"]?.stringValue {
-            sourceString = namedSource
-        } else if let firstArg = arguments.first?.value.stringValue {
-            sourceString = firstArg
-        } else {
-            return CallTool.Result(content: [.text(McpConfig.missingSourceStringParamError)])
-        }
-        
-        // Get destString
         guard let destString = arguments["destString"]?.stringValue else {
-            return CallTool.Result(content: [.text("Missing destString parameter")])
+            return CallTool.Result(content: [.text("Missing destinationString")])
         }
         
+        guard let sourceString = arguments["sourceString"]?.stringValue else {
+            return CallTool.Result(content: [.text("Missing sourceString")])
+        }
+    
         do {
-            // Create the diff
-            let diffOperations = try createDiffFromDocument(
-                sourceString: sourceString,
-                destString: destString
-            )
-            
-            // Convert diff operations to a string representation for output
-            let diffString = diffOperations.map { op -> String in
-                switch op {
-                case .insert(index: let index, substring: let substring):
-                    return "Insert at index \(index): \(substring)"
-                case .delete(range: let range):
-                    return "Delete range: \(range)"
-                case .replace(range: let range, substring: let substring):
-                    return "Replace at range \(range): with \(substring)"
-                }
-            }.joined(separator: "\n")
-            
-            return CallTool.Result(content: [.text(diffString)])
+            let uuid = try createDiffFromString(original: sourceString, modified: destString)
+            return CallTool.Result(content: [.text(uuid)])
+
         } catch {
-            return CallTool.Result(content: [.text("Error creating diff: \(error.localizedDescription)")])
+            throw MCPError.invalidParams(String(format: ErrorMessages.errorCreatingDiff, error.localizedDescription))
         }
     }
     
@@ -1125,74 +1099,26 @@ extension XcfMcpServer {
     /// - Throws: Error if filePath or operations is missing
     static func handleApplyDiffToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+            return CallTool.Result(content: [.text("I dunno, not done yet.")])
         }
         
-        // Try to get filePath from arguments in two ways:
-        // 1. As a named parameter (filePath=...)
-        // 2. As a direct argument (first argument after command)
-        let filePath: String
-        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
-            filePath = namedPath
-        } else if let firstArg = arguments.first?.value.stringValue {
-            filePath = firstArg
-        } else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
+        guard let uuidString = arguments["uuid"]?.stringValue else {
+            return CallTool.Result(content: [.text("Missing uuid")])
         }
         
-        // Get operations
-        guard let operationsArg = arguments["operations"],
-              let operationsArray = operationsArg.arrayValue else {
-            return CallTool.Result(content: [.text("Missing operations parameter")])
-        }
-        
-        // Convert operations to DiffOperation array
-        var diffOperations = [DiffOperation]()
-        for op in operationsArray {
-            guard let opDict = op.objectValue else {
-                return CallTool.Result(content: [.text("Invalid operation format")])
-            }
-            
-            guard let type = opDict["type"]?.stringValue,
-                  let index = opDict["index"]?.intValue else {
-                return CallTool.Result(content: [.text("Missing operation type or index")])
-            }
-            
-            switch type {
-            case "insert":
-                guard let element = opDict["element"]?.stringValue else {
-                    return CallTool.Result(content: [.text("Missing element for insert operation")])
-                }
-                let insertIndex = StringIndex(utf16Offset: index, in: "")
-                diffOperations.append(.insert(index: insertIndex, substring: element))
-            case "delete":
-                let deleteIndex = StringIndex(utf16Offset: index, in: "")
-                // Create a range that just includes the character at the index
-                let endIndex = "".index(deleteIndex, offsetBy: 1)
-                diffOperations.append(.delete(range: deleteIndex..<endIndex))
-            case "replace":
-                guard let element = opDict["element"]?.stringValue else {
-                    return CallTool.Result(content: [.text("Missing element for replace operation")])
-                }
-                let replaceIndex = StringIndex(utf16Offset: index, in: "")
-                // Create a range that just includes the character at the index
-                let endIndex = "".index(replaceIndex, offsetBy: 1)
-                diffOperations.append(.replace(range: replaceIndex..<endIndex, substring: element))
-            default:
-                return CallTool.Result(content: [.text("Unknown operation type: \(type)")])
-            }
-        }
+        guard let sourceString = arguments["sourceString"]?.stringValue else {
+            return CallTool.Result(content: [.text("Missing sourceString")])
+        } 
         
         do {
-            // Apply the diff
-            let success = try applyDiffToDocument(
-                filePath: filePath,
-                operations: diffOperations
-            )
-            
-            return CallTool.Result(content: [.text(success ? "Diff applied successfully" : "Failed to apply diff")])
+            var diff = try applyDiffFromString(original: sourceString, UUID: uuidString.lowercased())
+            if diff == "" {
+                diff = "Having Issues, \(sourceString) \(uuidString.lowercased())"
+            }
+            return CallTool.Result(content: [.text(diff )])
+
         } catch {
-            return CallTool.Result(content: [.text("Error applying diff: \(error.localizedDescription)")])
+            throw MCPError.invalidParams(String(format: ErrorMessages.errorCreatingDiff, error.localizedDescription))
         }
     }
     
