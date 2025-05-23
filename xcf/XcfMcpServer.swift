@@ -10,8 +10,11 @@ import MCP
 
 /// McpServer handles all MCP protocol interactions for the xcf tool.
 /// It defines tools, resources, and prompts, and configures the MCP server with appropriate handlers.
-class XcfMcpServer{
+class XcfMcpServer {
     static var XcfScript = XcfSwiftScript.shared
+    
+    // MARK: - Core Server Setup
+    
     /// Configures and starts the MCP server
     /// - Returns: The configured MCP server
     /// - Throws: Errors from server initialization or start
@@ -44,8 +47,8 @@ class XcfMcpServer{
             // Start the server with the configured transport
             try await server.start(transport: transport)
             
-            // Register all handlers
-            await registerHandlers(server: server)
+            // Register all handlers using the new handler classes
+            await XcfMcpHandlers.registerAllHandlers(server: server)
             
             return server
         } catch {

@@ -41,7 +41,7 @@ func handleArguments() {
        // let y = try! applyDiffFromString(original: "Hello My World!", UUID: "ewfwe")
         
        // print(y)
-       // ModalDisplay().showServerRequiredAlert()
+        ModalDisplay().showServerRequiredAlert()
         NSApplication.shared.terminate(nil)
 
     }
