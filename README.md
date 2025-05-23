@@ -8,7 +8,7 @@
 - File Operations
 - Directory Operations
 - Scripting Bridge Xcode Doc Operations
-- Diff Tools (this weekend)
+- AI Coding Diff Tools (this weekend)
 - ✅ Fuzzy Logic
 - ✅ Swift code analysis without building in Xcode
 
