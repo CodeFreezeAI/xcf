@@ -6,7 +6,7 @@
 [![Website](https://img.shields.io/badge/website-xcf.ai-blue.svg)](https://xcf.ai)
 [![Version](https://img.shields.io/badge/version-1.2.0-green.svg)](https://github.com/toddbruss/xcf)
 [![GitHub stars](https://img.shields.io/github/stars/codefreezeai/xcf.svg?style=social)](https://github.com/codefreezeai/xcf/stargazers)
-[![GitHub downloads](https://img.shields.io/github/downloads/codefreezeai/swift-multi-line-diff/total.svg)](https://github.com/codefreezeai/xcf/releases)
+[![GitHub downloads](https://img.shields.io/github/downloads/codefreezeai/xcf/total.svg)](https://github.com/codefreezeai/xcf/releases)
 [![GitHub forks](https://img.shields.io/github/forks/codefreezeai/swift-multi-line-diff.svg?style=social)](https://github.com/codefreezeai/xcf/network)
 
 ### 🚧 New features are in development...
