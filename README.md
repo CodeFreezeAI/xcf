@@ -454,10 +454,9 @@ Watch XCF in action: [YouTube Demo](https://www.youtube.com/embed/7KfrsZfQIIg)
 If commands fail, check:
 - xcf installation is correct
 - Refreshing xcf MCP Server
-- Configuration settings are valid
-- Permissions are properly set
-- Environment variables with `env`
-- Try restarting your AI assistant
+- Verify the server launches and is in your /Applications folder
+- Environment variables with `env` such as "server"
+- Relaunch your AI assistant
 
 ## 🤝 Open Source Community
 
