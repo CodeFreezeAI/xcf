@@ -1,13 +1,15 @@
-# 🚀 XCF Xcode MCP Server
+# 🚀 XCF Xcode MCP Server 
+
 ## The Swift way to Super Charge your AI Workflow!
 
 [![XCF Website](https://img.shields.io/badge/Website-xcf.ai-blue)](https://xcf.ai) [![Pure Swift](https://img.shields.io/badge/100%25-Swift-orange)](https://github.com/codefreezeai/xcf)
 
-#### In the works... 
+### 🚧 New features are in development...
 - File Operations
 - Directory Operations
-- Scripting Bridge Xcode Doc Operations 
-- ✅ Fuzzy Logic - Now Available!
+- Scripting Bridge Xcode Doc Operations
+- Diff Tools
+- ✅ Fuzzy Logic
 - ✅ Swift code analysis without building in Xcode
 
 Speed up writing Xcode apps with xcf, a dead simple Swift-based MCP server specifically designed for Cursor. Works seamlessly with VSCode and Claude, with no TypeScript, no JavaScript, no BS!
@@ -45,10 +47,11 @@ Add xcf to your MCP configuration file:
   "mcpServers": {
     "xcf": {
       "type": "stdio",
-      "command": "/Applications/xcf.app/Contents/MacOS/xcf server"
+      "command": "Applications/xcf.app/Contents/MacOS/xcf",
+      "args": ["server"]
     }
   }
-}
+}          
 ```
 
 ### Configuration Locations
@@ -59,14 +62,15 @@ Add xcf to your MCP configuration file:
 
 ## ⚙️ Advanced Configuration
 
-For non-Cursor clients or users requiring project-level control:
+For non-Cursor clients or users requiring strict project-level control:
 
 ```json
 {
   "mcpServers": {
     "xcf": {
       "type": "stdio",
-      "command": "/Applications/xcf.app/Contents/MacOS/xcf server",
+      "command": "Applications/xcf.app/Contents/MacOS/xcf",
+      "args": ["server"],
       "env": {
           "XCODE_PROJECT_FOLDER": "/path/to/project/",
           "XCODE_PROJECT": "/path/to/project/project.xcodeproj"
