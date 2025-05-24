@@ -358,8 +358,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/codefreezeai/xcf-swift";
 			requirement = {
-				branch = 1.0.0;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		EA8D403C2DD0618900464A89 /* XCRemoteSwiftPackageReference "swift-sdk" */ = {

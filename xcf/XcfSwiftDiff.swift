@@ -8,15 +8,14 @@
 import Foundation
 import MultiLineDiff
 
-
 var DiffOperationDict: [String : String] = [:]
 
 func createDiff(original: String, modified: String) throws -> String {
-    try MultiLineDiff.createBase64Diff(source: original, destination: modified, algorithm: .brus, includeMetadata: true, sourceStartLine: 1)
+    try MultiLineDiff.createBase64SmartDiff(source: original, destination: modified)
 }
 
 func applyDiff(original: String, base64Diff: String) throws -> String {
-    try MultiLineDiff.applyBase64Diff(to: original, base64Diff: base64Diff, allowTruncatedSource: true)
+    try MultiLineDiff.applyBase64SmartDiff(to: original, base64Diff: base64Diff)
 }
 
 /// Applies a diff to a document
@@ -96,7 +95,7 @@ func createDiffFromString(original: String, modified: String) throws -> String {
     // Store the diff operations in the dictionary
     DiffOperationDict[diffUUID] = base64diff
     
-    return  base64diff //diffUUID
+    return diffUUID
 }
 
 // Add new function to create diff from document and store in dictionary
