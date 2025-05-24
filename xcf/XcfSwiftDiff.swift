@@ -11,11 +11,11 @@ import MultiLineDiff
 var DiffOperationDict: [String : String] = [:]
 
 func createDiff(original: String, modified: String) throws -> String {
-    try MultiLineDiff.createBase64SmartDiff(source: original, destination: modified)
+    try MultiLineDiff.createBase64Diff(source: original, destination: modified)
 }
 
 func applyDiff(original: String, base64Diff: String) throws -> String {
-    try MultiLineDiff.applyBase64SmartDiff(to: original, base64Diff: base64Diff)
+    try MultiLineDiff.applyBase64Diff(to: original, base64Diff: base64Diff)
 }
 
 /// Applies a diff to a document
