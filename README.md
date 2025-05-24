@@ -2,7 +2,12 @@
 
 ## The Swift way to Super Charge your AI Workflow!
 
-[![XCF Website](https://img.shields.io/badge/Website-xcf.ai-blue)](https://xcf.ai) [![Pure Swift](https://img.shields.io/badge/100%25-Swift-orange)](https://github.com/codefreezeai/xcf)
+[![Swift 6.1](https://img.shields.io/badge/Swift-6.1-orange.svg)](https://swift.org)
+[![Website](https://img.shields.io/badge/website-xcf.ai-blue.svg)](https://xcf.ai)
+[![Version](https://img.shields.io/badge/version-1.2.0-green.svg)](https://github.com/toddbruss/xcf)
+[![GitHub stars](https://img.shields.io/github/stars/codefreezeai/xcf.svg?style=social)](https://github.com/codefreezeai/xcf/stargazers)
+[![GitHub downloads](https://img.shields.io/github/downloads/codefreezeai/xcf/total.svg)](https://github.com/codefreezeai/xcf/releases)
+[![GitHub forks](https://img.shields.io/github/forks/codefreezeai/swift-multi-line-diff.svg?style=social)](https://github.com/codefreezeai/xcf/network)
 
 ### 🚧 New features are in development...
 - File Operations
