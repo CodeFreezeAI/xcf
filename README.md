@@ -13,7 +13,7 @@
 - File Operations
 - Directory Operations
 - Scripting Bridge Xcode Doc Operations
-- AI Coding Diff Tools (this weekend)
+- AI Coding Diff Tools (In the works!)
 - ✅ Fuzzy Logic
 - ✅ Swift code analysis without building in Xcode
 
