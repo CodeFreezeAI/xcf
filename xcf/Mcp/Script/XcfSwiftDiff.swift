@@ -8,14 +8,14 @@
 import Foundation
 import MultiLineDiff
 
-var DiffOperationDict: [String : String] = [:]
+var DiffOperationDict: [String : DiffResult] = [:]
 
-func createDiff(original: String, modified: String) throws -> String {
-    try MultiLineDiff.createBase64Diff(source: original, destination: modified)
+func createDiff(original: String, modified: String) -> DiffResult {
+    MultiLineDiff.createDiff(source: original, destination: modified)
 }
 
-func applyDiff(original: String, base64Diff: String) throws -> String {
-    try MultiLineDiff.applyBase64Diff(to: original, base64Diff: base64Diff)
+func applyDiff(original: String, diff: DiffResult) throws -> String {
+    try MultiLineDiff.applyDiff(to: original, diff: diff)
 }
 
 /// Applies a diff to a document
@@ -26,8 +26,8 @@ func applyDiff(original: String, base64Diff: String) throws -> String {
 /// - Throws: File access, parsing, or application errors
 func applyDiffToDocument(
     filePath: String,
-    operations: String? = nil,
-    diffUUID: String? = nil
+    operations: DiffResult? = nil,
+    diffHash: String? = nil
 ) throws -> Bool {
     // Resolve the file path
     let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
@@ -45,12 +45,12 @@ func applyDiffToDocument(
     }
     
     // Determine which diff operations to use
-    let diffOperations: String
-    if let uuid = diffUUID {
+    let diffOperations: DiffResult
+    if let diffHash = diffHash {
         // Try to retrieve diff operations from the dictionary
-        guard let storedOperations = DiffOperationDict[uuid] else {
+        guard let storedOperations = DiffOperationDict[diffHash] else {
             throw NSError(domain: "XcfSwiftDiff", code: 5, userInfo: [
-                NSLocalizedDescriptionKey: "No diff operations found for the given UUID"
+                NSLocalizedDescriptionKey: "No diff operations found for the given hash"
             ])
         }
         diffOperations = storedOperations
@@ -72,14 +72,20 @@ func applyDiffToDocument(
     }
     
     // Apply the diff to the entire content using the existing applyDiff function
-    let modifiedContent = try applyDiff(original: originalContent, base64Diff: diffOperations)
+    let modifiedContent = try applyDiff(original: originalContent, diff: diffOperations)
     
     // Write the modified content back to the file using ScriptingBridge
-    if !XcfSwiftScript.shared.writeSwiftDocumentWithScriptingBridge(filePath: resolvedPath, content: modifiedContent) {
-        throw NSError(domain: "XcfSwiftDiff", code: 4, userInfo: [
-            NSLocalizedDescriptionKey: "Failed to write modified content to document"
-        ])
-    }
+//    if !XcfSwiftScript.shared.writeSwiftDocumentWithScriptingBridge(filePath: resolvedPath, content: modifiedContent) {
+//        throw NSError(domain: "XcfSwiftDiff", code: 4, userInfo: [
+//            NSLocalizedDescriptionKey: "Failed to write modified content to document"
+//        ])
+//    }
+    
+    if !XcfSwiftScript.shared.writeSwiftDocumentWithFileManager(filePath: resolvedPath, content: modifiedContent) {
+            throw NSError(domain: "XcfSwiftDiff", code: 4, userInfo: [
+                NSLocalizedDescriptionKey: "Failed to write modified content to document"
+            ])
+        }
     
     return true
 }
@@ -88,41 +94,35 @@ func applyDiffToDocument(
 func createDiffFromString(original: String, modified: String) throws -> String {
     
     // Create the diff operations
-    let base64diff = try createDiff(original: original, modified: modified)
+    let diffResult = createDiff(original: original, modified: modified)
     
-    let diffUUID = UUID().uuidString.lowercased()
+    guard let diffHash = diffResult.metadata?.diffHash else {
+        return "The Diff did not create a hash"
+    }
     
     // Store the diff operations in the dictionary
-    DiffOperationDict[diffUUID] = base64diff
+    DiffOperationDict[diffHash] = diffResult
     
-    return diffUUID
+    return diffHash
 }
 
 // Add new function to create diff from document and store in dictionary
-func applyDiffFromString(original: String, UUID: String) throws -> String {
+func applyDiffFromString(original: String, diffHash: String) throws -> String {
 
     // Store the diff operations in the dictionary
-    let diff = DiffOperationDict[UUID] ?? "Not Found"
-    
-    if diff == "Not Found" {
-        return diff
+    guard let diff = DiffOperationDict[diffHash] else {
+        return "Diff hash not found"
     }
-        
+    
     // Create the diff operations
-    do {
-        let modified = try applyDiff(original: original, base64Diff: diff)
-        return modified
-    } catch {
-        return error.localizedDescription
-    }
+    return try applyDiff(original: original, diff: diff)
+
 }
 
 
 
 // Add new function to create diff from document and store in dictionary
-func createDiffFromDocument(
-    filePath: String
-) throws -> String {
+func createDiffFromDocument(filePath: String, modifiedContent: String) throws -> String {
     // Resolve the file path
     let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
     
@@ -145,14 +145,14 @@ func createDiffFromDocument(
         ])
     }
     
-    // Create a new UUID for this diff operation
-    let diffUUID = UUID().uuidString.lowercased()
-    
     // Create the diff operations
-    let base64diff = try createDiff(original: originalContent, modified: originalContent)
+    let diffResult = createDiff(original: originalContent, modified: modifiedContent)
     
+    // Create a new hash for this diff operation
+    let diffHash = diffResult.metadata?.diffHash ?? "Diff hash is missing"
+
     // Store the diff operations in the dictionary
-    DiffOperationDict[diffUUID] = base64diff
+    DiffOperationDict[diffHash] = diffResult
     
-    return diffUUID
+    return diffHash
 }

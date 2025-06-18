@@ -35,12 +35,7 @@ func handleArguments() {
         
     } else {
         NSApplication.shared.setActivationPolicy(.accessory)
-        
-       // let x = try! createDiffFromString(original: "Hello My World!", modified: "Hello My! World!")
-        
-       // let y = try! applyDiffFromString(original: "Hello My World!", UUID: "ewfwe")
-        
-       // print(y)
+    
         ModalDisplay().showServerRequiredAlert()
         NSApplication.shared.terminate(nil)
 

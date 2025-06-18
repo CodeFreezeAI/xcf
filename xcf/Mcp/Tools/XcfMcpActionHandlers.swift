@@ -7,49 +7,49 @@ class XcfMcpActionHandlers {
     
     /// Handles a call to the show help tool
     static func handleShowHelpToolCall(_ params: CallTool.Parameters) async -> CallTool.Result {
-        return CallTool.Result(content: [.text(await XcfActionHandler.getHelpText())])
+        return CallTool.Result(content: [.text(await XcfMcpActionHandler.getHelpText())])
     }
     
     /// Handles a call to the grant permission tool
     static func handleGrantPermissionToolCall(_ params: CallTool.Parameters) async -> CallTool.Result {
-        return CallTool.Result(content: [.text(await XcfActionHandler.grantPermission())])
+        return CallTool.Result(content: [.text(await XcfMcpActionHandler.grantPermission())])
     }
     
     /// Handles a call to the run project tool
     static func handleRunProjectToolCall(_ params: CallTool.Parameters) async -> CallTool.Result {
-        return CallTool.Result(content: [.text(await XcfActionHandler.runProject())])
+        return CallTool.Result(content: [.text(await XcfMcpActionHandler.runProject())])
     }
     
     /// Handles a call to the build project tool
     static func handleBuildProjectToolCall(_ params: CallTool.Parameters) async -> CallTool.Result {
-        return CallTool.Result(content: [.text(await XcfActionHandler.buildProject())])
+        return CallTool.Result(content: [.text(await XcfMcpActionHandler.buildProject())])
     }
     
     /// Handles a call to the show current project tool
     static func handleShowCurrentProjectToolCall(_ params: CallTool.Parameters) async -> CallTool.Result {
-        return CallTool.Result(content: [.text(await XcfActionHandler.showCurrentProject())])
+        return CallTool.Result(content: [.text(await XcfMcpActionHandler.showCurrentProject())])
     }
     
     /// Handles a call to the show environment variables tool
     static func handleShowEnvToolCall(_ params: CallTool.Parameters) async -> CallTool.Result {
-        return CallTool.Result(content: [.text(await XcfActionHandler.showEnvironmentVariables())])
+        return CallTool.Result(content: [.text(await XcfMcpActionHandler.showEnvironmentVariables())])
     }
     
     /// Handles a call to the show current folder tool
     static func handleShowFolderToolCall(_ params: CallTool.Parameters) async -> CallTool.Result {
-        return CallTool.Result(content: [.text(await XcfActionHandler.showCurrentFolder())])
+        return CallTool.Result(content: [.text(await XcfMcpActionHandler.showCurrentFolder())])
     }
     
     /// Handles a call to the list projects tool
     static func handleListProjectsToolCall(_ params: CallTool.Parameters) async -> CallTool.Result {
-        return CallTool.Result(content: [.text(await XcfActionHandler.listProjects())])
+        return CallTool.Result(content: [.text(await XcfMcpActionHandler.listProjects())])
     }
     
     /// Handles a call to the select project tool
     static func handleSelectProjectToolCall(_ params: CallTool.Parameters) async -> CallTool.Result {
         if let projectNumber = params.arguments?[McpConfig.projectNumberParamName]?.intValue {
             let action = "open \(projectNumber)"
-            return CallTool.Result(content: [.text(await XcfActionHandler.selectProject(action: action))])
+            return CallTool.Result(content: [.text(await XcfMcpActionHandler.selectProject(action: action))])
         } else {
             return CallTool.Result(content: [.text(ErrorMessages.invalidProjectSelection)])
         }
@@ -79,6 +79,6 @@ class XcfMcpActionHandlers {
             }
         }
         
-        return CallTool.Result(content: [.text(await XcfActionHandler.handleAnalyzeAction(action: analyzeCommand))])
+        return CallTool.Result(content: [.text(await XcfMcpActionHandler.handleAnalyzeAction(action: analyzeCommand))])
     }
 } 

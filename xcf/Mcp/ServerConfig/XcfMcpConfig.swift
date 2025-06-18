@@ -83,6 +83,14 @@ struct McpConfig {
     static let selectProjectToolName = "select_project"
     static let analyzeSwiftCodeToolName = "analyze_swift_code"
     
+    // Diff tool names
+    static let createDiffFromDocToolName = "create_diff_from_doc"
+    static let applyDiffToDocToolName = "apply_diff_to_doc"
+    
+    // Diff tool descriptions
+    static let createDiffFromDocToolDesc = "Create a diff from a document and store it with a hash"
+    static let applyDiffToDocToolDesc = "Apply a diff to a document using a stored diff hash"
+    
     // Standalone action tool descriptions
     static let showHelpToolDesc = "Display help information about available commands"
     static let grantPermissionToolDesc = "Grant Xcode automation permissions"
@@ -106,6 +114,10 @@ struct McpConfig {
     static let listProjectsPromptName = "listProjects"
     static let selectProjectPromptName = "selectProject"
     static let analyzeSwiftCodePromptName = "analyzeSwiftCode"
+    
+    // Diff tool parameter names
+    static let diffHashParamName = "diffHash"
+    static let diffHashParamDesc = "SHA256 hash of the diff to apply"
     
     // Standalone action tool parameter names
     static let projectNumberParamName = "projectNumber"
@@ -187,9 +199,13 @@ struct McpConfig {
     static let integerType = "integer"
     static let booleanType = "boolean"
     
+    // DiffTools
+    static let modifiedContentParamName = "modifiedContent"
+    static let modifiedContentParamNameDesc = "modified content to the file"
+    
     // Snippet tool parameters
-    static let filePathParamName = "filePath"
-    static let filePathParamDesc = "Path to the file to extract snippet from"
+    static let filePathParamName = "filePath"         // Use from Diff Tools
+    static let filePathParamDesc = "Path to the file" // Use from Diff Tools
     static let startLineParamName = "startLine"
     static let startLineParamDesc = "Starting line number (1-indexed)"
     static let endLineParamName = "endLine"

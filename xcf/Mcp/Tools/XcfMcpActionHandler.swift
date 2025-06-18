@@ -1,5 +1,5 @@
 //
-//  XcfActionHandler.swift
+//  XcfMcpActionHandler.swift
 //  xcf
 //
 //  Created by Todd Bruss on 5/7/25.
@@ -11,7 +11,7 @@ import Foundation
 /// This actor-isolated struct provides methods for project management, building,
 /// running, and utility functions to interact with Xcode projects.
 @MainActor
-struct XcfActionHandler {
+struct XcfMcpActionHandler {
     static var XcfScript = XcfSwiftScript.shared
     // MARK: - Action Handling
     
@@ -463,29 +463,10 @@ struct XcfActionHandler {
     static func openFile(filePath: String) async throws {
         let opened = XcfSwiftScript.shared.openSwiftDocument(filePath: filePath)
         if !opened {
-            throw NSError(domain: "XcfActionHandler", code: 1, userInfo: [
+            throw NSError(domain: "XcfMcpActionHandler", code: 1, userInfo: [
                 NSLocalizedDescriptionKey: "Failed to open file: \(filePath)"
             ])
         }
-    }
-    
-    /// Edits a file by replacing text at the specified range
-    /// - Parameters:
-    ///   - filePath: Path to the file to edit
-    ///   - startLine: Starting line number (1-indexed)
-    ///   - endLine: Ending line number (1-indexed)
-    ///   - replacement: Text to replace the specified range with
-    /// - Returns: The edited file contents and language
-    static func editFile(filePath: String, startLine: Int, endLine: Int, replacement: String) -> (String, String) {
-   
-        if XcfSwiftScript.shared.editSwiftDocumentWithFileManager(filePath: filePath, startLine: startLine, endLine: endLine, replacement: replacement) {
-            // Return the updated file content
-            if let content = XcfSwiftScript.shared.readSwiftDocumentWithFileManager(filePath: filePath) {
-                return (content, CaptureSnippet.determineLanguage(from: filePath))
-            }
-        }
- 
-        return ("Failed to edit file", "text")
     }
     
     /// Shows a directory selection dialog and returns the selected path

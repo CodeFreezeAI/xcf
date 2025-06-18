@@ -69,6 +69,12 @@ class XcfMcpToolCallHandlers {
             
         case "apply_diff":
             return try XcfMcpDiffHandlers.handleApplyDiffToolCall(params)
+            
+        case McpConfig.createDiffFromDocToolName:
+            return try XcfMcpDiffHandlers.handleCreateDiffFromDocToolCall(params)
+            
+        case McpConfig.applyDiffToDocToolName:
+            return try XcfMcpDiffHandlers.handleApplyDiffToDocToolCall(params)
         
         // Action-specific tool handlers - delegate to specialized handler
         case McpConfig.showHelpToolName:
@@ -112,11 +118,11 @@ class XcfMcpToolCallHandlers {
     static func handleXcfToolCall(_ params: CallTool.Parameters) async throws -> CallTool.Result {
         if let action = params.arguments?[McpConfig.actionParamName]?.stringValue {
             print(String(format: McpConfig.actionFound, action))
-            return CallTool.Result(content: [.text(await XcfActionHandler.handleAction(action: action))])
+            return CallTool.Result(content: [.text(await XcfMcpActionHandler.handleAction(action: action))])
         } else {
             print(McpConfig.noActionFound)
             // If no action specified, return the help information
-            return CallTool.Result(content: [.text(await XcfActionHandler.handleAction(action: Actions.help))])
+            return CallTool.Result(content: [.text(await XcfMcpActionHandler.handleAction(action: Actions.help))])
         }
     }
 } 

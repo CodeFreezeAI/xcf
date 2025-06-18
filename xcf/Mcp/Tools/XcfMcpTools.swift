@@ -34,7 +34,9 @@ class XcfMcpTools {
             createSelectProjectTool(),
             createAnalyzeSwiftCodeTool(),
             createCreateDiffTool(),
-            createApplyDiffTool()
+            createApplyDiffTool(),
+            createCreateDiffFromDocTool(),
+            createApplyDiffToDocTool()
         ]
     }
     
@@ -471,12 +473,54 @@ class XcfMcpTools {
                         McpConfig.typeKey: .string(McpConfig.stringType),
                         McpConfig.descriptionKey: .string("Source string to modify")
                     ]),
-                    "uuid": .object([
+                    "diffHash": .object([
                         McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string("uuid of the diff to apply")
+                        McpConfig.descriptionKey: .string("SHA256 hash of the diff to apply")
                     ])
                 ]),
-                McpConfig.requiredKey: .array([.string("sourceString"), .string("uuid")])
+                McpConfig.requiredKey: .array([.string("sourceString"), .string("diffHash")])
+            ])
+        )
+    }
+    
+    private static func createCreateDiffFromDocTool() -> Tool {
+        Tool(
+            name: McpConfig.createDiffFromDocToolName,
+            description: McpConfig.createDiffFromDocToolDesc,
+            inputSchema: .object([
+                McpConfig.typeKey: .string(McpConfig.objectType),
+                McpConfig.propertiesKey: .object([
+                    McpConfig.filePathParamName: .object([
+                        McpConfig.typeKey: .string(McpConfig.stringType),
+                        McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                    ]),
+                    McpConfig.modifiedContentParamName: .object([
+                        McpConfig.typeKey: .string(McpConfig.stringType),
+                        McpConfig.descriptionKey: .string(McpConfig.modifiedContentParamNameDesc)
+                    ])
+                ]),
+                McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName),.string(McpConfig.modifiedContentParamName)])
+            ])
+        )
+    }
+    
+    private static func createApplyDiffToDocTool() -> Tool {
+        Tool(
+            name: McpConfig.applyDiffToDocToolName,
+            description: McpConfig.applyDiffToDocToolDesc,
+            inputSchema: .object([
+                McpConfig.typeKey: .string(McpConfig.objectType),
+                McpConfig.propertiesKey: .object([
+                    McpConfig.filePathParamName: .object([
+                        McpConfig.typeKey: .string(McpConfig.stringType),
+                        McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                    ]),
+                    McpConfig.diffHashParamName: .object([
+                        McpConfig.typeKey: .string(McpConfig.stringType),
+                        McpConfig.descriptionKey: .string(McpConfig.diffHashParamDesc)
+                    ])
+                ]),
+                McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string(McpConfig.diffHashParamName)])
             ])
         )
     }

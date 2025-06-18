@@ -26,7 +26,7 @@ class XcfMcpServer {
         
         // If no project was set from environment, try to select one
         if projectManager.currentProject == nil {
-            projectManager.currentProject = await XcfActionHandler.selectProject()
+            projectManager.currentProject = await XcfMcpActionHandler.selectProject()
         }
 
         // Set up the server with enhanced capabilities

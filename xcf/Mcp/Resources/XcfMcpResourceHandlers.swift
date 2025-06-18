@@ -24,7 +24,7 @@ class XcfMcpResourceHandlers {
     
     /// Handles a request for the Xcode projects resource
     static func handleXcodeProjectsResource() async throws -> ReadResource.Result {
-        let projects = await XcfActionHandler.getSortedXcodeProjects()
+        let projects = await XcfMcpActionHandler.getSortedXcodeProjects()
         let content = Resource.Content.text(
             projects.joined(separator: McpConfig.newLineSeparator),
             uri: McpConfig.xcodeProjResourceURI
@@ -34,7 +34,7 @@ class XcfMcpResourceHandlers {
     
     /// Handles a request for the build results resource
     static func handleBuildResultsResource() async throws -> ReadResource.Result {
-        guard let currentProject = await XcfActionHandler.getCurrentProject() else {
+        guard let currentProject = await XcfMcpActionHandler.getCurrentProject() else {
             throw MCPError.invalidParams(ErrorMessages.noProjectSelected)
         }
         
