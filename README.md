@@ -4,16 +4,16 @@
 
 [![Swift 6.1](https://img.shields.io/badge/Swift-6.1-orange.svg)](https://swift.org)
 [![Website](https://img.shields.io/badge/website-xcf.ai-blue.svg)](https://xcf.ai)
-[![Version](https://img.shields.io/badge/version-1.2.0-green.svg)](https://github.com/toddbruss/xcf)
-[![GitHub stars](https://img.shields.io/github/stars/codefreezeai/xcf.svg?style=social)](https://github.com/codefreezeai/xcf/stargazers)
+[![Version](https://img.shields.io/badge/version-1.0.3-green.svg)](https://github.com/toddbruss/xcf)
 [![GitHub downloads](https://img.shields.io/github/downloads/codefreezeai/xcf/total.svg)](https://github.com/codefreezeai/xcf/releases)
+[![GitHub stars](https://img.shields.io/github/stars/codefreezeai/xcf.svg?style=social)](https://github.com/codefreezeai/xcf/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/codefreezeai/swift-multi-line-diff.svg?style=social)](https://github.com/codefreezeai/xcf/network)
 
 ### 🚧 New features are in development...
 - File Operations
 - Directory Operations
 - Scripting Bridge Xcode Doc Operations
-- AI Coding Diff Tools (this weekend)
+- AI Coding Diff Tools (In the works!)
 - ✅ Fuzzy Logic
 - ✅ Swift code analysis without building in Xcode
 
