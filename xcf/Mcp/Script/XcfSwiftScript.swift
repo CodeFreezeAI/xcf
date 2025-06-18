@@ -219,12 +219,13 @@ class XcfSwiftScript {
             return false
         }
         
-        // Try to open the document
-        if let _ = xcode.open?(resolvedPath as Any) {
-            return true
+        // Open the document in Xcode if it'sresolvedPathnot already open
+        guard let _ = xcode.open?(filePath as Any) as? XcodeTextDocument else {
+            print("Failed to open document in Xcode")
+            return false
         }
         
-        return false
+        return true
     }
     
     /// Creates a new Swift document using Xcode ScriptingBridge
@@ -252,7 +253,6 @@ class XcfSwiftScript {
         } catch {
             return false
         }
-        
         
         // Verify the file exists and is a Swift file
         if !FileManager.default.fileExists(atPath: resolvedPath) {
@@ -331,7 +331,7 @@ class XcfSwiftScript {
         }
         
         // Open the document in Xcode if it's not already open
-        guard let document = xcode.open?(filePath as Any) as? XcodeSourceDocument else {
+        guard let document = xcode.open?(filePath as Any) as? XcodeTextDocument else {
             print("Failed to open document in Xcode")
             return false
         }
@@ -340,10 +340,10 @@ class XcfSwiftScript {
         document.setText?(content)
         
         // Save the document
-        document.closeSaving?(.yes, savingIn: nil)
+        //document.closeSaving?(.yes, savingIn: nil)
         
         // Reopen the document
-        _ = xcode.open?(filePath as Any)
+        //_ = xcode.open?(filePath as Any)
         
         return true
     }
@@ -487,54 +487,5 @@ class XcfSwiftScript {
             print("Error searching lines: \(error.localizedDescription)")
             return nil
         }
-    }
-    
-    /// Performs a find and replace operation in a Swift document using ScriptingBridge
-    /// - Parameters:
-    ///   - filePath: The path to the Swift file to modify
-    ///   - findString: The string to find and replace
-    ///   - replaceString: The string to replace the found text with
-    /// - Returns: A tuple with a boolean indicating success and an optional error message
-    func findAndReplaceInSwiftDocument(filePath: String, findString: String, replaceString: String) -> (success: Bool, errorMessage: String?) {
-        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
-            return (false, ErrorMessages.failedToConnectXcode)
-        }
-        
-        // Open the document in Xcode if it's not already open
-        guard let document = xcode.open?(filePath as Any) as? XcodeSourceDocument else {
-            return (false, "Failed to open document in Xcode")
-        }
-        
-        // Get the current text of the document
-        guard var documentText = document.text else {
-            return (false, "Failed to retrieve document text")
-        }
-        
-        // Count occurrences of findString
-        let occurrences = documentText.components(separatedBy: findString).count - 1
-        
-        // Check if findString is not found
-        guard occurrences > 0 else {
-            return (false, "Find string '\(findString)' not found in the document")
-        }
-        
-        // Check if findString appears more than once
-        guard occurrences == 1 else {
-            return (false, "Find string '\(findString)' appears multiple times in the document")
-        }
-        
-        // Perform the find and replace
-        documentText = documentText.replacingOccurrences(of: findString, with: replaceString)
-        
-        // Update the document text
-        document.setText?(documentText)
-        
-        // Save the document
-        document.closeSaving?(.yes, savingIn: nil)
-        
-        // Reopen the document to ensure changes are reflected
-        _ = xcode.open?(filePath as Any)
-        
-        return (true, nil)
     }
 }

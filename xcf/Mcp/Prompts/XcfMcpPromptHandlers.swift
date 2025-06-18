@@ -28,7 +28,7 @@ class XcfMcpPromptHandlers {
         let projectPath = params.arguments?[McpConfig.projectPathArgName]?.stringValue ?? McpConfig.projectPathPlaceholder
         
         let messages: [Prompt.Message] = [
-            .init(role: .user, content: .text(text: String(format: McpConfig.buildProjectTemplate, projectPath)))
+            .user(.text(text: String(format: McpConfig.buildProjectTemplate, projectPath)))
         ]
         
         return GetPrompt.Result(description: McpConfig.buildProjectResultDesc, messages: messages)
@@ -40,7 +40,7 @@ class XcfMcpPromptHandlers {
         let projectPath = params.arguments?[McpConfig.projectPathArgName]?.stringValue ?? McpConfig.projectPathPlaceholder
         
         let messages: [Prompt.Message] = [
-            .init(role: .user, content: .text(text: String(format: McpConfig.runProjectTemplate, projectPath)))
+            .user(.text(text: String(format: McpConfig.runProjectTemplate, projectPath)))
         ]
         
         return GetPrompt.Result(description: McpConfig.runProjectResultDesc, messages: messages)
@@ -53,9 +53,8 @@ class XcfMcpPromptHandlers {
         let includeSnippet = params.arguments?[McpConfig.includeSnippetArgName]?.boolValue ?? false
         
         // Create the base message
-        let baseMessage = Prompt.Message(
-            role: .user,
-            content: .text(text: String(format: McpConfig.analyzeCodeTemplate, filePath))
+        let baseMessage = Prompt.Message.user(
+            .text(text: String(format: McpConfig.analyzeCodeTemplate, filePath))
         )
         
         var messages: [Prompt.Message] = [baseMessage]

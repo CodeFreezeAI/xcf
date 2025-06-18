@@ -75,17 +75,17 @@ func applyDiffToDocument(
     let modifiedContent = try applyDiff(original: originalContent, diff: diffOperations)
     
     // Write the modified content back to the file using ScriptingBridge
-//    if !XcfSwiftScript.shared.writeSwiftDocumentWithScriptingBridge(filePath: resolvedPath, content: modifiedContent) {
-//        throw NSError(domain: "XcfSwiftDiff", code: 4, userInfo: [
-//            NSLocalizedDescriptionKey: "Failed to write modified content to document"
-//        ])
-//    }
+    if !XcfSwiftScript.shared.writeSwiftDocumentWithScriptingBridge(filePath: resolvedPath, content: modifiedContent) {
+        throw NSError(domain: "XcfSwiftDiff", code: 4, userInfo: [
+            NSLocalizedDescriptionKey: "Failed to write modified content to document"
+        ])
+    }
     
-    if !XcfSwiftScript.shared.writeSwiftDocumentWithFileManager(filePath: resolvedPath, content: modifiedContent) {
-            throw NSError(domain: "XcfSwiftDiff", code: 4, userInfo: [
-                NSLocalizedDescriptionKey: "Failed to write modified content to document"
-            ])
-        }
+//    if !XcfSwiftScript.shared.writeSwiftDocumentWithFileManager(filePath: resolvedPath, content: modifiedContent) {
+//            throw NSError(domain: "XcfSwiftDiff", code: 4, userInfo: [
+//                NSLocalizedDescriptionKey: "Failed to write modified content to document"
+//            ])
+//        }
     
     return true
 }

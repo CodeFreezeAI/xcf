@@ -80,9 +80,8 @@ class XcfMcpCodeSnippetHandlers {
         let language = FileFinder.determineLanguage(from: filePath)
         let resourceUri = "\(McpConfig.fileContentsResourceURI)/\(filePath)"
         
-        return Prompt.Message(
-            role: .user,
-            content: .resource(
+        return Prompt.Message.user(
+            .resource(
                 uri: resourceUri,
                 mimeType: McpConfig.plainTextMimeType,
                 text: String(format: McpConfig.codeBlockFormat, language, fileContents),
