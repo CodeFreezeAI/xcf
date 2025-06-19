@@ -14,7 +14,7 @@ class XcfMcpCodeSnippetHandlers {
         
         // Validate file path - use the resolved path
         guard FileManager.default.fileExists(atPath: resolvedPath) else {
-            return XcfMcpToolHelpers.formattedTextResult(ErrorMessages.errorReadingFile, "File not found. Tried searching for \(filePath) in multiple locations.")
+            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, "File not found. Tried searching for \(filePath) in multiple locations."))])
         }
         
         // Add warning message if there is one
@@ -28,7 +28,7 @@ class XcfMcpCodeSnippetHandlers {
         } else if let startLine = startLine, let endLine = endLine {
             return handleLineRangeSnippet(filePath: resolvedPath, startLine: startLine, endLine: endLine, warning: warningText)
         } else {
-            return XcfMcpToolHelpers.textResult(McpConfig.missingLineParamsError)
+            return CallTool.Result(content: [.text(McpConfig.missingLineParamsError)])
         }
     }
     
@@ -37,9 +37,9 @@ class XcfMcpCodeSnippetHandlers {
         do {
             let fileContents = try String(contentsOfFile: filePath, encoding: .utf8)
             let language = FileFinder.determineLanguage(from: filePath)
-            return XcfMcpToolHelpers.formattedTextResult(warning + McpConfig.codeBlockFormat, language, fileContents)
+            return CallTool.Result(content: [.text(warning + String(format: McpConfig.codeBlockFormat, language, fileContents))])
         } catch {
-            return XcfMcpToolHelpers.errorResult(warning + ErrorMessages.errorReadingFile, error.localizedDescription)
+            return CallTool.Result(content: [.text(warning + String(format: ErrorMessages.errorReadingFile, error.localizedDescription))])
         }
     }
     
@@ -51,7 +51,7 @@ class XcfMcpCodeSnippetHandlers {
             endLine: endLine
         )
         
-        return XcfMcpToolHelpers.formattedTextResult(warning + McpConfig.codeBlockFormat, language, snippet)
+        return CallTool.Result(content: [.text(warning + String(format: McpConfig.codeBlockFormat, language, snippet))])
     }
     
     /// Handles extracting a code snippet for the analyzer tool
@@ -67,10 +67,10 @@ class XcfMcpCodeSnippetHandlers {
         // Format the result based on the language
         if language == "markdown" {
             // Markdown output doesn't need code block formatting
-            return XcfMcpToolHelpers.textResult(analysisResult)
+            return CallTool.Result(content: [.text(analysisResult)])
         } else {
             // Format as code block
-            return XcfMcpToolHelpers.formattedTextResult(McpConfig.codeBlockFormat, language, analysisResult)
+            return CallTool.Result(content: [.text(String(format: McpConfig.codeBlockFormat, language, analysisResult))])
         }
     }
     
