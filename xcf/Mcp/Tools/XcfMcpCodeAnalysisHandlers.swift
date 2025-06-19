@@ -7,28 +7,19 @@ class XcfMcpCodeAnalysisHandlers {
     
     /// Handles a call to the snippet tool
     static func handleSnippetToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
-        }
+        // Extract arguments
+        let (arguments, errorResult) = XcfMcpToolHelpers.extractArguments(from: params, errorMessage: McpConfig.missingFilePathError)
+        if let errorResult = errorResult { return errorResult }
         
-        // Try to get filePath from arguments in two ways:
-        // 1. As a named parameter (filePath=...)
-        // 2. As a direct argument (first argument after command)
-        let filePath: String
-        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
-            filePath = namedPath
-        } else if let firstArg = arguments.first?.value.stringValue {
-            filePath = firstArg
-        } else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
-        }
+        // Extract file path
+        let (filePath, filePathError) = XcfMcpToolHelpers.extractFilePath(from: arguments!)
+        if let filePathError = filePathError { return filePathError }
         
-        let entireFile = arguments[McpConfig.entireFileParamName]?.boolValue ?? false
-        let startLine = arguments[McpConfig.startLineParamName]?.intValue
-        let endLine = arguments[McpConfig.endLineParamName]?.intValue
+        // Extract code analysis parameters
+        let (entireFile, startLine, endLine) = XcfMcpToolHelpers.extractCodeAnalysisParams(from: arguments!)
         
         return XcfMcpCodeSnippetHandlers.handleCodeSnippet(
-            filePath: filePath,
+            filePath: filePath!,
             entireFile: entireFile,
             startLine: startLine,
             endLine: endLine
@@ -37,28 +28,19 @@ class XcfMcpCodeAnalysisHandlers {
     
     /// Handles a call to the analyzer tool
     static func handleAnalyzerToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
-        guard let arguments = params.arguments else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
-        }
+        // Extract arguments
+        let (arguments, errorResult) = XcfMcpToolHelpers.extractArguments(from: params, errorMessage: McpConfig.missingFilePathError)
+        if let errorResult = errorResult { return errorResult }
         
-        // Try to get filePath from arguments in two ways:
-        // 1. As a named parameter (filePath=...)
-        // 2. As a direct argument (first argument after command)
-        let filePath: String
-        if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
-            filePath = namedPath
-        } else if let firstArg = arguments.first?.value.stringValue {
-            filePath = firstArg
-        } else {
-            return CallTool.Result(content: [.text(McpConfig.missingFilePathError)])
-        }
+        // Extract file path
+        let (filePath, filePathError) = XcfMcpToolHelpers.extractFilePath(from: arguments!)
+        if let filePathError = filePathError { return filePathError }
         
-        let entireFile = arguments[McpConfig.entireFileParamName]?.boolValue ?? false
-        let startLine = arguments[McpConfig.startLineParamName]?.intValue
-        let endLine = arguments[McpConfig.endLineParamName]?.intValue
+        // Extract code analysis parameters
+        let (entireFile, startLine, endLine) = XcfMcpToolHelpers.extractCodeAnalysisParams(from: arguments!)
         
         return XcfMcpCodeSnippetHandlers.handleAnalyzerCodeSnippet(
-            filePath: filePath,
+            filePath: filePath!,
             entireFile: entireFile,
             startLine: startLine,
             endLine: endLine
