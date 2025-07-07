@@ -58,20 +58,26 @@ class XcfMcpToolCallHandlers {
         case McpConfig.closeDocToolName:
             return try XcfMcpXcodeDocumentHandlers.handleCloseDocToolCall(params)
             
-        case "tools":
+        case McpConfig.tools:
             return XcfMcpHelpHandlers.handleToolsReferenceToolCall(params)
             
-        case "xcf_help":
+        case McpConfig.xcfHelp:
             return XcfMcpHelpHandlers.handleQuickHelpToolCall(params)
 
-        case "create_diff":
+        case McpConfig.createDiff:
             return try XcfMcpDiffHandlers.handleCreateDiffToolCall(params)
             
-        case "apply_diff":
+        case McpConfig.applyDiff:
             return try XcfMcpDiffHandlers.handleApplyDiffToolCall(params)
+            
+        case McpConfig.getAsciiDiff:
+            return try XcfMcpDiffHandlers.handleGetAsciiDiffToolCall(params)
             
         case McpConfig.createDiffFromDocToolName:
             return try XcfMcpDiffHandlers.handleCreateDiffFromDocToolCall(params)
+            
+        case McpConfig.applyUndoDiffToDocToolName:
+            return try XcfMcpDiffHandlers.handleApplyUndoDiffToDocToolCall(params)
             
         case McpConfig.applyDiffToDocToolName:
             return try XcfMcpDiffHandlers.handleApplyDiffToDocToolCall(params)

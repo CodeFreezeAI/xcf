@@ -30,6 +30,28 @@ class XcfMcpDiffHandlers {
     }
     
     /// Handles a call to the apply_diff tool
+    static func handleGetAsciiDiffToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments else {
+            return CallTool.Result(content: [.text("I dunno, not done yet.")])
+        }
+        
+        guard let diffHash = arguments["diffHash"]?.stringValue else {
+            return CallTool.Result(content: [.text("Missing diff hash")])
+        }
+        
+        do {
+            var diff = try getAsciiDiffFromHash(diffHash: diffHash)
+            if diff.isEmpty {
+                diff = "Having Issues, \(diffHash)"
+            }
+            return CallTool.Result(content: [.text(diff )])
+
+        } catch {
+            throw MCPError.invalidParams(String(format: ErrorMessages.errorCreatingDiff, error.localizedDescription))
+        }
+    }
+    
+    /// Handles a call to the apply_diff tool
     static func handleApplyDiffToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         guard let arguments = params.arguments else {
             return CallTool.Result(content: [.text("I dunno, not done yet.")])
@@ -45,7 +67,7 @@ class XcfMcpDiffHandlers {
         
         do {
             var diff = try applyDiffFromString(original: sourceString, diffHash: diffHash)
-            if diff == "" {
+            if diff.isEmpty {
                 diff = "Having Issues, \(sourceString) \(diffHash)"
             }
             return CallTool.Result(content: [.text(diff )])
@@ -92,7 +114,8 @@ class XcfMcpDiffHandlers {
         }
         
         do {
-            let success = try applyDiffToDocument(filePath: filePath, diffHash: diffHash)
+            let diffResult = try getDiffResultFromHash(diffHash: diffHash)
+            let success = try applyDiffToDocument(filePath: filePath, operations: diffResult)
             if success {
                 return CallTool.Result(content: [.text("Diff applied successfully to document: \(filePath)")])
             } else {
@@ -102,4 +125,31 @@ class XcfMcpDiffHandlers {
             throw MCPError.invalidParams(String(format: "Error applying diff to document: %@", error.localizedDescription))
         }
     }
-} 
+    
+    /// Handles a call to apply a diff to a document
+    static func handleApplyUndoDiffToDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
+        guard let arguments = params.arguments else {
+            throw MCPError.invalidParams("Missing arguments")
+        }
+        
+        guard let filePath = arguments[McpConfig.filePathParamName]?.stringValue else {
+            return CallTool.Result(content: [.text("Missing filePath parameter")])
+        }
+        
+        guard let diffHash = arguments[McpConfig.diffHashParamName]?.stringValue else {
+            return CallTool.Result(content: [.text("Missing diffHash parameter")])
+        }
+        
+        do {
+            let diffResult = try getDiffResultFromHash(diffHash: diffHash)
+            let success = try applyDiffToDocument(filePath: filePath, operations: diffResult)
+            if success {
+                return CallTool.Result(content: [.text("Diff applied successfully to document: \(filePath)")])
+            } else {
+                return CallTool.Result(content: [.text("Failed to apply diff to document: \(filePath)")])
+            }
+        } catch {
+            throw MCPError.invalidParams(String(format: "Error applying diff to document: %@", error.localizedDescription))
+        }
+    }
+}

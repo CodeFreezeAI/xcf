@@ -7,42 +7,43 @@ class XcfMcpTools {
     
     static func getAllTools() -> [Tool] {
         return [
-            createXcfTool(),
-            createListTool(),
-            createQuickHelpTool(),
-            createHelpTool(),
-            createSnippetTool(),
-            createAnalyzerTool(),
-            createReadDirTool(),
-            createReadFileTool(),
-            createCdDirTool(),
-            createOpenDocTool(),
-            createCloseDocTool(),
-            createCreateDocTool(),
-            createReadDocTool(),
-            createSaveDocTool(),
-            createUseXcfTool(),
-            createToolsReferenceTool(),
-            createShowHelpTool(),
-            createGrantPermissionTool(),
-            createRunProjectTool(),
-            createBuildProjectTool(),
-            createShowCurrentProjectTool(),
-            createShowEnvTool(),
-            createShowFolderTool(),
-            createListProjectsTool(),
-            createSelectProjectTool(),
-            createAnalyzeSwiftCodeTool(),
-            createCreateDiffTool(),
-            createApplyDiffTool(),
-            createCreateDiffFromDocTool(),
-            createApplyDiffToDocTool()
+            XcfTool(),
+            ListTool(),
+            QuickHelpTool(),
+            HelpTool(),
+            SnippetTool(),
+            AnalyzerTool(),
+            ReadDirTool(),
+            ReadFileTool(),
+            CdDirTool(),
+            OpenDocTool(),
+            CloseDocTool(),
+            CreateDocTool(),
+            ReadDocTool(),
+            SaveDocTool(),
+            UseXcfTool(),
+            ToolsReferenceTool(),
+            ShowHelpTool(),
+            GrantPermissionTool(),
+            RunProjectTool(),
+            BuildProjectTool(),
+            ShowCurrentProjectTool(),
+            ShowEnvTool(),
+            ShowFolderTool(),
+            ListProjectsTool(),
+            SelectProjectTool(),
+            AnalyzeSwiftCodeTool(),
+            CreateDiffTool(),
+            ApplyDiffTool(),
+            CreateDiffFromDocTool(),
+            ApplyDiffToDocTool(),
+            ApplyUndoDiffToDocTool()
         ]
     }
     
     // MARK: - Tool Creation Functions
     
-    private static func createXcfTool() -> Tool {
+    private static func XcfTool() -> Tool {
         Tool(
             name: McpConfig.xcfToolName,
             description: McpConfig.xcfToolDesc,
@@ -59,7 +60,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createListTool() -> Tool {
+    private static func ListTool() -> Tool {
         Tool(
             name: McpConfig.listToolsName,
             description: McpConfig.listToolsDesc,
@@ -69,7 +70,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createQuickHelpTool() -> Tool {
+    private static func QuickHelpTool() -> Tool {
         Tool(
             name: "xcf_help",
             description: "Help for xcf actions only",
@@ -79,7 +80,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createHelpTool() -> Tool {
+    private static func HelpTool() -> Tool {
         Tool(
             name: "help",
             description: "Regular help with common examples",
@@ -89,7 +90,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createSnippetTool() -> Tool {
+    private static func SnippetTool() -> Tool {
         Tool(
             name: McpConfig.snippetToolName,
             description: McpConfig.snippetToolDesc,
@@ -118,7 +119,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createAnalyzerTool() -> Tool {
+    private static func AnalyzerTool() -> Tool {
         Tool(
             name: McpConfig.analyzerToolName,
             description: McpConfig.analyzerToolDesc,
@@ -147,7 +148,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createReadDirTool() -> Tool {
+    private static func ReadDirTool() -> Tool {
         Tool(
             name: McpConfig.readDirToolName,
             description: McpConfig.readDirToolDesc,
@@ -168,7 +169,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createReadFileTool() -> Tool {
+    private static func ReadFileTool() -> Tool {
         Tool(
             name: McpConfig.readFileToolName,
             description: McpConfig.readFileToolDesc,
@@ -185,7 +186,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createCdDirTool() -> Tool {
+    private static func CdDirTool() -> Tool {
         Tool(
             name: McpConfig.cdDirToolName,
             description: McpConfig.cdDirToolDesc,
@@ -202,7 +203,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createOpenDocTool() -> Tool {
+    private static func OpenDocTool() -> Tool {
         Tool(
             name: McpConfig.openDocToolName,
             description: McpConfig.openDocToolDesc,
@@ -219,7 +220,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createCloseDocTool() -> Tool {
+    private static func CloseDocTool() -> Tool {
         Tool(
             name: McpConfig.closeDocToolName,
             description: McpConfig.closeDocToolDesc,
@@ -240,7 +241,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createCreateDocTool() -> Tool {
+    private static func CreateDocTool() -> Tool {
         Tool(
             name: McpConfig.createDocToolName,
             description: McpConfig.createDocToolDesc,
@@ -261,7 +262,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createReadDocTool() -> Tool {
+    private static func ReadDocTool() -> Tool {
         Tool(
             name: McpConfig.readDocToolName,
             description: McpConfig.readDocToolDesc,
@@ -278,7 +279,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createSaveDocTool() -> Tool {
+    private static func SaveDocTool() -> Tool {
         Tool(
             name: McpConfig.saveDocToolName,
             description: McpConfig.saveDocToolDesc,
@@ -295,7 +296,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createUseXcfTool() -> Tool {
+    private static func UseXcfTool() -> Tool {
         Tool(
             name: McpConfig.useXcfToolName,
             description: McpConfig.useXcfToolDesc,
@@ -305,7 +306,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createToolsReferenceTool() -> Tool {
+    private static func ToolsReferenceTool() -> Tool {
         Tool(
             name: "tools",
             description: "Show detailed reference for all tools including AI function calls",
@@ -315,7 +316,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createShowHelpTool() -> Tool {
+    private static func ShowHelpTool() -> Tool {
         Tool(
             name: McpConfig.showHelpToolName,
             description: McpConfig.showHelpToolDesc,
@@ -325,7 +326,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createGrantPermissionTool() -> Tool {
+    private static func GrantPermissionTool() -> Tool {
         Tool(
             name: McpConfig.grantPermissionToolName,
             description: McpConfig.grantPermissionToolDesc,
@@ -335,7 +336,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createRunProjectTool() -> Tool {
+    private static func RunProjectTool() -> Tool {
         Tool(
             name: McpConfig.runProjectToolName,
             description: McpConfig.runProjectToolDesc,
@@ -345,7 +346,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createBuildProjectTool() -> Tool {
+    private static func BuildProjectTool() -> Tool {
         Tool(
             name: McpConfig.buildProjectToolName,
             description: McpConfig.buildProjectToolDesc,
@@ -355,7 +356,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createShowCurrentProjectTool() -> Tool {
+    private static func ShowCurrentProjectTool() -> Tool {
         Tool(
             name: McpConfig.showCurrentProjectToolName,
             description: McpConfig.showCurrentProjectToolDesc,
@@ -365,7 +366,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createShowEnvTool() -> Tool {
+    private static func ShowEnvTool() -> Tool {
         Tool(
             name: McpConfig.showEnvToolName,
             description: McpConfig.showEnvToolDesc,
@@ -375,7 +376,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createShowFolderTool() -> Tool {
+    private static func ShowFolderTool() -> Tool {
         Tool(
             name: McpConfig.showFolderToolName,
             description: McpConfig.showFolderToolDesc,
@@ -385,7 +386,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createListProjectsTool() -> Tool {
+    private static func ListProjectsTool() -> Tool {
         Tool(
             name: McpConfig.listProjectsToolName,
             description: McpConfig.listProjectsToolDesc,
@@ -395,7 +396,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createSelectProjectTool() -> Tool {
+    private static func SelectProjectTool() -> Tool {
         Tool(
             name: McpConfig.selectProjectToolName,
             description: McpConfig.selectProjectToolDesc,
@@ -412,7 +413,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createAnalyzeSwiftCodeTool() -> Tool {
+    private static func AnalyzeSwiftCodeTool() -> Tool {
         Tool(
             name: McpConfig.analyzeSwiftCodeToolName,
             description: McpConfig.analyzeSwiftCodeToolDesc,
@@ -441,7 +442,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createCreateDiffTool() -> Tool {
+    private static func CreateDiffTool() -> Tool {
         Tool(
             name: "create_diff",
             description: "Create a diff between documents or document sections",
@@ -462,7 +463,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createApplyDiffTool() -> Tool {
+    private static func ApplyDiffTool() -> Tool {
         Tool(
             name: "apply_diff",
             description: "Apply diff operations to a document",
@@ -483,7 +484,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createCreateDiffFromDocTool() -> Tool {
+    private static func CreateDiffFromDocTool() -> Tool {
         Tool(
             name: McpConfig.createDiffFromDocToolName,
             description: McpConfig.createDiffFromDocToolDesc,
@@ -504,7 +505,7 @@ class XcfMcpTools {
         )
     }
     
-    private static func createApplyDiffToDocTool() -> Tool {
+    private static func ApplyDiffToDocTool() -> Tool {
         Tool(
             name: McpConfig.applyDiffToDocToolName,
             description: McpConfig.applyDiffToDocToolDesc,
@@ -524,4 +525,25 @@ class XcfMcpTools {
             ])
         )
     }
-} 
+    
+    private static func ApplyUndoDiffToDocTool() -> Tool {
+        Tool(
+            name: McpConfig.applyUndoDiffToDocToolName,
+            description: McpConfig.applyUndoDiffToDocToolDesc,
+            inputSchema: .object([
+                McpConfig.typeKey: .string(McpConfig.objectType),
+                McpConfig.propertiesKey: .object([
+                    McpConfig.filePathParamName: .object([
+                        McpConfig.typeKey: .string(McpConfig.stringType),
+                        McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
+                    ]),
+                    McpConfig.diffHashParamName: .object([
+                        McpConfig.typeKey: .string(McpConfig.stringType),
+                        McpConfig.descriptionKey: .string(McpConfig.diffHashParamDesc)
+                    ])
+                ]),
+                McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string(McpConfig.diffHashParamName)])
+            ])
+        )
+    }
+}
