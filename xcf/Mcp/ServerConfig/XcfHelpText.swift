@@ -116,11 +116,7 @@ Example: save_doc main.swift
 Example: save_doc src/views/main.swift
 Example: save_doc ../shared/helpers.swift
 
-edit_doc <file> <start> <end> <content>
-Edit Xcode document
-Example: edit_doc main.swift 10 20 "new code"
-Example: edit_doc src/views/main.swift 5 10 "new code"
-Example: edit_doc ../shared/helpers.swift 1 5 "new code"
+
 
 Analysis Tools:
 snippet <file> [start] [end]
@@ -282,14 +278,7 @@ Required Parameters:
   - filePath: string (Path to the file to save)
 Example: mcp_xcf_save_doc filePath="main.swift"
 
-edit_doc
-Description: Edit document content in Xcode
-Required Parameters:
-  - filePath: string (Path to the file to edit)
-  - startLine: integer (Starting line number, 1-indexed)
-  - endLine: integer (Ending line number, 1-indexed)
-  - replacement: string (Replacement text for the specified lines)
-Example: mcp_xcf_edit_doc filePath="main.swift" startLine=10 endLine=20 replacement="new code"
+
 
 Mode Activation:
 use_xcf

@@ -35,6 +35,7 @@ class XcfMcpTools {
             AnalyzeSwiftCodeTool(),
             CreateDiffTool(),
             ApplyDiffTool(),
+            GetAsciiDiffTool(),
             CreateDiffFromDocTool(),
             ApplyDiffToDocTool(),
             ApplyUndoDiffToDocTool()
@@ -543,6 +544,23 @@ class XcfMcpTools {
                     ])
                 ]),
                 McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string(McpConfig.diffHashParamName)])
+            ])
+        )
+    }
+    
+    private static func GetAsciiDiffTool() -> Tool {
+        Tool(
+            name: McpConfig.getAsciiDiff,
+            description: McpConfig.getAsciiDiffToolDesc,
+            inputSchema: .object([
+                McpConfig.typeKey: .string(McpConfig.objectType),
+                McpConfig.propertiesKey: .object([
+                    McpConfig.diffHashParamName: .object([
+                        McpConfig.typeKey: .string(McpConfig.stringType),
+                        McpConfig.descriptionKey: .string(McpConfig.diffHashParamDesc)
+                    ])
+                ]),
+                McpConfig.requiredKey: .array([.string(McpConfig.diffHashParamName)])
             ])
         )
     }

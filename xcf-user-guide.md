@@ -183,7 +183,7 @@ create_doc new.swift "import Foundation"
 
 ### Editing Documents
 ```bash
-edit_doc main.swift 10 20 "// New implementation"
+
 ```
 
 ### Document Lifecycle

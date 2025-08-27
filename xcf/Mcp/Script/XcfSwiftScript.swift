@@ -80,14 +80,15 @@ class XcfSwiftScript {
             processIssues(issues: testFailures, issueType: XcodeConstants.testFailureIssueType, buildResults: &buildResults)
         }
         
-        // Send entire file(s) at the end, uses a set to avoid duplicates
-        for file in files {
-            buildResults += "\(XcodeConstants.filePrefix)\(file)\(XcodeConstants.fileSuffix)\(Format.newLine)"
-            let (fileContent, language) = CaptureSnippet.getCodeSnippet(filePath: file, startLine: 1, endLine: Int.max, entireFile: true)
-            buildResults += "\(XcodeConstants.codeBlockStart)\(language)\(Format.newLine)"
-            buildResults += fileContent
-            buildResults += "\(Format.newLine)\(XcodeConstants.codeBlockEnd)\(Format.newLine)"
-        }
+        // Send entire file(s) at the end, uses a set to avoid duplicateso
+        // Commented out: this uses too many tokens.. may send specific snippets later
+//        for file in files {
+//            buildResults += "\(XcodeConstants.filePrefix)\(file)\(XcodeConstants.fileSuffix)\(Format.newLine)"
+//            let (fileContent, language) = CaptureSnippet.getCodeSnippet(filePath: file, startLine: 1, endLine: Int.max, entireFile: true)
+//            buildResults += "\(XcodeConstants.codeBlockStart)\(language)\(Format.newLine)"
+//            buildResults += fileContent
+//            buildResults += "\(Format.newLine)\(XcodeConstants.codeBlockEnd)\(Format.newLine)"
+//        }
         
         // Return build results
         return buildResults.isEmpty ? SuccessMessages.buildSuccess : buildResults
@@ -233,7 +234,7 @@ class XcfSwiftScript {
     ///   - filePath: The path where the Swift file should be created
     ///   - content: Initial content of the Swift file (optional)
     /// - Returns: True if successful, false otherwise
-    func createSwiftDocumentWithScriptingBridge(filePath: String, content: String = "") -> Bool {
+    func createSwiftDocumentWithFileManager(filePath: String, content: String = "") -> Bool {
         guard let _: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
             print(ErrorMessages.failedToConnectXcode)
             return false
@@ -279,29 +280,6 @@ class XcfSwiftScript {
         }
     }
     
-    /// Reads the contents of a Swift document using Xcode ScriptingBridge
-    /// - Parameter filePath: The path to the Swift file to read
-    /// - Returns: The file contents as a string, or nil if the operation failed
-    func readSwiftDocumentWithScriptingBridge(filePath: String) -> String? {
-        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
-            print(ErrorMessages.failedToConnectXcode)
-            return nil
-        }
-        
-        // Open the document in Xcode if it's not already open
-        guard let document = xcode.open?(filePath as Any) as? XcodeTextDocument else {
-            print("Failed to open document in Xcode")
-            return nil
-        }
-        
-        // Return the document text
-        guard let documentText = document.text else {
-            return nil
-        }
-        
-        return documentText
-    }
-    
     // MARK: - Document Writing
     
     /// Writes content to a Swift document using FileManager
@@ -318,56 +296,12 @@ class XcfSwiftScript {
             return false
         }
     }
-    
-    /// Writes content to a Swift document using Xcode ScriptingBridge
-    /// - Parameters:
-    ///   - filePath: The path to the Swift file to write to
-    ///   - content: The content to write to the file
-    /// - Returns: True if successful, false otherwise
-    func writeSwiftDocumentWithScriptingBridge(filePath: String, content: String) -> Bool {
-        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
-            print(ErrorMessages.failedToConnectXcode)
-            return false
-        }
         
-        // Open the document in Xcode if it's not already open
-        guard let document = xcode.open?(filePath as Any) as? XcodeTextDocument else {
-            print("Failed to open document in Xcode")
-            return false
-        }
-        
-        // Update the document text
-        document.setText?(content)
-        
-        // Save the document
-        //document.closeSaving?(.yes, savingIn: nil)
-        
-        // Reopen the document
-        //_ = xcode.open?(filePath as Any)
-        
-        return true
-    }
-    
     // MARK: - Directory Operations
     /// Shows a directory selection dialog and returns the selected path
     /// - Returns: The selected directory path, or nil if cancelled
     func selectDirectory() -> String? {
         return XcfFileManager.selectDirectory()
-    }
-    
-    // MARK: - File Deletion
-    
-    /// Deletes a file using FileManager
-    /// - Parameter filePath: The path to the file to delete
-    /// - Returns: True if successful, false otherwise
-    func deleteFileWithFileManager(at filePath: String) -> Bool {
-        do {
-            try XcfFileManager.deleteFile(at: filePath)
-            return true
-        } catch {
-            print("Error deleting file: \(error.localizedDescription)")
-            return false
-        }
     }
     
     /// Closes a Swift document in Xcode
@@ -425,67 +359,5 @@ class XcfSwiftScript {
         
         print("Document not found in Xcode: \(resolvedPath)")
         return false
-    }
-    
-    /// Deletes a file using ScriptingBridge
-    /// - Parameter filePath: The path to the file to delete
-    /// - Returns: True if successful, false otherwise
-    func deleteFileWithScriptingBridge(at filePath: String) -> Bool {
-        guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
-            print(ErrorMessages.failedToConnectXcode)
-            return false
-        }
-        
-        // First close the document if it's open
-        if let documents = xcode.documents?(),
-           let document = (documents as? [XcodeDocument])?.first(where: { $0.path == filePath }) {
-            document.closeSaving?(.no, savingIn: nil)
-        }
-        
-        // Then delete the file using FileManager
-        return deleteFileWithFileManager(at: filePath)
-    }
-    
-    /// Calculates the total number of lines in a document
-    /// - Parameter filePath: Path to the file to count lines
-    /// - Returns: Total number of lines in the document, or nil if the file cannot be read
-    func calculateDocumentEndLine(filePath: String) -> Int? {
-        do {
-            let (content, _) = try XcfFileManager.readFile(at: filePath)
-            let lines = content.components(separatedBy: .newlines)
-            return lines.count
-        } catch {
-            print("Error calculating end line: \(error.localizedDescription)")
-            return nil
-        }
-    }
-    
-    /// Searches a file for lines containing specific text
-    /// - Parameters:
-    ///   - filePath: Path to the file to search
-    ///   - searchText: Text to search for in the file
-    ///   - caseSensitive: Whether the search should be case-sensitive (default is false)
-    /// - Returns: An array of line numbers where the text is found, or nil if the file cannot be read
-    func searchLinesInDocument(filePath: String, searchText: String, caseSensitive: Bool = false) -> [Int]? {
-        do {
-            let (content, _) = try XcfFileManager.readFile(at: filePath)
-            let lines = content.components(separatedBy: .newlines)
-            
-            var matchedLineNumbers: [Int] = []
-            
-            for (index, line) in lines.enumerated() {
-                let lineToCheck = caseSensitive ? line : line.lowercased()
-                let searchTextToCheck = caseSensitive ? searchText : searchText.lowercased()
-                
-                if lineToCheck.contains(searchTextToCheck) {
-                    matchedLineNumbers.append(index + 1)  // Convert to 1-indexed line numbers
-                }
-            }
-            
-            return matchedLineNumbers
-        } catch {
-            print("Error searching lines: \(error.localizedDescription)")
-            return nil
-        }
     }
 }

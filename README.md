@@ -143,7 +143,7 @@ The tool is designed by Swift developers, for Swift developers. Commands like `b
 | `create_doc <file> [content]` | Create new Xcode document |
 | `read_doc <file>` | Read Xcode document |
 | `save_doc <file>` | Save Xcode document |
-| `edit_doc <file> <start> <end> <content>` | Edit Xcode document |
+
 | `close_doc <file> <saving>` | Close a document in Xcode |
 
 ### Analysis Tools
@@ -307,7 +307,7 @@ The analysis identifies issues like:
 - `mcp_xcf_create_doc`: Create a new document in Xcode
 - `mcp_xcf_read_doc`: Read document content from Xcode
 - `mcp_xcf_save_doc`: Save document in Xcode
-- `mcp_xcf_edit_doc`: Edit document content in Xcode
+
 - `mcp_xcf_use_xcf`: Activate XCF mode
 
 ### Standalone Action Tools
@@ -385,7 +385,7 @@ mcp_xcf_create_doc filePath="new_file.swift" content="import Foundation"
 
 Edit a document:
 ```
-mcp_xcf_edit_doc filePath="main.swift" startLine=5 endLine=10 replacement="// New code"
+
 ```
 
 Close a document:
@@ -422,7 +422,7 @@ mcp_xcf_close_doc filePath="main.swift" saving=true
 
 ### Xcode Document Workflow (For Humans)
 1. `open_doc main.swift` - Open document in Xcode
-2. `edit_doc main.swift 10 20 "// New implementation"` - Edit in Xcode
+
 4. `save_doc main.swift` - Save the document
 5. `xcf build` - Build after changes
 
@@ -446,7 +446,7 @@ mcp_xcf_close_doc filePath="main.swift" saving=true
 
 ### Xcode Document Workflow (For AI Assistants)
 2. `mcp_xcf_open_doc filePath="main.swift"` - Open document in Xcode
-3. `mcp_xcf_edit_doc filePath="main.swift" startLine=10 endLine=20 replacement="// New implementation"` - Edit in Xcode
+
 4. `mcp_xcf_save_doc filePath="main.swift"` - Save the document
 5. `mcp_xcf_xcf action="build"` - Build after changes
 

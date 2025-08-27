@@ -41,7 +41,6 @@ struct McpConfig {
                createDocToolName = "create_doc",
                readDocToolName = "read_doc",
                saveDocToolName = "save_doc",
-               editDocToolName = "edit_doc",
                closeDocToolName = "close_doc"
     
     // Tool descriptions
@@ -70,7 +69,7 @@ struct McpConfig {
                createDocToolDesc = "Create a new document in Xcode",
                readDocToolDesc = "Read document content from Xcode",
                saveDocToolDesc = "Save document in Xcode",
-               editDocToolDesc = "Edit document content in Xcode",
+
                closeDocToolDesc = "Close a document in Xcode"
     
     // Standalone action tool names
@@ -96,7 +95,8 @@ struct McpConfig {
     // Diff tool descriptions
     static let createDiffFromDocToolDesc = "Create a diff from a document and store it with a hash",
                applyDiffToDocToolDesc = "Apply a diff to a document using a stored diff hash",
-               applyUndoDiffToDocToolDesc = "Apply undo diff to a document using a stored diff hash"
+               applyUndoDiffToDocToolDesc = "Apply undo diff to a document using a stored diff hash",
+               getAsciiDiffToolDesc = "Get ASCII diff representation from a stored diff hash"
 
     // Standalone action tool descriptions
     static let showHelpToolDesc = "Display help information about available commands",

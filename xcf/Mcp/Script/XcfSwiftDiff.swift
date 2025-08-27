@@ -44,7 +44,7 @@ func applyUndoDiffToDocument(
     }
     
     // Read the original content using ScriptingBridge
-    guard let originalContent = XcfSwiftScript.shared.readSwiftDocumentWithScriptingBridge(filePath: resolvedPath) else {
+    guard let originalContent = XcfSwiftScript.shared.readSwiftDocumentWithFileManager(filePath: resolvedPath) else {
         throw NSError(domain: "XcfSwiftDiff", code: 3, userInfo: [
             NSLocalizedDescriptionKey: "Failed to read document content"
         ])
@@ -58,7 +58,7 @@ func applyUndoDiffToDocument(
     let modifiedContent = try applyDiff(original: originalContent, diff: operations)
     
     // Write the modified content back to the file using ScriptingBridge
-    if !XcfSwiftScript.shared.writeSwiftDocumentWithScriptingBridge(filePath: resolvedPath, content: modifiedContent) {
+    if !XcfSwiftScript.shared.writeSwiftDocumentWithFileManager(filePath: resolvedPath, content: modifiedContent) {
         throw NSError(domain: "XcfSwiftDiff", code: 4, userInfo: [
             NSLocalizedDescriptionKey: "Failed to write modified content to document"
         ])
@@ -116,7 +116,7 @@ func applyDiffToDocument(
     }
     
     // Read the original content using ScriptingBridge
-    guard let originalContent = XcfSwiftScript.shared.readSwiftDocumentWithScriptingBridge(filePath: resolvedPath) else {
+    guard let originalContent = XcfSwiftScript.shared.readSwiftDocumentWithFileManager(filePath: resolvedPath) else {
         throw NSError(domain: "XcfSwiftDiff", code: 3, userInfo: [
             NSLocalizedDescriptionKey: "Failed to read document content"
         ])
@@ -126,7 +126,7 @@ func applyDiffToDocument(
     let modifiedContent = try applyDiff(original: originalContent, diff: operations)
     
     // Write the modified content back to the file using ScriptingBridge
-    if !XcfSwiftScript.shared.writeSwiftDocumentWithScriptingBridge(filePath: resolvedPath, content: modifiedContent) {
+    if !XcfSwiftScript.shared.writeSwiftDocumentWithFileManager(filePath: resolvedPath, content: modifiedContent) {
         throw NSError(domain: "XcfSwiftDiff", code: 4, userInfo: [
             NSLocalizedDescriptionKey: "Failed to write modified content to document"
         ])
@@ -182,7 +182,7 @@ func createDiffFromDocument(filePath: String, modifiedContent: String) throws ->
     }
     
     // Read the original content using ScriptingBridge
-    guard let originalContent = XcfSwiftScript.shared.readSwiftDocumentWithScriptingBridge(filePath: resolvedPath) else {
+    guard let originalContent = XcfSwiftScript.shared.readSwiftDocumentWithFileManager(filePath: resolvedPath) else {
         throw NSError(domain: "XcfSwiftDiff", code: 3, userInfo: [
             NSLocalizedDescriptionKey: "Failed to read document content"
         ])

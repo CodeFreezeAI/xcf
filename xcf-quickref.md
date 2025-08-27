@@ -113,7 +113,7 @@ write_file config.json '{"key": "value"}'  # JSON content
 | `create_doc <file> [content]` | Create new document | `create_doc new.swift "import Foundation"` |
 | `read_doc <file>` | Read Xcode document | `read_doc main.swift` |
 | `save_doc <file>` | Save Xcode document | `save_doc main.swift` |
-| `edit_doc <file> <start> <end> <content>` | Edit document | `edit_doc main.swift 10 20 "New code"` |
+
 | `close_doc <file> <saving>` | Close document | `close_doc main.swift true` |
 
 ## 🔍 Code Analysis

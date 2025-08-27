@@ -39,7 +39,7 @@ class XcfMcpXcodeDocumentHandlers {
         
         let content = arguments[McpConfig.contentParamName]?.stringValue ?? ""
         
-        if XcfMcpServer.XcfScript.createSwiftDocumentWithScriptingBridge(filePath: filePath, content: content) {
+        if XcfMcpServer.XcfScript.createSwiftDocumentWithFileManager(filePath: filePath, content: content) {
             return CallTool.Result(content: [.text(McpConfig.documentCreatedSuccessfully)])
         } else {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorCreatingFile, filePath))])
@@ -72,7 +72,7 @@ class XcfMcpXcodeDocumentHandlers {
             print(warning)
         }
         
-        if let content = XcfMcpServer.XcfScript.readSwiftDocumentWithScriptingBridge(filePath: resolvedPath) {
+        if let content = XcfMcpServer.XcfScript.readSwiftDocumentWithFileManager(filePath: resolvedPath) {
             return CallTool.Result(content: [.text(content)])
         } else {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorReadingFile, filePath))])
@@ -86,7 +86,7 @@ class XcfMcpXcodeDocumentHandlers {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
         
-        if XcfMcpServer.XcfScript.writeSwiftDocumentWithScriptingBridge(filePath: filePath, content: "") {
+        if XcfMcpServer.XcfScript.writeSwiftDocumentWithFileManager(filePath: filePath, content: "") {
             return CallTool.Result(content: [.text(McpConfig.documentSavedSuccessfully)])
         } else {
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorWritingFile, filePath))])
