@@ -148,7 +148,7 @@ class XcfSwiftScript {
         return Array(paths).sorted()
     }
     
-    // New method to get schemes
+    // New method to get schemes (not implemented)
     func getSchemes() -> [String] {
         // Get Xcode application instance
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
