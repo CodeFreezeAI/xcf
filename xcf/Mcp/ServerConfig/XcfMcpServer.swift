@@ -52,7 +52,6 @@ class XcfMcpServer {
             
             return server
         } catch {
-            print(String(format: McpConfig.errorStartingServer, error.localizedDescription))
             throw error
         }
     }

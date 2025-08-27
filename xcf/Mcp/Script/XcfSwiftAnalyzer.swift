@@ -227,7 +227,6 @@ struct SwiftAnalyzer {
         do {
             return try check(path)
         } catch {
-            print("Warning: Check failed with error: \(error)")
             return []
         }
     }
@@ -237,7 +236,6 @@ struct SwiftAnalyzer {
         do {
             return try check(path, threshold)
         } catch {
-            print("Warning: Check failed with error: \(error)")
             return []
         }
     }

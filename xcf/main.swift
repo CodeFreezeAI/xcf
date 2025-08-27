@@ -14,7 +14,6 @@ func handleArguments() {
     // Check command-line arguments for "server" flag
     if CommandLine.arguments.count > 1 && CommandLine.arguments[1] == "server"  {
         // Print welcome message
-        print(McpConfig.welcomeMessage)
         
         // Main async task
         Task.detached {

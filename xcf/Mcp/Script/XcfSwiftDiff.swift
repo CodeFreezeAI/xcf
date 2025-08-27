@@ -31,11 +31,6 @@ func applyUndoDiffToDocument(
     // Resolve the file path
     let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
     
-    // Print warning if any
-    if !warning.isEmpty {
-        print(warning)
-    }
-    
     // Validate file exists
     guard FileManager.default.fileExists(atPath: resolvedPath) else {
         throw NSError(domain: "XcfSwiftDiff", code: 1, userInfo: [
@@ -103,11 +98,6 @@ func applyDiffToDocument(
     // Resolve the file path
     let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
     
-    // Print warning if any
-    if !warning.isEmpty {
-        print(warning)
-    }
-    
     // Validate file exists
     guard FileManager.default.fileExists(atPath: resolvedPath) else {
         throw NSError(domain: "XcfSwiftDiff", code: 1, userInfo: [
@@ -168,11 +158,6 @@ func applyDiffFromString(original: String, diffHash: String) throws -> String {
 func createDiffFromDocument(filePath: String, modifiedContent: String) throws -> String {
     // Resolve the file path
     let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
-    
-    // Print warning if any
-    if !warning.isEmpty {
-        print(warning)
-    }
     
     // Validate file exists
     guard FileManager.default.fileExists(atPath: resolvedPath) else {

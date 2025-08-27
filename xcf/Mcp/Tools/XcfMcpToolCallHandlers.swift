@@ -123,10 +123,8 @@ class XcfMcpToolCallHandlers {
     /// Handles a call to the xcf tool
     static func handleXcfToolCall(_ params: CallTool.Parameters) async throws -> CallTool.Result {
         if let action = params.arguments?[McpConfig.actionParamName]?.stringValue {
-            print(String(format: McpConfig.actionFound, action))
             return CallTool.Result(content: [.text(await XcfMcpActionHandler.handleAction(action: action))])
         } else {
-            print(McpConfig.noActionFound)
             // If no action specified, return the help information
             return CallTool.Result(content: [.text(await XcfMcpActionHandler.handleAction(action: Actions.help))])
         }

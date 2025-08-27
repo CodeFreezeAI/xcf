@@ -23,10 +23,28 @@ class XcfMcpXcodeDocumentHandlers {
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
         
-        if XcfMcpServer.XcfScript.openSwiftDocument(filePath: filePath) {
-            return CallTool.Result(content: [.text(McpConfig.documentOpenedSuccessfully)])
+        // Use FuzzyLogicService to resolve the path for better error messages
+        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
+        
+        // If there was a warning, include it in the response
+        var responseMessage = ""
+        if !warning.isEmpty {
+            responseMessage += "Warning: \(warning)\n"
+        }
+        
+        if XcfMcpServer.XcfScript.openSwiftDocument(filePath: resolvedPath) {
+            responseMessage += McpConfig.documentOpenedSuccessfully
+            return CallTool.Result(content: [.text(responseMessage)])
         } else {
-            return CallTool.Result(content: [.text(String(format: ErrorMessages.errorOpeningFile, filePath))])
+            // Check if file exists to provide more specific error
+            if !FileManager.default.fileExists(atPath: resolvedPath) {
+                responseMessage += "Error: File does not exist: \(resolvedPath)"
+            } else if !FileManager.default.isReadableFile(atPath: resolvedPath) {
+                responseMessage += "Error: File is not readable: \(resolvedPath)"
+            } else {
+                responseMessage += String(format: ErrorMessages.errorOpeningFile, resolvedPath)
+            }
+            return CallTool.Result(content: [.text(responseMessage)])
         }
     }
     
@@ -66,12 +84,7 @@ class XcfMcpXcodeDocumentHandlers {
         
         // Use FuzzyLogicService to resolve the path
         let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
-        
-        // If there was a warning, print it
-        if !warning.isEmpty {
-            print(warning)
-        }
-        
+    
         if let content = XcfMcpServer.XcfScript.readSwiftDocumentWithFileManager(filePath: resolvedPath) {
             return CallTool.Result(content: [.text(content)])
         } else {
@@ -96,15 +109,10 @@ class XcfMcpXcodeDocumentHandlers {
     /// Handles closing a document in Xcode
     static func handleCloseDocToolCall(_ params: CallTool.Parameters) throws -> CallTool.Result {
         // Debug: Print out the entire params
-        print("Close Doc Tool Call Params: \(params)")
         
         guard let arguments = params.arguments else {
-            print("No arguments provided")
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
-        
-        // Debug: Print out the arguments
-        print("Arguments: \(arguments)")
         
         // Try to get filePath from arguments in two ways:
         // 1. As a named parameter (filePath=...)
@@ -112,12 +120,9 @@ class XcfMcpXcodeDocumentHandlers {
         let filePath: String
         if let namedPath = arguments[McpConfig.filePathParamName]?.stringValue {
             filePath = namedPath
-            print("FilePath from named parameter: \(filePath)")
         } else if let firstArg = arguments.first?.value.stringValue {
             filePath = firstArg
-            print("FilePath from first argument: \(filePath)")
         } else {
-            print("No filePath found")
             return CallTool.Result(content: [.text(McpConfig.missingFilePathParamError)])
         }
         
@@ -125,26 +130,19 @@ class XcfMcpXcodeDocumentHandlers {
         let savingParam: Bool
         if let boolValue = arguments["saving"]?.boolValue {
             savingParam = boolValue
-            print("Saving parameter (bool): \(savingParam)")
         } else if let stringValue = arguments["saving"]?.stringValue {
             // Handle string representations of boolean
             savingParam = ["true", "yes", "1"].contains(stringValue.lowercased())
-            print("Saving parameter (string): \(stringValue), parsed as: \(savingParam)")
         } else {
-            print("No saving parameter found")
             return CallTool.Result(content: [.text("Missing 'saving' parameter")])
         }
         
         // Convert boolean to XcodeSaveOptions
         let saveOptions: XcodeSaveOptions = savingParam ? .yes : .no
-        
-        print("Attempting to close document: \(filePath) with save options: \(saveOptions)")
-        
+                
         if XcfMcpServer.XcfScript.closeSwiftDocument(filePath: filePath, xcSaveOptions: saveOptions) {
-            print("Document closed successfully")
             return CallTool.Result(content: [.text(McpConfig.documentClosedSuccessfully)])
         } else {
-            print("Failed to close document")
             return CallTool.Result(content: [.text(String(format: ErrorMessages.errorClosingFile, filePath))])
         }
     }

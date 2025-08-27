@@ -62,10 +62,7 @@ struct XcfFileManager {
     /// - Throws: Error if file cannot be created
     static func createFile(at filePath: String, content: String) throws {
         let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
-        if !warning.isEmpty {
-            print(warning)
-        }
-        
+    
         guard !FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 2, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileAlreadyExists, filePath)])
         }
@@ -76,43 +73,7 @@ struct XcfFileManager {
         
         try content.write(toFile: resolvedPath, atomically: true, encoding: .utf8)
     }
-    
-    /// Edits a specific range of lines in a file
-    /// - Parameters:
-    ///   - filePath: Path to the file to edit
-    ///   - startLine: First line to edit (1-indexed)
-    ///   - endLine: Last line to edit (1-indexed)
-    ///   - replacementContent: New content for the specified line range
-    /// - Throws: Error if file cannot be edited
-//    static func editFileCommentedOut(at filePath: String, startLine: Int, endLine: Int, replacementContent: String) throws {
-//        // Security check with path resolution
-//        let (allowed, resolvedPath, error) = SecurityManager.shared.isFileOperationAllowed(filePath, operation: "edit")
-//        if !allowed {
-//            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: error ?? "Access denied"])
-//        }
-//        
-//        guard FileManager.default.fileExists(atPath: resolvedPath) else {
-//            throw NSError(domain: "XcfFileManager", code: 1, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileNotFound, filePath)])
-//        }
-//        
-//        do {
-//            let content = try String(contentsOfFile: resolvedPath, encoding: .utf8)
-//            var lines = content.components(separatedBy: .newlines)
-//            
-//            guard startLine > 0, endLine <= lines.count, startLine <= endLine else {
-//                throw NSError(domain: "XcfFileManager", code: 3, userInfo: [NSLocalizedDescriptionKey: ErrorMessages.invalidLineNumbers])
-//            }
-//            
-//            let replacementLines = replacementContent.components(separatedBy: .newlines)
-//            lines.replaceSubrange((startLine - 1)...(endLine - 1), with: replacementLines)
-//            
-//            let newContent = lines.joined(separator: "\n")
-//            try newContent.write(toFile: resolvedPath, atomically: true, encoding: .utf8)
-//        } catch {
-//            throw error
-//        }
-//    }
-    
+        
     /// Deletes a file
     /// - Parameter filePath: Path to the file to delete
     /// - Throws: Error if file cannot be deleted
@@ -135,10 +96,7 @@ struct XcfFileManager {
     /// - Throws: Error if directory cannot be created
     static func createDirectory(at directoryPath: String) throws {
         let (resolvedPath, warning) = FuzzyLogicService.resolveDirectoryPath(directoryPath)
-        if !warning.isEmpty {
-            print(warning)
-        }
-        
+      
         guard !FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 2, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryAlreadyExists, directoryPath)])
         }
@@ -181,10 +139,7 @@ struct XcfFileManager {
         
         // Now resolve the target path
         let (resolvedPath, warning) = FuzzyLogicService.resolveDirectoryPath(path)
-        if !warning.isEmpty {
-            print(warning)
-        }
-        
+   
         // Verify the target directory exists
         var isDirectory: ObjCBool = false
         guard FileManager.default.fileExists(atPath: resolvedPath, isDirectory: &isDirectory),

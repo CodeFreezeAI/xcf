@@ -104,7 +104,6 @@ class XcfXcodeProjectManager {
     /// - Parameter projectPath: The path to the selected Xcode project
     func updateFromProjectSelection(_ projectPath: String) {
         guard FileExtensions.isValidXcodeProjectPath(projectPath) else {
-            print(String(format: ErrorMessages.invalidProjectPath, projectPath))
             return
         }
         

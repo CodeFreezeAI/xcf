@@ -128,7 +128,6 @@ class XcfSwiftScript {
     func getXcodeDocumentPaths(ext: String) -> [String] {
         // Get Xcode application instance
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
-            print(ErrorMessages.failedToConnectXcode)
             return []
         }
         
@@ -153,13 +152,11 @@ class XcfSwiftScript {
     func getSchemes() -> [String] {
         // Get Xcode application instance
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
-            print(ErrorMessages.failedToConnectXcode)
             return []
         }
         
         // Get the active workspace document
         guard let activeWorkspace = xcode.activeWorkspaceDocument else {
-            print("No active workspace document.")
             return []
         }
         
@@ -167,14 +164,12 @@ class XcfSwiftScript {
         if let schemes = activeWorkspace.schemes?() as? [XcodeScheme] {
             return schemes.compactMap { $0.name }
         } else {
-            print("No schemes found.")
             return []
         }
     }
     
     func activeWorkspacePath() -> String? {
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
-            print(ErrorMessages.failedToConnectXcode)
             return nil
         }
         
@@ -202,31 +197,42 @@ class XcfSwiftScript {
     /// - Returns: True if successful, false otherwise
     func openSwiftDocument(filePath: String) -> Bool {
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
-            print(ErrorMessages.failedToConnectXcode)
             return false
         }
         
         // Use FileFinder to resolve the path
         let (resolvedPath, warning) = FileFinder.resolveFilePath(filePath)
         
-        // If there was a warning, print it
-        if !warning.isEmpty {
-            print(warning)
-        }
-        
-        // Verify the file exists
+        // First check if the file exists on disk using FileManager
         if !FileManager.default.fileExists(atPath: resolvedPath) {
-            print("File does not exist or is not a Swift file: \(resolvedPath)")
             return false
         }
         
-        // Open the document in Xcode if it'sresolvedPathnot already open
-        guard let _ = xcode.open?(filePath as Any) as? XcodeTextDocument else {
-            print("Failed to open document in Xcode")
+        // Check if the document is already open in Xcode using Scripting Bridge
+        if let documents = xcode.documents?() {
+            for case let document as XcodeDocument in documents {
+                if let docPath = document.path, docPath == resolvedPath {
+                    return true
+                }
+            }
+        }
+        
+        // Check if the file is accessible and readable
+        guard FileManager.default.isReadableFile(atPath: resolvedPath) else {
             return false
         }
         
-        return true
+        // Try to open the document in Xcode using Scripting Bridge
+        guard let openedDocument = xcode.open?(resolvedPath as Any) as? XcodeTextDocument else {
+            return false
+        }
+        
+        // Verify the document was actually opened by checking its path
+        if let openedPath = openedDocument.path, openedPath == resolvedPath {
+            return true
+        } else {
+            return false
+        }
     }
     
     /// Creates a new Swift document using Xcode ScriptingBridge
@@ -236,29 +242,17 @@ class XcfSwiftScript {
     /// - Returns: True if successful, false otherwise
     func createSwiftDocumentWithFileManager(filePath: String, content: String = "") -> Bool {
         guard let _: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
-            print(ErrorMessages.failedToConnectXcode)
             return false
         }
         
         // Use FileFinder to resolve the path
         let (resolvedPath, warning) = FileFinder.resolveFilePath(filePath)
         
-        // If there was a warning, print it
-        if !warning.isEmpty {
-            print(warning)
-        }
-        
         // First create the file using FileManager
         do {
             try XcfFileManager.writeFile(content: content, to: resolvedPath)
         } catch {
             return false
-        }
-        
-        // Verify the file exists and is a Swift file
-        if !FileManager.default.fileExists(atPath: resolvedPath) {
-            print("File does not exist or is not a Swift file: \(resolvedPath)")
-            //return false
         }
         
         // Try to open the document
@@ -275,7 +269,6 @@ class XcfSwiftScript {
             let (content, _) = try XcfFileManager.readFile(at: filePath)
             return content
         } catch {
-            print("Error reading file: \(error.localizedDescription)")
             return nil
         }
     }
@@ -292,7 +285,6 @@ class XcfSwiftScript {
             try XcfFileManager.writeFile(content: content, to: filePath)
             return true
         } catch {
-            print("Error writing to file: \(error.localizedDescription)")
             return false
         }
     }
@@ -309,32 +301,15 @@ class XcfSwiftScript {
     /// - Returns: True if successful, false otherwise
     func closeSwiftDocument(filePath: String, xcSaveOptions: XcodeSaveOptions ) -> Bool {
         guard let xcode: XcodeApplication = SBApplication(bundleIdentifier: XcodeConstants.xcodeBundleIdentifier) else {
-            print(ErrorMessages.failedToConnectXcode)
             return false
         }
         
         // Use FileFinder to resolve the path
         let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
         
-        // If there was a warning, print it
-        if !warning.isEmpty {
-            print(warning)
-        }
-        
         // Find the document in Xcode
         guard let documents = xcode.documents?() else {
-            print("No documents open in Xcode")
             return false
-        }
-        
-        // Debug information
-        print("Looking for document with path: \(resolvedPath)")
-        print("Number of open documents: \((documents as? [XcodeDocument])?.count ?? 0)")
-        
-        if let documentList = documents as? [XcodeDocument] {
-            for doc in documentList {
-                print("Document path: \(doc.path ?? "unknown")")
-            }
         }
         
         // Try to find document with exact path
@@ -357,7 +332,6 @@ class XcfSwiftScript {
             return true
         }
         
-        print("Document not found in Xcode: \(resolvedPath)")
         return false
     }
 }
