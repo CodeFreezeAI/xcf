@@ -9,11 +9,11 @@
 [![GitHub stars](https://img.shields.io/github/stars/codefreezeai/xcf.svg?style=social)](https://github.com/codefreezeai/xcf/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/codefreezeai/swift-multi-line-diff.svg?style=social)](https://github.com/codefreezeai/xcf/network)
 
-### 🚧 New features are in development...
-- File Operations
-- Directory Operations
-- Scripting Bridge Xcode Doc Operations
-- AI Coding Diff Tools (In the works!)
+### 🖌️ New features in 1.0.5!
+- ✅ File Operations
+- ✅ Directory Operations
+- ✅ Scripting Bridge Xcode Doc Operations
+- ✅ AI Coding Diff Tools
 - ✅ Fuzzy Logic
 - ✅ Swift code analysis without building in Xcode
 
