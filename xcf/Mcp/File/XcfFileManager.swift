@@ -61,7 +61,7 @@ struct XcfFileManager {
     ///   - content: Initial content for the file
     /// - Throws: Error if file cannot be created
     static func createFile(at filePath: String, content: String) throws {
-        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
+        let (resolvedPath, _) = FuzzyLogicService.resolveFilePath(filePath)
     
         guard !FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 2, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.fileAlreadyExists, filePath)])
@@ -95,7 +95,7 @@ struct XcfFileManager {
     /// - Parameter directoryPath: Path where the directory should be created
     /// - Throws: Error if directory cannot be created
     static func createDirectory(at directoryPath: String) throws {
-        let (resolvedPath, warning) = FuzzyLogicService.resolveDirectoryPath(directoryPath)
+        let (resolvedPath, _) = FuzzyLogicService.resolveDirectoryPath(directoryPath)
       
         guard !FileManager.default.fileExists(atPath: resolvedPath) else {
             throw NSError(domain: "XcfFileManager", code: 2, userInfo: [NSLocalizedDescriptionKey: String(format: ErrorMessages.directoryAlreadyExists, directoryPath)])
@@ -138,7 +138,7 @@ struct XcfFileManager {
         }
         
         // Now resolve the target path
-        let (resolvedPath, warning) = FuzzyLogicService.resolveDirectoryPath(path)
+        let (resolvedPath, _) = FuzzyLogicService.resolveDirectoryPath(path)
    
         // Verify the target directory exists
         var isDirectory: ObjCBool = false

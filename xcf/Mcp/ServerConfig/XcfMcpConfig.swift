@@ -36,13 +36,6 @@ struct McpConfig {
                moveFileToolName = "move_file",
                moveDirToolName = "move_dir"
     
-    // ScriptingBridge tool names
-    static let openDocToolName = "open_doc",
-               createDocToolName = "create_doc",
-               readDocToolName = "read_doc",
-               saveDocToolName = "save_doc",
-               closeDocToolName = "close_doc"
-    
     // Tool descriptions
     static let listToolsDesc = "Lists all available tools on this server",
                xcfToolDesc = "Execute an \(AppConstants.appName) action or command",
@@ -64,14 +57,6 @@ struct McpConfig {
                moveFileToolDesc = "Move a file from one location to another",
                moveDirToolDesc = "Move a directory from one location to another"
     
-    // ScriptingBridge tool descriptions
-    static let openDocToolDesc = "Open a document in Xcode",
-               createDocToolDesc = "Create a new document in Xcode",
-               readDocToolDesc = "Read document content from Xcode",
-               saveDocToolDesc = "Save document in Xcode",
-
-               closeDocToolDesc = "Close a document in Xcode"
-    
     // Standalone action tool names
     static let showHelpToolName = "show_help",
                grantPermissionToolName = "grant_permission",
@@ -84,20 +69,6 @@ struct McpConfig {
                selectProjectToolName = "select_project",
                analyzeSwiftCodeToolName = "analyze_swift_code"
     
-    // Diff tool names
-    static let createDiffFromDocToolName = "create_diff_from_doc",
-               applyDiffToDocToolName = "apply_diff_to_doc",
-               applyUndoDiffToDocToolName = "apply_undo_diff_to_doc",
-               createDiff = "create_diff",
-               applyDiff = "apply_diff",
-               getAsciiDiff = "get_ascii_diff"
-    
-    // Diff tool descriptions
-    static let createDiffFromDocToolDesc = "Create a diff from a document and store it with a hash",
-               applyDiffToDocToolDesc = "Apply a diff to a document using a stored diff hash",
-               applyUndoDiffToDocToolDesc = "Apply undo diff to a document using a stored diff hash",
-               getAsciiDiffToolDesc = "Get ASCII diff representation from a stored diff hash"
-
     // Standalone action tool descriptions
     static let showHelpToolDesc = "Display help information about available commands",
                grantPermissionToolDesc = "Grant Xcode automation permissions",
@@ -121,10 +92,6 @@ struct McpConfig {
                listProjectsPromptName = "listProjects",
                selectProjectPromptName = "selectProject",
                analyzeSwiftCodePromptName = "analyzeSwiftCode"
-    
-    // Diff tool parameter names
-    static let diffHashParamName = "diffHash",
-               diffHashParamDesc = "SHA256 hash of the diff to apply"
     
     // Standalone action tool parameter names
     static let projectNumberParamName = "projectNumber",
@@ -206,13 +173,9 @@ struct McpConfig {
                integerType = "integer",
                booleanType = "boolean"
     
-    // DiffTools
-    static let modifiedContentParamName = "modifiedContent",
-               modifiedContentParamNameDesc = "modified content to the file"
-    
     // Snippet tool parameters
-    static let filePathParamName = "filePath",         // Use from Diff Tools
-               filePathParamDesc = "Path to the file", // Use from Diff Tools
+    static let filePathParamName = "filePath",
+               filePathParamDesc = "Path to the file",
                startLineParamName = "startLine",
                startLineParamDesc = "Starting line number (1-indexed)",
                endLineParamName = "endLine",
@@ -295,13 +258,7 @@ struct McpConfig {
                directoryReadSuccessfully = "Directory read successfully",
                directorySelectedSuccessfully = "Directory selected successfully",
                directoryChangedSuccessfully = "Directory changed successfully",
-               directoryRemovedSuccessfully = "Directory removed successfully",
-               documentOpenedSuccessfully = "Document opened successfully",
-               documentCreatedSuccessfully = "Document created successfully",
-               documentReadSuccessfully = "Document read successfully",
-               documentSavedSuccessfully = "Document saved successfully",
-               documentEditedSuccessfully = "Document edited successfully",
-               documentClosedSuccessfully = "Document closed successfully"
+               directoryRemovedSuccessfully = "Directory removed successfully"
     
     // Error messages
     static let errorChangingDirectory = "Error changing directory: %@",

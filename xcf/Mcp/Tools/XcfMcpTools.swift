@@ -16,11 +16,6 @@ class XcfMcpTools {
             ReadDirTool(),
             ReadFileTool(),
             CdDirTool(),
-            OpenDocTool(),
-            CloseDocTool(),
-            CreateDocTool(),
-            ReadDocTool(),
-            SaveDocTool(),
             UseXcfTool(),
             ToolsReferenceTool(),
             ShowHelpTool(),
@@ -32,13 +27,7 @@ class XcfMcpTools {
             ShowFolderTool(),
             ListProjectsTool(),
             SelectProjectTool(),
-            AnalyzeSwiftCodeTool(),
-            CreateDiffTool(),
-            ApplyDiffTool(),
-            GetAsciiDiffTool(),
-            CreateDiffFromDocTool(),
-            ApplyDiffToDocTool(),
-            ApplyUndoDiffToDocTool()
+            AnalyzeSwiftCodeTool()
         ]
     }
     
@@ -204,99 +193,6 @@ class XcfMcpTools {
         )
     }
     
-    private static func OpenDocTool() -> Tool {
-        Tool(
-            name: McpConfig.openDocToolName,
-            description: McpConfig.openDocToolDesc,
-            inputSchema: .object([
-                McpConfig.typeKey: .string(McpConfig.objectType),
-                McpConfig.propertiesKey: .object([
-                    McpConfig.filePathParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
-                    ])
-                ]),
-                McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
-            ])
-        )
-    }
-    
-    private static func CloseDocTool() -> Tool {
-        Tool(
-            name: McpConfig.closeDocToolName,
-            description: McpConfig.closeDocToolDesc,
-            inputSchema: .object([
-                McpConfig.typeKey: .string(McpConfig.objectType),
-                McpConfig.propertiesKey: .object([
-                    McpConfig.filePathParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
-                    ]),
-                    "saving": .object([
-                        McpConfig.typeKey: .string(McpConfig.booleanType),
-                        McpConfig.descriptionKey: .string("Whether to save the document before closing")
-                    ])
-                ]),
-                McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string("saving")])
-            ])
-        )
-    }
-    
-    private static func CreateDocTool() -> Tool {
-        Tool(
-            name: McpConfig.createDocToolName,
-            description: McpConfig.createDocToolDesc,
-            inputSchema: .object([
-                McpConfig.typeKey: .string(McpConfig.objectType),
-                McpConfig.propertiesKey: .object([
-                    McpConfig.filePathParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
-                    ]),
-                    McpConfig.contentParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.contentParamDesc)
-                    ])
-                ]),
-                McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
-            ])
-        )
-    }
-    
-    private static func ReadDocTool() -> Tool {
-        Tool(
-            name: McpConfig.readDocToolName,
-            description: McpConfig.readDocToolDesc,
-            inputSchema: .object([
-                McpConfig.typeKey: .string(McpConfig.objectType),
-                McpConfig.propertiesKey: .object([
-                    McpConfig.filePathParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
-                    ])
-                ]),
-                McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
-            ])
-        )
-    }
-    
-    private static func SaveDocTool() -> Tool {
-        Tool(
-            name: McpConfig.saveDocToolName,
-            description: McpConfig.saveDocToolDesc,
-            inputSchema: .object([
-                McpConfig.typeKey: .string(McpConfig.objectType),
-                McpConfig.propertiesKey: .object([
-                    McpConfig.filePathParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
-                    ])
-                ]),
-                McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName)])
-            ])
-        )
-    }
-    
     private static func UseXcfTool() -> Tool {
         Tool(
             name: McpConfig.useXcfToolName,
@@ -443,125 +339,4 @@ class XcfMcpTools {
         )
     }
     
-    private static func CreateDiffTool() -> Tool {
-        Tool(
-            name: "create_diff",
-            description: "Create a diff between documents or document sections",
-            inputSchema: .object([
-                McpConfig.typeKey: .string(McpConfig.objectType),
-                McpConfig.propertiesKey: .object([
-                    "sourceString": .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string("Source string to modify")
-                    ]),
-                    "destString": .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string("Destination string to create")
-                    ])
-                ]),
-                McpConfig.requiredKey: .array([.string("sourceString"), .string("destString")])
-            ])
-        )
-    }
-    
-    private static func ApplyDiffTool() -> Tool {
-        Tool(
-            name: "apply_diff",
-            description: "Apply diff operations to a document",
-            inputSchema: .object([
-                McpConfig.typeKey: .string(McpConfig.objectType),
-                McpConfig.propertiesKey: .object([
-                    "sourceString": .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string("Source string to modify")
-                    ]),
-                    "diffHash": .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string("SHA256 hash of the diff to apply")
-                    ])
-                ]),
-                McpConfig.requiredKey: .array([.string("sourceString"), .string("diffHash")])
-            ])
-        )
-    }
-    
-    private static func CreateDiffFromDocTool() -> Tool {
-        Tool(
-            name: McpConfig.createDiffFromDocToolName,
-            description: McpConfig.createDiffFromDocToolDesc,
-            inputSchema: .object([
-                McpConfig.typeKey: .string(McpConfig.objectType),
-                McpConfig.propertiesKey: .object([
-                    McpConfig.filePathParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
-                    ]),
-                    McpConfig.modifiedContentParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.modifiedContentParamNameDesc)
-                    ])
-                ]),
-                McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName),.string(McpConfig.modifiedContentParamName)])
-            ])
-        )
-    }
-    
-    private static func ApplyDiffToDocTool() -> Tool {
-        Tool(
-            name: McpConfig.applyDiffToDocToolName,
-            description: McpConfig.applyDiffToDocToolDesc,
-            inputSchema: .object([
-                McpConfig.typeKey: .string(McpConfig.objectType),
-                McpConfig.propertiesKey: .object([
-                    McpConfig.filePathParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
-                    ]),
-                    McpConfig.diffHashParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.diffHashParamDesc)
-                    ])
-                ]),
-                McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string(McpConfig.diffHashParamName)])
-            ])
-        )
-    }
-    
-    private static func ApplyUndoDiffToDocTool() -> Tool {
-        Tool(
-            name: McpConfig.applyUndoDiffToDocToolName,
-            description: McpConfig.applyUndoDiffToDocToolDesc,
-            inputSchema: .object([
-                McpConfig.typeKey: .string(McpConfig.objectType),
-                McpConfig.propertiesKey: .object([
-                    McpConfig.filePathParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.filePathParamDesc)
-                    ]),
-                    McpConfig.diffHashParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.diffHashParamDesc)
-                    ])
-                ]),
-                McpConfig.requiredKey: .array([.string(McpConfig.filePathParamName), .string(McpConfig.diffHashParamName)])
-            ])
-        )
-    }
-    
-    private static func GetAsciiDiffTool() -> Tool {
-        Tool(
-            name: McpConfig.getAsciiDiff,
-            description: McpConfig.getAsciiDiffToolDesc,
-            inputSchema: .object([
-                McpConfig.typeKey: .string(McpConfig.objectType),
-                McpConfig.propertiesKey: .object([
-                    McpConfig.diffHashParamName: .object([
-                        McpConfig.typeKey: .string(McpConfig.stringType),
-                        McpConfig.descriptionKey: .string(McpConfig.diffHashParamDesc)
-                    ])
-                ]),
-                McpConfig.requiredKey: .array([.string(McpConfig.diffHashParamName)])
-            ])
-        )
-    }
 }

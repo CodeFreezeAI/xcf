@@ -201,7 +201,7 @@ class XcfSwiftScript {
         }
         
         // Use FileFinder to resolve the path
-        let (resolvedPath, warning) = FileFinder.resolveFilePath(filePath)
+        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
         
         // First check if the file exists on disk using FileManager
         if !FileManager.default.fileExists(atPath: resolvedPath) {
@@ -246,7 +246,7 @@ class XcfSwiftScript {
         }
         
         // Use FileFinder to resolve the path
-        let (resolvedPath, warning) = FileFinder.resolveFilePath(filePath)
+        let (resolvedPath, _) = FileFinder.resolveFilePath(filePath)
         
         // First create the file using FileManager
         do {
@@ -305,7 +305,7 @@ class XcfSwiftScript {
         }
         
         // Use FileFinder to resolve the path
-        let (resolvedPath, warning) = FuzzyLogicService.resolveFilePath(filePath)
+        let (resolvedPath, _) = FuzzyLogicService.resolveFilePath(filePath)
         
         // Find the document in Xcode
         guard let documents = xcode.documents?() else {

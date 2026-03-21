@@ -1,6 +1,5 @@
 import Foundation
 import MCP
-import MultiLineDiff
 
 //typealias StringIndex = String.Index
 
@@ -40,47 +39,14 @@ class XcfMcpToolCallHandlers {
         case McpConfig.cdDirToolName:
             return try XcfMcpFileSystemHandlers.handleCdDirToolCall(params)
             
-        case McpConfig.openDocToolName:
-            return try XcfMcpXcodeDocumentHandlers.handleOpenDocToolCall(params)
-            
-        case McpConfig.createDocToolName:
-            return try XcfMcpXcodeDocumentHandlers.handleCreateDocToolCall(params)
-            
-        case McpConfig.readDocToolName:
-            return try XcfMcpXcodeDocumentHandlers.handleReadDocToolCall(params)
-            
-        case McpConfig.saveDocToolName:
-            return try XcfMcpXcodeDocumentHandlers.handleSaveDocToolCall(params)
-            
         case McpConfig.readDirToolName:
             return try XcfMcpFileSystemHandlers.handleReadDirToolCall(params)
-            
-        case McpConfig.closeDocToolName:
-            return try XcfMcpXcodeDocumentHandlers.handleCloseDocToolCall(params)
             
         case McpConfig.tools:
             return XcfMcpHelpHandlers.handleToolsReferenceToolCall(params)
             
         case McpConfig.xcfHelp:
             return XcfMcpHelpHandlers.handleQuickHelpToolCall(params)
-
-        case McpConfig.createDiff:
-            return try XcfMcpDiffHandlers.handleCreateDiffToolCall(params)
-            
-        case McpConfig.applyDiff:
-            return try XcfMcpDiffHandlers.handleApplyDiffToolCall(params)
-            
-        case McpConfig.getAsciiDiff:
-            return try XcfMcpDiffHandlers.handleGetAsciiDiffToolCall(params)
-            
-        case McpConfig.createDiffFromDocToolName:
-            return try XcfMcpDiffHandlers.handleCreateDiffFromDocToolCall(params)
-            
-        case McpConfig.applyUndoDiffToDocToolName:
-            return try XcfMcpDiffHandlers.handleApplyUndoDiffToDocToolCall(params)
-            
-        case McpConfig.applyDiffToDocToolName:
-            return try XcfMcpDiffHandlers.handleApplyDiffToDocToolCall(params)
         
         // Action-specific tool handlers - delegate to specialized handler
         case McpConfig.showHelpToolName:
