@@ -96,9 +96,8 @@ These environment variables let you:
 - **Real-time Error Handling:** `xcf build` or `xcf run` sends errors and warnings from Xcode directly to your AI IDE
 - **AI-Powered Fixes:** Let Claude fix bugs and mistakes during your coding sessions
 - **Intuitive Commands:** Simple, developer-friendly command structure for maximum productivity
-- **Comprehensive File Operations:** Read, write, edit, and delete files with ease
-- **Directory Management:** Navigate, list, create, and remove directories
-- **Xcode Document Integration:** Open, create, read, save, edit, and close Xcode documents directly
+- **Comprehensive File Operations:** Read files and directories with ease
+- **Xcode Integration:** Build, run, and manage Xcode projects directly
 - **Advanced Code Analysis:** Get detailed Swift code analysis without building in Xcode
 
 ## 🛠️ Perfect for Swift Developers
@@ -122,29 +121,8 @@ The tool is designed by Swift developers, for Swift developers. Commands like `b
 | Command | Description |
 |---------|-------------|
 | `read_file <file>` | Read content from a file |
-| `write_file <file> <content>` | Write content to a file |
-| `edit_file <file> <start> <end> <content>` | Edit specific lines in a file |
-| `delete_file <file>` | Delete a file |
-| `move_file <source> <destination>` | Move a file from one location to another |
-
-### Directory Operations
-| Command | Description |
-|---------|-------------|
-| `cd_dir <path>` | Change directory |
 | `read_dir [path] [extension]` | List directory contents |
-| `add_dir <path>` | Create directory |
-| `rm_dir <path>` | Remove directory |
-| `move_dir <source> <destination>` | Move a directory from one location to another |
-
-### Xcode Document Operations
-| Command | Description |
-|---------|-------------|
-| `open_doc <file>` | Open document in Xcode |
-| `create_doc <file> [content]` | Create new Xcode document |
-| `read_doc <file>` | Read Xcode document |
-| `save_doc <file>` | Save Xcode document |
-
-| `close_doc <file> <saving>` | Close a document in Xcode |
+| `cd_dir <path>` | Change directory |
 
 ### Analysis Tools
 | Command | Description |
@@ -215,18 +193,15 @@ When a file isn't found at the exact path, xcf will intelligently search for it 
 6. As a last resort, performs a fuzzy search for similar filenames
 
 This smart path resolution is used consistently across ALL file operations in xcf, including:
-- File reading and writing
-- Code snippets and analysis
+- File reading and code snippets
+- Code analysis
 - Directory operations
-- File editing and deletion
-- Document operations in Xcode
 
 This means you can usually just use the filename without any path for any operation:
 
 ```
 xcf snippet Constants.swift    // For humans
 xcf analyze Constants.swift    // For humans
-xcf edit Constants.swift       // For humans
 ```
 
 Or for AI assistants:
@@ -234,7 +209,6 @@ Or for AI assistants:
 ```
 mcp_xcf_snippet filePath="Constants.swift" entireFile=true
 mcp_xcf_analyzer filePath="Constants.swift" entireFile=true
-mcp_xcf_xcf action="edit Constants.swift"
 ```
 
 ## 🔍 Swift Code Analysis
@@ -284,43 +258,62 @@ The analysis identifies issues like:
 
 ## 🧩 MCP Tools
 
-### Function-Based Tools
-- `mcp_xcf_xcf`: Execute xcf actions/commands
-- `mcp_xcf_list`: Show all available tools
-- `mcp_xcf_snippet`: Extract code snippets from files
-- `mcp_xcf_analyzer`: Analyze Swift code for potential issues
-- `mcp_xcf_help`: Get help information
-- `mcp_xcf_xcf_help`: Get help for xcf actions only
-- `mcp_xcf_tools`: Show detailed reference for all tools
-- `mcp_xcf_read_dir`: List contents of a directory
-- `mcp_xcf_read_file`: Read content from a file
-- `mcp_xcf_write_file`: Write content to a file
-- `mcp_xcf_edit_file`: Edit content in a file
-- `mcp_xcf_delete_file`: Delete a file
-- `mcp_xcf_cd_dir`: Change current directory
-- `mcp_xcf_add_dir`: Create a new directory
-- `mcp_xcf_rm_dir`: Remove a directory
-- `mcp_xcf_move_file`: Move a file from one location to another
-- `mcp_xcf_move_dir`: Move a directory from one location to another
-- `mcp_xcf_open_doc`: Open a document in Xcode
-- `mcp_xcf_close_doc`: Close a document in Xcode
-- `mcp_xcf_create_doc`: Create a new document in Xcode
-- `mcp_xcf_read_doc`: Read document content from Xcode
-- `mcp_xcf_save_doc`: Save document in Xcode
+### Currently Available Tools
 
-- `mcp_xcf_use_xcf`: Activate XCF mode
+These are the tools currently available in XCF:
 
-### Standalone Action Tools
-- `mcp_xcf_show_help`: Display help information about available commands
-- `mcp_xcf_grant_permission`: Grant Xcode automation permissions
-- `mcp_xcf_run_project`: Run the current Xcode project
-- `mcp_xcf_build_project`: Build the current Xcode project
-- `mcp_xcf_show_current_project`: Show information about the currently selected project
-- `mcp_xcf_show_env`: Display all environment variables
-- `mcp_xcf_show_folder`: Display the current working folder
-- `mcp_xcf_list_projects`: List all open Xcode projects
-- `mcp_xcf_select_project`: Select an Xcode project by number
-- `mcp_xcf_analyze_swift_code`: Analyze Swift code for potential issues
+| Tool | Description |
+|------|-------------|
+| `mcp_xcf_xcf` | Execute xcf actions/commands |
+| `mcp_xcf_list` | Show all available tools on this server |
+| `mcp_xcf_xcf_help` | Help for xcf actions only |
+| `mcp_xcf_help` | Regular help with common examples |
+| `mcp_xcf_snippet` | Extract code snippets from files |
+| `mcp_xcf_analyzer` | Analyze Swift code for potential issues |
+| `mcp_xcf_read_dir` | List contents of a directory |
+| `mcp_xcf_read_file` | Read content from a file |
+| `mcp_xcf_cd_dir` | Change current directory |
+| `mcp_xcf_use_xcf` | Activate XCF mode |
+| `mcp_xcf_tools` | Show detailed reference for all tools |
+| `mcp_xcf_show_help` | Display help information about available commands |
+| `mcp_xcf_grant_permission` | Grant Xcode automation permissions |
+| `mcp_xcf_run_project` | Run the current Xcode project |
+| `mcp_xcf_build_project` | Build the current Xcode project |
+| `mcp_xcf_show_current_project` | Show information about the currently selected project |
+| `mcp_xcf_show_env` | Display all environment variables |
+| `mcp_xcf_show_folder` | Display the current working folder |
+| `mcp_xcf_list_projects` | List all open Xcode projects |
+| `mcp_xcf_select_project` | Select an Xcode project by number |
+| `mcp_xcf_analyze_swift_code` | Analyze Swift code for potential issues |
+
+### Tools Moved to Agent macOS App
+
+The following tools were previously available in XCF but have been **moved to the native Agent macOS app** (github.com/macOS26/agent) for better integration and performance:
+
+| Moved Tool | Replacement in Agent |
+|------------|----------------------|
+| `mcp_xcf_write_file` | Use native `write_file` tool |
+| `mcp_xcf_edit_file` | Use native `edit_file` tool |
+| `mcp_xcf_delete_file` | Use native file system tools |
+| `mcp_xcf_add_dir` | Use native directory tools |
+| `mcp_xcf_rm_dir` | Use native directory tools |
+| `mcp_xcf_move_file` | Use native file system tools |
+| `mcp_xcf_move_dir` | Use native file system tools |
+| `mcp_xcf_open_doc` | Use native Xcode integration |
+| `mcp_xcf_close_doc` | Use native Xcode integration |
+| `mcp_xcf_create_doc` | Use native Xcode integration |
+| `mcp_xcf_read_doc` | Use native Xcode integration |
+| `mcp_xcf_save_doc` | Use native Xcode integration |
+
+**Why were these tools moved?**
+
+These file and document manipulation tools are now available as native tools in the Agent macOS application, providing:
+- **Better performance** - Direct integration without MCP overhead
+- **Enhanced reliability** - Native Swift implementation
+- **Consistent API** - Unified tool interface across all operations
+- **Improved maintenance** - Centralized updates in the main Agent app
+
+See the [Agent macOS repository](https://github.com/macOS26/agent) for the complete set of native tools.
 
 ### For AI Function Calls
 
@@ -351,46 +344,19 @@ Read a file:
 mcp_xcf_read_file filePath="main.swift"
 ```
 
-Write to a file:
-```
-mcp_xcf_write_file filePath="test.txt" content="Hello World"
-```
-
-Edit specific lines in a file:
-```
-mcp_xcf_edit_file filePath="main.swift" startLine=10 endLine=20 replacement="new code here"
-```
-
 List directory contents:
 ```
 mcp_xcf_read_dir directoryPath="."
 ```
 
-Create a new directory:
+List Swift files only:
 ```
-mcp_xcf_add_dir directoryPath="new_folder"
-```
-
-### Working with Xcode Documents
-
-Open a document in Xcode:
-```
-mcp_xcf_open_doc filePath="main.swift"
+mcp_xcf_read_dir directoryPath="src" fileExtension="swift"
 ```
 
-Create a new document:
+Change directory:
 ```
-mcp_xcf_create_doc filePath="new_file.swift" content="import Foundation"
-```
-
-Edit a document:
-```
-
-```
-
-Close a document:
-```
-mcp_xcf_close_doc filePath="main.swift" saving=true
+mcp_xcf_cd_dir directoryPath="src"
 ```
 
 ## 🔒 Security Features
@@ -417,14 +383,8 @@ mcp_xcf_close_doc filePath="main.swift" saving=true
 ### File Manipulation Workflow (For Humans)
 1. `read_dir .` - List files in current directory
 2. `read_file main.swift` - View file contents
-3. `edit_file main.swift 10 15 "// Updated code"` - Edit the file
+3. Use Agent native tools for file editing
 4. `xcf build` - Build after changes
-
-### Xcode Document Workflow (For Humans)
-1. `open_doc main.swift` - Open document in Xcode
-
-4. `save_doc main.swift` - Save the document
-5. `xcf build` - Build after changes
 
 ### Basic Workflow (For AI Assistants)
 2. `mcp_xcf_xcf action="show"` - See available projects
@@ -441,13 +401,7 @@ mcp_xcf_close_doc filePath="main.swift" saving=true
 ### File Manipulation Workflow (For AI Assistants)
 2. `mcp_xcf_read_dir directoryPath="."` - List files in current directory
 3. `mcp_xcf_read_file filePath="main.swift"` - View file contents
-4. `mcp_xcf_edit_file filePath="main.swift" startLine=10 endLine=15 replacement="// Updated code"` - Edit the file
-5. `mcp_xcf_xcf action="build"` - Build after changes
-
-### Xcode Document Workflow (For AI Assistants)
-2. `mcp_xcf_open_doc filePath="main.swift"` - Open document in Xcode
-
-4. `mcp_xcf_save_doc filePath="main.swift"` - Save the document
+4. Use Agent native `edit_file` tool for file editing
 5. `mcp_xcf_xcf action="build"` - Build after changes
 
 ## 📺 Demo
