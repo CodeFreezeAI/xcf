@@ -1,8 +1,5 @@
 import Foundation
 import MCP
-import MultiLineDiff
-
-typealias StringIndex = String.Index
 
 // MARK: - MCP Handlers
 

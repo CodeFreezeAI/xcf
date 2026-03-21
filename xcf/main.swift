@@ -7,7 +7,6 @@
 
 import Cocoa
 import MCP
-import MultiLineDiff
 
 // Process command line arguments
 func handleArguments() {

@@ -1,5 +1,5 @@
 {
-  "originHash" : "b58ab3d2524826d1ee6381aab41445f36db72aa6c60122ae51658543ea6e9fee",
+  "originHash" : "9ec1c89ea374275bf540fe00ef9934daf5436fdb30676dc998e5bb9f932bc7e6",
   "pins" : [
     {
       "identity" : "eventsource",
@@ -17,15 +17,6 @@
       "state" : {
         "revision" : "ce592ae52f982c847a4efc0dd881cc9eb32d29f2",
         "version" : "1.6.4"
-      }
-    },
-    {
-      "identity" : "swift-multi-line-diff",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/codefreezeai/swift-multi-line-diff.git",
-      "state" : {
-        "revision" : "696849afadd73e2fbecb64a2f2e1272d17ea298c",
-        "version" : "2.0.2"
       }
     },
     {
