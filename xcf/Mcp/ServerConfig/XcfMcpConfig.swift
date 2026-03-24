@@ -13,93 +13,13 @@ struct McpConfig {
     static let arrayType = "array",
                missingSourceStringParamError = "Missing source string parameter Error"
     
-    // Tool names
-    static let listToolsName = "list",
-               xcfToolName = AppConstants.appName,
-               snippetToolName = "snippet",
-               quickHelpToolName = "xcf_help",
-               helpToolName = "help",
-               analyzerToolName = "analyzer",
-               useXcfToolName = "use_xcf",
-               tools = "tools",
-               xcfHelp = "xcf_help"
-    
-    // Filesystem tool names
-    static let writeFileToolName = "write_file",
-               readFileToolName = "read_file",
-               readDirToolName = "read_dir",
-               cdDirToolName = "cd_dir",
-               editFileToolName = "edit_file",
-               deleteFileToolName = "delete_file",
-               addDirToolName = "add_dir",
-               rmDirToolName = "rm_dir",
-               moveFileToolName = "move_file",
-               moveDirToolName = "move_dir"
+    // Tool name (single consolidated tool)
+    static let xcfToolName = AppConstants.appName
     
     // Tool descriptions
-    static let listToolsDesc = "Lists all available tools on this server",
-               xcfToolDesc = "Execute an \(AppConstants.appName) action or command",
-               snippetToolDesc = "Extract code snippets from files",
-               quickHelpToolDesc = "Quick help for xcf actions only",
-               helpToolDesc = "Regular help with common examples",
-               analyzerToolDesc = "Analyze Swift code for potential issues",
-               useXcfToolDesc = "Activate XCF mode"
+    static let xcfToolDesc = "Xcode automation tool. Actions: help, build, run, show, open <n>, current, grant, env, pwd, analyze <file>, snippet <file>, read <file>, readdir <path>, cd <path>"
     
-    // Filesystem tool descriptions
-    static let writeFileToolDesc = "Write content to a file",
-               readFileToolDesc = "Read content from a file",
-               readDirToolDesc = "List contents of a directory",
-               cdDirToolDesc = "Change current directory",
-               editFileToolDesc = "Edit content in a file",
-               deleteFileToolDesc = "Delete a file",
-               addDirToolDesc = "Create a new directory",
-               rmDirToolDesc = "Remove a directory",
-               moveFileToolDesc = "Move a file from one location to another",
-               moveDirToolDesc = "Move a directory from one location to another"
-    
-    // Standalone action tool names
-    static let showHelpToolName = "show_help",
-               grantPermissionToolName = "grant_permission",
-               runProjectToolName = "run_project",
-               buildProjectToolName = "build_project",
-               showCurrentProjectToolName = "show_current_project",
-               showEnvToolName = "show_env",
-               showFolderToolName = "show_folder",
-               listProjectsToolName = "list_projects",
-               selectProjectToolName = "select_project",
-               analyzeSwiftCodeToolName = "analyze_swift_code"
-    
-    // Standalone action tool descriptions
-    static let showHelpToolDesc = "Display help information about available commands",
-               grantPermissionToolDesc = "Grant Xcode automation permissions",
-               runProjectToolDesc = "Run the current Xcode project",
-               buildProjectToolDesc = "Build the current Xcode project",
-               showCurrentProjectToolDesc = "Show information about the currently selected project",
-               showEnvToolDesc = "Display all environment variables",
-               showFolderToolDesc = "Display the current working folder",
-               listProjectsToolDesc = "List all open Xcode projects",
-               selectProjectToolDesc = "Select an Xcode project by number",
-               analyzeSwiftCodeToolDesc = "Analyze Swift code for potential issues"
-    
-    // Standalone action prompt names
-    static let showHelpPromptName = "showHelp",
-               grantPermissionPromptName = "grantPermission",
-               runProjectPromptName = "runProject",
-               buildProjectPromptName = "buildProject",
-               showCurrentProjectPromptName = "showCurrentProject",
-               showEnvPromptName = "showEnvironment",
-               showFolderPromptName = "showFolder",
-               listProjectsPromptName = "listProjects",
-               selectProjectPromptName = "selectProject",
-               analyzeSwiftCodePromptName = "analyzeSwiftCode"
-    
-    // Standalone action tool parameter names
-    static let projectNumberParamName = "projectNumber",
-               projectNumberParamDesc = "The number of the project to select",
-               checkGroupsParamName = "checkGroups",
-               checkGroupsParamDesc = "Check groups to perform (all, syntax, style, safety, performance, bestPractices)"
-    
-    // Standalone action resource names
+    // Resource names
     static let helpResourceName = "help",
                helpResourceDesc = "Help information about available commands",
                helpResourceURI = "\(AppConstants.appName)://resources/help"
@@ -122,7 +42,7 @@ struct McpConfig {
     
     // Server config
     static let serverName = AppConstants.appName,
-               serverVersion = "1.0.5"
+               serverVersion = "1.1.0"
     
     // Resource URIs
     static let xcodeProjResourceURI = "\(AppConstants.appName)://resources/xcodeProjects",
@@ -167,7 +87,7 @@ struct McpConfig {
     
     // Schema parameters
     static let actionParamName = "action",
-               actionParamDesc = "The xcf action to execute",
+               actionParamDesc = "The action to execute (e.g., build, run, show, open 1, current, grant, env, pwd, analyze file.swift, snippet file.swift, read file.swift, readdir . swift, cd src, help)",
                objectType = "object",
                stringType = "string",
                integerType = "integer",

@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		EA284A9B2DD2CBCE00920DB6 /* xcf-swift in Frameworks */ = {isa = PBXBuildFile; productRef = EA284A9A2DD2CBCE00920DB6 /* xcf-swift */; };
-
 		EA8D403E2DD0618900464A89 /* MCP in Frameworks */ = {isa = PBXBuildFile; productRef = EA8D403D2DD0618900464A89 /* MCP */; };
 /* End PBXBuildFile section */
 
@@ -88,7 +87,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1630;
-				LastUpgradeCheck = 1630;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					EA8D401B2DD0533700464A89 = {
 						CreatedOnToolsVersion = 16.3;
@@ -173,6 +172,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 469UCUB275;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -198,6 +198,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -237,6 +238,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 469UCUB275;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -255,6 +257,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -269,6 +272,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 5;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 469UCUB275;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -301,6 +305,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 5;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 469UCUB275;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -355,7 +360,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-
 		EA8D403C2DD0618900464A89 /* XCRemoteSwiftPackageReference "swift-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/modelcontextprotocol/swift-sdk.git";
@@ -372,7 +376,6 @@
 			package = EA284A992DD2CBCE00920DB6 /* XCRemoteSwiftPackageReference "xcf-swift" */;
 			productName = "xcf-swift";
 		};
-
 		EA8D403D2DD0618900464A89 /* MCP */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = EA8D403C2DD0618900464A89 /* XCRemoteSwiftPackageReference "swift-sdk" */;

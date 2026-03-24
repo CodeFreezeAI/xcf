@@ -10,14 +10,13 @@
 [![GitHub forks](https://img.shields.io/github/forks/codefreezeai/swift-multi-line-diff.svg?style=social)](https://github.com/codefreezeai/xcf/network)
 
 ### 🖌️ New features in 1.0.5!
-- ✅ File Operations
-- ✅ Directory Operations
+- ✅ File & Directory Operations
 - ✅ Scripting Bridge Xcode Doc Operations
-- ✅ AI Coding Diff Tools
-- ✅ Fuzzy Logic
-- ✅ Swift code analysis without building in Xcode
+- ✅ Fuzzy Logic Path Resolution
+- ✅ Swift Code Analysis (without building in Xcode)
+- ✅ 21 MCP Tools for Xcode Automation
 
-Speed up writing Xcode apps with xcf, a dead simple Swift-based MCP server specifically designed for Cursor. Works seamlessly with VSCode and Claude, with no TypeScript, no JavaScript, no BS!
+Speed up writing Xcode apps with xcf, a dead simple Swift-based MCP server designed for Cursor, Claude Code, and VSCode — no TypeScript, no JavaScript, no BS!
 
 ## 🧰 XCF Installation & Configuration
 
@@ -256,64 +255,48 @@ The analysis identifies issues like:
 - Long methods
 - And more
 
-## 🧩 MCP Tools
+## 🧩 MCP Tools (21 Tools)
 
-### Currently Available Tools
-
-These are the tools currently available in XCF:
+### Core Tools
 
 | Tool | Description |
 |------|-------------|
-| `mcp_xcf_xcf` | Execute xcf actions/commands |
-| `mcp_xcf_list` | Show all available tools on this server |
-| `mcp_xcf_xcf_help` | Help for xcf actions only |
-| `mcp_xcf_help` | Regular help with common examples |
-| `mcp_xcf_snippet` | Extract code snippets from files |
-| `mcp_xcf_analyzer` | Analyze Swift code for potential issues |
-| `mcp_xcf_read_dir` | List contents of a directory |
-| `mcp_xcf_read_file` | Read content from a file |
-| `mcp_xcf_cd_dir` | Change current directory |
-| `mcp_xcf_use_xcf` | Activate XCF mode |
-| `mcp_xcf_tools` | Show detailed reference for all tools |
-| `mcp_xcf_show_help` | Display help information about available commands |
-| `mcp_xcf_grant_permission` | Grant Xcode automation permissions |
-| `mcp_xcf_run_project` | Run the current Xcode project |
-| `mcp_xcf_build_project` | Build the current Xcode project |
-| `mcp_xcf_show_current_project` | Show information about the currently selected project |
-| `mcp_xcf_show_env` | Display all environment variables |
-| `mcp_xcf_show_folder` | Display the current working folder |
-| `mcp_xcf_list_projects` | List all open Xcode projects |
-| `mcp_xcf_select_project` | Select an Xcode project by number |
-| `mcp_xcf_analyze_swift_code` | Analyze Swift code for potential issues |
+| `xcf` | Execute xcf actions (show, open, build, run, current, env, pwd, analyze, lz) |
+| `list` | Lists all available tools on this server |
+| `xcf_help` | Quick help for xcf actions only |
+| `help` | Regular help with common examples |
+| `use_xcf` | Activate XCF mode |
+| `tools` | Show detailed reference for all tools including AI function calls |
+| `show_help` | Display help information about available commands |
 
-### Tools Moved to Agent macOS App
+### Project Management Tools
 
-The following tools were previously available in XCF but have been **moved to the native Agent macOS app** (github.com/macOS26/agent) for better integration and performance:
+| Tool | Description |
+|------|-------------|
+| `build_project` | Build the current Xcode project |
+| `run_project` | Run the current Xcode project |
+| `list_projects` | List all open Xcode projects |
+| `select_project` | Select an Xcode project by number |
+| `show_current_project` | Show information about the currently selected project |
+| `show_env` | Display all environment variables |
+| `show_folder` | Display the current working folder |
+| `grant_permission` | Grant Xcode automation permissions |
 
-| Moved Tool | Replacement in Agent |
-|------------|----------------------|
-| `mcp_xcf_write_file` | Use native `write_file` tool |
-| `mcp_xcf_edit_file` | Use native `edit_file` tool |
-| `mcp_xcf_delete_file` | Use native file system tools |
-| `mcp_xcf_add_dir` | Use native directory tools |
-| `mcp_xcf_rm_dir` | Use native directory tools |
-| `mcp_xcf_move_file` | Use native file system tools |
-| `mcp_xcf_move_dir` | Use native file system tools |
-| `mcp_xcf_open_doc` | Use native Xcode integration |
-| `mcp_xcf_close_doc` | Use native Xcode integration |
-| `mcp_xcf_create_doc` | Use native Xcode integration |
-| `mcp_xcf_read_doc` | Use native Xcode integration |
-| `mcp_xcf_save_doc` | Use native Xcode integration |
+### File System Tools
 
-**Why were these tools moved?**
+| Tool | Description |
+|------|-------------|
+| `read_file` | Read content from a file |
+| `read_dir` | List contents of a directory |
+| `cd_dir` | Change current directory |
 
-These file and document manipulation tools are now available as native tools in the Agent macOS application, providing:
-- **Better performance** - Direct integration without MCP overhead
-- **Enhanced reliability** - Native Swift implementation
-- **Consistent API** - Unified tool interface across all operations
-- **Improved maintenance** - Centralized updates in the main Agent app
+### Code Analysis Tools
 
-See the [Agent macOS repository](https://github.com/macOS26/agent) for the complete set of native tools.
+| Tool | Description |
+|------|-------------|
+| `snippet` | Extract code snippets from files |
+| `analyzer` | Analyze Swift code for potential issues |
+| `analyze_swift_code` | Analyze Swift code with customizable check groups (syntax, style, safety, performance, bestPractices) |
 
 ### For AI Function Calls
 

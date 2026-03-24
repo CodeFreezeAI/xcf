@@ -26,7 +26,11 @@ struct Actions {
                dir = "dir",
                path = "path",
                analyze = "analyze",
-               lz = "lz" // Short alias for analyze
+               lz = "lz", // Short alias for analyze
+               snippet = "snippet",
+               read = "read",
+               readdir = "readdir",
+               cd = "cd"
 }
 
 // Environment variable constants

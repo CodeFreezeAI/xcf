@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__xcf-server__read_dir",
+      "mcp__xcf-server__read_file",
+      "Bash(xcodebuild -scheme xcf -configuration Debug build)"
+    ]
+  }
+}
