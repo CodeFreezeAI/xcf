@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-syntax.git",
       "state" : {
-        "revision" : "f99ae8aa18f0cf0d53481901f88a0991dc3bd4a2",
-        "version" : "601.0.1"
+        "revision" : "2b59c0c741e9184ab057fd22950b491076d42e91",
+        "version" : "603.0.0"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/codefreezeai/xcf-swift",
       "state" : {
-        "revision" : "2bc70856401230b093956dee35ac9bec174fec62",
-        "version" : "1.0.0"
+        "revision" : "00e15e828cbb974c9555d74dac40cbd94df24463",
+        "version" : "1.0.1"
       }
     }
   ],

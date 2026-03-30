@@ -357,7 +357,7 @@
 			repositoryURL = "https://github.com/codefreezeai/xcf-swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 1.0.1;
 			};
 		};
 		EA8D403C2DD0618900464A89 /* XCRemoteSwiftPackageReference "swift-sdk" */ = {
