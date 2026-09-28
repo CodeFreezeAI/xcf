@@ -431,3 +431,9 @@ Swift Engineers are welcome to contribute! Help us make xcf even better.
 ---
 
 Created by XCodeFreeze Automation and CodeFreeze.ai - Bringing the future of Swift development to your fingertips!
+
+---
+
+**AgentiLoop:** [agentiloop.ai](https://agentiloop.ai/)
+
+Copyright © 2026 AgentiLoop.ai, a Logos InkPen LLC company. All rights reserved.
