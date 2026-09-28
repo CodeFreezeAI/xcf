@@ -8,6 +8,7 @@
 [![GitHub downloads](https://img.shields.io/github/downloads/codefreezeai/xcf/total.svg)](https://github.com/codefreezeai/xcf/releases)
 [![GitHub stars](https://img.shields.io/github/stars/codefreezeai/xcf.svg?style=social)](https://github.com/codefreezeai/xcf/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/codefreezeai/swift-multi-line-diff.svg?style=social)](https://github.com/codefreezeai/xcf/network)
+[![MCP Marketplace](https://img.shields.io/badge/MCP%20Marketplace-Indexed-blueviolet)](https://getlulu.dev/mcps)
 
 ### 🖌️ New features in 1.0.5!
 - ✅ File & Directory Operations
