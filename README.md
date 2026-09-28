@@ -4,45 +4,65 @@
 
 [![Swift 6.1](https://img.shields.io/badge/Swift-6.1-orange.svg)](https://swift.org)
 [![Website](https://img.shields.io/badge/website-xcf.ai-blue.svg)](https://xcf.ai)
-[![Version](https://img.shields.io/badge/version-1.0.5-green.svg)](https://github.com/toddbruss/xcf)
+[![Version](https://img.shields.io/badge/version-1.0.6-green.svg)](https://github.com/CodeFreezeAI/xcf/releases/tag/1.0.6)
 [![GitHub downloads](https://img.shields.io/github/downloads/codefreezeai/xcf/total.svg)](https://github.com/codefreezeai/xcf/releases)
 [![GitHub stars](https://img.shields.io/github/stars/codefreezeai/xcf.svg?style=social)](https://github.com/codefreezeai/xcf/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/codefreezeai/swift-multi-line-diff.svg?style=social)](https://github.com/codefreezeai/xcf/network)
 
-### 🖌️ New features in 1.0.5!
-- ✅ File & Directory Operations
-- ✅ Scripting Bridge Xcode Doc Operations
-- ✅ Fuzzy Logic Path Resolution
-- ✅ Swift Code Analysis (without building in Xcode)
-- ✅ 21 MCP Tools for Xcode Automation
+### 🖌️ What's new in 1.0.6
+
+- A leaner MCP server focused on Xcode project automation, file reading, directory navigation, Swift analysis, and code snippets.
+- Removed diff, code-editing, and Xcode-document tools from the MCP server, along with the MultiLineDiff (D1F) dependency.
+- Downloadable **DMG and ZIP** packages, with an **Applications shortcut** in the DMG for drag-and-drop installation.
+- Universal macOS app for **Apple silicon and Intel**, targeting **macOS 13.5 or later**.
+- Packaged-build compatibility fixes: `xcf-swift` pinned to **1.0.0** and MCP call sites adapted to the updated SDK.
+
+**Upgrading:** use your client's native editing tools for operations removed from XCF. Replace the app and restart your MCP client to reload the tool list.
+
+[Release notes](https://github.com/CodeFreezeAI/xcf/releases/tag/1.0.6) · [Changes since 1.0.5](https://github.com/CodeFreezeAI/xcf/compare/1.0.5...1.0.6)
 
 Speed up writing Xcode apps with xcf, a dead simple Swift-based MCP server designed for Cursor, Claude Code, and VSCode — no TypeScript, no JavaScript, no BS!
 
 ## 🧰 XCF Installation & Configuration
 
+### Downloads
+
+| Package | Installation |
+| --- | --- |
+| [XCF 1.0.6 — macOS DMG](https://github.com/CodeFreezeAI/xcf/releases/download/1.0.6/xcf-1.0.6-macos.dmg) | **Recommended:** open the image and drag **xcf.app** onto the **Applications** shortcut. |
+| [XCF 1.0.6 — macOS ZIP](https://github.com/CodeFreezeAI/xcf/releases/download/1.0.6/xcf-1.0.6-macos.zip) | Extract the archive and move **xcf.app** into **/Applications**. |
+
+The packaged app's minimum deployment target is **macOS 13.5**, verified in both **arm64** and **x86_64** executables. Runtime testing on macOS 13.5 has not been performed.
+
 ### Installation Steps
 
-1. Download the XCF application and drag it to your /Applications folder.
+1. Install XCF using either download above.
 2. Launch the application to approve the internet download.
 
 <img width="372" alt="Screenshot 2025-05-11 at 9 15 35 PM" src="https://github.com/user-attachments/assets/da8fe321-7292-4985-a08e-c07ed2f9be59" />
 
-4. You will see the following alert (this is expected):
+3. You will see the following alert (this is expected):
 
 <img width="414" alt="XCF Alert" src="https://github.com/user-attachments/assets/e84c4ed5-2e17-4064-8871-b35f07af20e8" />
 
-6. Click the "Press to Quit this XCF Xcode MCP Server" button.
+4. Click the "Press to Quit this XCF Xcode MCP Server" button.
 
 > 💡 **Troubleshooting:** If XCF doesn't display the alert, run this command:
 > ```bash
 > codesign --force --deep --sign - /Applications/xcf.app
 > ```
 
-You can also build xcf from source using Xcode. It's 100% Swift and easy to build locally.
+You can also build xcf from source using Xcode.
+
+> **Source archive note:** the attached 1.0.6 app packages include compatibility fixes made after the `1.0.6` tag. GitHub's automatically generated source archives for that tag do not include those fixes.
 
 ## 🔧 Quick Setup
 
 ### Minimum Requirements:
+
+- macOS **13.5 or later** for the packaged app.
+- Xcode for Xcode project automation.
+- An MCP client configured to launch XCF over standard input/output.
 
 Add xcf to your MCP configuration file:
 
@@ -51,7 +71,7 @@ Add xcf to your MCP configuration file:
   "mcpServers": {
     "xcf": {
       "type": "stdio",
-      "command": "Applications/xcf.app/Contents/MacOS/xcf",
+      "command": "/Applications/xcf.app/Contents/MacOS/xcf",
       "args": ["server"]
     }
   }
@@ -73,7 +93,7 @@ For non-Cursor clients or users requiring strict project-level control:
   "mcpServers": {
     "xcf": {
       "type": "stdio",
-      "command": "Applications/xcf.app/Contents/MacOS/xcf",
+      "command": "/Applications/xcf.app/Contents/MacOS/xcf",
       "args": ["server"],
       "env": {
           "XCODE_PROJECT_FOLDER": "/path/to/project/",
