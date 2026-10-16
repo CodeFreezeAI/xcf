@@ -11,3 +11,4 @@ xcf.xcodeproj/project.xcworkspace/xcuserdata/toddbruss.xcuserdatad/UserInterface
 *.xcuserstate
 .DS_Store
 .DS_Store
+/build/
