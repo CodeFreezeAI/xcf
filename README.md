@@ -1,5 +1,8 @@
 # 🚀 XCF Xcode MCP Server 
 
+🤖 **Built by the makers of [Agent!](https://github.com/AgentiLoop/Agent)**, an autonomous macOS agent.
+
+
 ## The Swift way to Super Charge your AI Workflow!
 
 [![Swift 6.1](https://img.shields.io/badge/Swift-6.1-orange.svg)](https://swift.org)
