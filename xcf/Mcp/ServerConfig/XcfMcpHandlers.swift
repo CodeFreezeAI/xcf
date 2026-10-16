@@ -73,7 +73,7 @@ class XcfMcpHandlers {
         var result = McpConfig.availableTools
         
         for tool in XcfMcpTools.getAllTools() {
-            result += String(format: McpConfig.toolListFormat, tool.name, tool.description)
+            result += String(format: McpConfig.toolListFormat, tool.name, tool.description ?? "")
         }
         
         return result

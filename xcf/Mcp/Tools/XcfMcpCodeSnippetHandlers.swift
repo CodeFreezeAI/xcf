@@ -81,12 +81,11 @@ class XcfMcpCodeSnippetHandlers {
         let resourceUri = "\(McpConfig.fileContentsResourceURI)/\(filePath)"
         
         return Prompt.Message.user(
-            .resource(
+            .resource(resource: .text(
+                String(format: McpConfig.codeBlockFormat, language, fileContents),
                 uri: resourceUri,
-                mimeType: McpConfig.plainTextMimeType,
-                text: String(format: McpConfig.codeBlockFormat, language, fileContents),
-                blob: nil
-            )
+                mimeType: McpConfig.plainTextMimeType
+            ))
         )
     }
 } 

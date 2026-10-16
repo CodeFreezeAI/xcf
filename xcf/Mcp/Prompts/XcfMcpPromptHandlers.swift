@@ -25,7 +25,7 @@ class XcfMcpPromptHandlers {
     /// Handles a request for the build project prompt
     static func handleBuildPrompt(_ params: GetPrompt.Parameters) -> GetPrompt.Result {
         // Get project path from arguments or use placeholder
-        let projectPath = params.arguments?[McpConfig.projectPathArgName]?.stringValue ?? McpConfig.projectPathPlaceholder
+        let projectPath = params.arguments?[McpConfig.projectPathArgName] ?? McpConfig.projectPathPlaceholder
         
         let messages: [Prompt.Message] = [
             .user(.text(text: String(format: McpConfig.buildProjectTemplate, projectPath)))
@@ -37,7 +37,7 @@ class XcfMcpPromptHandlers {
     /// Handles a request for the run project prompt
     static func handleRunPrompt(_ params: GetPrompt.Parameters) -> GetPrompt.Result {
         // Get project path from arguments or use placeholder
-        let projectPath = params.arguments?[McpConfig.projectPathArgName]?.stringValue ?? McpConfig.projectPathPlaceholder
+        let projectPath = params.arguments?[McpConfig.projectPathArgName] ?? McpConfig.projectPathPlaceholder
         
         let messages: [Prompt.Message] = [
             .user(.text(text: String(format: McpConfig.runProjectTemplate, projectPath)))
@@ -49,8 +49,8 @@ class XcfMcpPromptHandlers {
     /// Handles a request for the analyze code prompt
     static func handleAnalyzeCodePrompt(_ params: GetPrompt.Parameters) throws -> GetPrompt.Result {
         // Get file path from arguments or use placeholder
-        let filePath = params.arguments?[McpConfig.filePathArgName]?.stringValue ?? McpConfig.filePathPlaceholder
-        let includeSnippet = params.arguments?[McpConfig.includeSnippetArgName]?.boolValue ?? false
+        let filePath = params.arguments?[McpConfig.filePathArgName] ?? McpConfig.filePathPlaceholder
+        let includeSnippet = params.arguments?[McpConfig.includeSnippetArgName].flatMap { Bool($0) } ?? false
         
         // Create the base message
         let baseMessage = Prompt.Message.user(
